@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nishant Shah, Founder, Leader, Storyteller</title>
+<title>Nishant Shah — Founder, Leader, Storyteller</title>
 <meta name="description" content="High-school senior at Carrollwood Day School creating at the intersection of business, leadership, and the arts." />
-<meta property="og:title" content="Nishant Shah, Founder, Leader, Storyteller" />
+<meta property="og:title" content="Nishant Shah — Founder, Leader, Storyteller" />
 <meta property="og:description" content="Creating at the intersection of business, engineering, and the arts." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="https://i.imgur.com/MVhoIC5.jpeg" />
@@ -16,104 +16,6 @@
 <link rel="stylesheet" href="assets/tokens.css" />
 <style>
   body { overflow-x: hidden; }
-  /* ===== Dawn cinematic background ===== */
-  html { background: #07080c; }
-  body.dawn-mode { background: transparent !important; }
-  .dawn-stage { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-  .dawn-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
-  .dawn-stage.has-clip .dawn-vid { display: block; }
-  .dawn-stage.has-clip .dawn-grad { opacity: 0; }
-  .dawn-grad { position: absolute; inset: 0; background: linear-gradient(160deg,#0a1430 0%,#14213f 42%,#2a3358 72%,#4a3a52 100%); transition: background .6s linear; }
-  /* sunrise overlay (works even if the clip has no sun) */
-  .dawn-sun { position: absolute; left: 62%; bottom: -160px; width: 460px; height: 460px; transform: translate(-50%, 0); border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,244,214,0.95) 0%, rgba(255,210,137,0.7) 26%, rgba(255,176,90,0.28) 50%, rgba(255,160,80,0) 72%);
-    filter: blur(2px); opacity: 0; pointer-events: none; will-change: transform, opacity; }
-  .dawn-warm { position: absolute; inset: 0; pointer-events: none; opacity: 0; mix-blend-mode: soft-light;
-    background: linear-gradient(0deg, rgba(255,150,70,0.85) 0%, rgba(255,190,120,0.4) 40%, transparent 75%); }
-  .dawn-scrim { position: fixed; inset: 0; z-index: 1; pointer-events: none;
-    background:
-      linear-gradient(85deg, rgba(5,6,10,0.74) 0%, rgba(5,6,10,0.5) 42%, rgba(5,6,10,0.24) 72%, rgba(5,6,10,0.34) 100%),
-      linear-gradient(0deg, rgba(5,6,10,0.42) 0%, rgba(5,6,10,0.1) 30%, transparent 55%),
-      rgba(5,6,10,0.1); }
-  /* translucent surfaces so the dawn shows through, esp. in Experience */
-  body.dawn-mode .intern, body.dawn-mode .roster .it, body.dawn-mode .stats > div,
-  body.dawn-mode .cred-card, body.dawn-mode .tl-item, body.dawn-mode .statcard,
-  body.dawn-mode .award-modal .am-card { background: rgba(14,16,22,0.55) !important; backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); }
-  body.dawn-mode .intern-grid, body.dawn-mode .roster, body.dawn-mode .stats { background: rgba(255,255,255,0.06) !important; }
-  body.dawn-mode .capmatrix, body.dawn-mode .spike, body.dawn-mode .tf-photo { background: rgba(14,16,22,0.5) !important; }
-  /* catch-all: every remaining card/surface gets a translucent frosted backing */
-  body.dawn-mode .card, body.dawn-mode .bento, body.dawn-mode .wslide, body.dawn-mode .scard,
-  body.dawn-mode .srow, body.dawn-mode .cm-row, body.dawn-mode .pill, body.dawn-mode .badge,
-  body.dawn-mode .it, body.dawn-mode .wf-btn, body.dawn-mode .wf-menu, body.dawn-mode .award-card,
-  body.dawn-mode .statcard, body.dawn-mode .cred li, body.dawn-mode .am-card,
-  body.dawn-mode .hero-team .tk, body.dawn-mode .cloud .pill {
-    background: rgba(14,16,22,0.5) !important; -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
-  body.dawn-mode .stack, body.dawn-mode .capmatrix, body.dawn-mode .wcar { background: transparent !important; }
-  body.dawn-mode .cred-card { background: transparent !important; border: 0 !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
-  body.dawn-mode .cred li { background: transparent !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
-  body.dawn-mode .shell { position: relative; z-index: 2; }
-  body.dawn-mode .reveal { opacity: 1; transform: none; }
-  /* ===== presentation-style scroll reveals (JS-gated; visible if JS off) ===== */
-  body.anim-on .main > section .wrap > *,
-  body.anim-on .main > section .hold > *,
-  body.anim-on .team-feature { opacity: 0; transition: opacity .8s var(--ease, cubic-bezier(.2,.7,.2,1)), transform .9s var(--ease, cubic-bezier(.2,.7,.2,1)); will-change: opacity, transform; }
-  /* base motion = rise up */
-  body.anim-on .main > section .wrap > *,
-  body.anim-on .main > section .hold > * { transform: translateY(38px); }
-  /* per-section flavor */
-  body.anim-on #tech .team-feature { transform: translateX(-46px); opacity: 0; }
-  body.anim-on #enterprise .team-feature { transform: translateX(46px); opacity: 0; }
-  body.anim-on #advocacy .team-feature { transform: translateY(46px) scale(.97); opacity: 0; }
-  body.anim-on #making .team-feature { transform: translateX(-46px); opacity: 0; }
-  body.anim-on #why .wrap > * { transform: translateY(30px) scale(.99); }
-  body.anim-on #receipts .wrap > * { transform: translateY(30px); }
-  body.anim-on #contact .wrap > * { transform: translateY(40px) scale(.98); }
-  /* revealed state */
-  body.anim-on section.in-view .wrap > *,
-  body.anim-on section.in-view .hold > *,
-  body.anim-on section.in-view .team-feature { opacity: 1 !important; transform: none !important; }
-  /* stagger children within a section */
-  body.anim-on section .wrap > *:nth-child(1){ transition-delay:.02s; }
-  body.anim-on section .wrap > *:nth-child(2){ transition-delay:.10s; }
-  body.anim-on section .wrap > *:nth-child(3){ transition-delay:.18s; }
-  body.anim-on section .wrap > *:nth-child(4){ transition-delay:.26s; }
-  body.anim-on section .wrap > *:nth-child(5){ transition-delay:.34s; }
-  body.anim-on section .wrap > *:nth-child(n+6){ transition-delay:.40s; }
-  @media (prefers-reduced-motion: reduce) {
-    body.anim-on .main > section .wrap > *, body.anim-on .main > section .hold > *, body.anim-on .team-feature { opacity:1; transform:none; transition:none; }
-  }
-  /* ===== unique per-element flavors ===== */
-  /* headings: blur-in rise (no clip-path, safe for split drop-cap headings) */
-  body.anim-on section h1, body.anim-on section .sec {
-    filter: blur(6px); transition: opacity .8s var(--ease), transform .9s var(--ease), filter .8s var(--ease); }
-  body.anim-on section.in-view h1, body.anim-on section.in-view .sec { filter: blur(0) !important; }
-  /* feature/case photos: cinematic clip-path wipe from left + slight zoom */
-  body.anim-on .tf-photo, body.anim-on .story-left { clip-path: inset(0 100% 0 0); transform: scale(1.04); transition: clip-path 1s var(--ease), transform 1.1s var(--ease), opacity .8s var(--ease); }
-  body.anim-on .in-view .tf-photo, body.anim-on .in-view .story-left { clip-path: inset(0 0 0 0) !important; transform: none !important; }
-  /* metric tiles: pop in with overshoot, staggered */
-  body.anim-on .tf-metrics .tf-m, body.anim-on .impact .m, body.anim-on .stats > div {
-    opacity: 0; transform: translateY(18px) scale(.82); transition: opacity .5s ease, transform .6s cubic-bezier(.34,1.56,.64,1); }
-  body.anim-on .in-view .tf-metrics .tf-m, body.anim-on .in-view .impact .m, body.anim-on .in-view .stats > div { opacity:1 !important; transform:none !important; }
-  body.anim-on .tf-metrics .tf-m:nth-child(2){ transition-delay:.08s; } body.anim-on .tf-metrics .tf-m:nth-child(3){ transition-delay:.16s; } body.anim-on .tf-metrics .tf-m:nth-child(4){ transition-delay:.24s; }
-  body.anim-on .impact .m:nth-child(2){ transition-delay:.08s; } body.anim-on .impact .m:nth-child(3){ transition-delay:.16s; } body.anim-on .impact .m:nth-child(4){ transition-delay:.24s; }
-  /* hero pills: 3D flip-up, staggered */
-  body.anim-on .hero-team .tk { opacity:0; transform: perspective(600px) rotateX(-70deg); transform-origin: bottom; transition: opacity .5s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
-  body.anim-on .hero.in-view .hero-team .tk { opacity:1 !important; transform:none !important; }
-  body.anim-on .hero-team .tk:nth-child(2){ transition-delay:.09s; } body.anim-on .hero-team .tk:nth-child(3){ transition-delay:.18s; } body.anim-on .hero-team .tk:nth-child(4){ transition-delay:.27s; }
-  /* stacked rows & cards: alternating skew-slide from sides */
-  body.anim-on .srow, body.anim-on .cm-row { opacity:0; transform: translateX(-40px) skewX(4deg); transition: opacity .6s ease, transform .7s var(--ease); }
-  body.anim-on .srow:nth-child(even), body.anim-on .cm-row:nth-child(even) { transform: translateX(40px) skewX(-4deg); }
-  body.anim-on .in-view .srow, body.anim-on .in-view .cm-row { opacity:1 !important; transform:none !important; }
-  body.anim-on .srow:nth-child(2){transition-delay:.06s} body.anim-on .srow:nth-child(3){transition-delay:.12s} body.anim-on .srow:nth-child(4){transition-delay:.18s} body.anim-on .srow:nth-child(5){transition-delay:.24s} body.anim-on .srow:nth-child(6){transition-delay:.30s}
-  /* awards pills: scale + rotate pop, cascading */
-  body.anim-on .cloud .pill { opacity:0; transform: scale(.6) rotate(-6deg); transition: opacity .4s ease, transform .55s cubic-bezier(.34,1.56,.64,1); }
-  body.anim-on .in-view .cloud .pill { opacity:1 !important; transform:none !important; }
-  body.dawn-mode .topnav { z-index: 95; }
-  /* let content surfaces breathe over the cinematic bg */
-  body.dawn-mode .hero { background: transparent; padding-top: 120px; }
-  body.dawn-mode .hero-photo, body.dawn-mode .contact-photo { display: none !important; }
-  body.dawn-mode .contact { background: transparent; }
-  @media print { .dawn-stage, .dawn-scrim { display: none !important; } body.dawn-mode { background: #fff !important; } }
 
   /* ============ LAYOUT: sidebar + main ============ */
   .shell { min-height: 100vh; }
@@ -245,8 +147,8 @@
   .story-left .role { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-top: 7px; }
   .story-left .socials { margin-top: 16px; }
   .cred { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 11px; }
-  .cred li { position: relative; padding-left: 17px; font-size: 0.78rem; color: var(--text-2); line-height: 1.4; }
-  .cred li::before { content: ""; position: absolute; left: 0; top: 7px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+  .cred li { position: relative; padding-left: 19px; font-size: 0.9rem; color: var(--text-2); line-height: 1.45; }
+  .cred li::before { content: ""; position: absolute; left: 0; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
   .story-right h2 { font-size: clamp(1.9rem, 3.6vw, 2.9rem); margin-bottom: 22px; }
   .story-right p { font-size: 1.1rem; color: var(--text-2); line-height: 1.7; margin-bottom: 16px; }
   .story-right p strong { color: var(--text); font-weight: 600; }
@@ -486,71 +388,8 @@
     .wrap { padding: 0 22px; }
   }
 </style>
-
-<style id="journey-css">
-  /* fixed-stage scene swap with per-chapter camera moves */
-  @media (prefers-reduced-motion: no-preference) {
-    .main > section { transition: opacity .85s var(--ease), transform .95s cubic-bezier(.22,.9,.24,1), filter .85s var(--ease); will-change: opacity, transform; }
-    .main > section:not(.ch-active) { opacity: 0.1; pointer-events: none; filter: blur(2px); }
-    .main > section[data-cam="rise"]:not(.ch-active) { transform: translateY(70px) scale(0.98); }
-    .main > section[data-cam="zoom"]:not(.ch-active) { transform: scale(1.07); filter: blur(4px); }
-    .main > section[data-cam="tilt"]:not(.ch-active) { transform: perspective(1000px) rotateX(9deg) translateY(54px); transform-origin: 50% 100%; }
-    .main > section[data-cam="panl"]:not(.ch-active) { transform: perspective(1000px) rotateY(-7deg) translateX(-70px); transform-origin: 0% 50%; }
-    .main > section[data-cam="panr"]:not(.ch-active) { transform: perspective(1000px) rotateY(7deg) translateX(70px); transform-origin: 100% 50%; }
-    .main > section.ch-active { opacity: 1; transform: none; filter: none; }
-  }
-  /* full-viewport stage formatting */
-  .main > section { min-height: 96vh; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; }
-  /* Day Meter companion */
-  .daymeter { position: fixed; right: 22px; bottom: 22px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 9px 16px; border-radius: 999px; background: rgba(10,12,18,0.55); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.16); color: #fff; }
-  .daymeter .dm-dot { width: 9px; height: 9px; border-radius: 50%; background: #7a8aff; flex: 0 0 auto; transition: background .3s; }
-  .daymeter .dm-time { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.92rem; letter-spacing: 0.04em; }
-  .daymeter .dm-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.25); }
-  .daymeter .dm-ch { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.75); white-space: nowrap; }
-  @media (max-width: 700px) { .daymeter .dm-ch, .daymeter .dm-sep { display: none; } }
-  /* journey rail */
-  .jrail { position: fixed; left: 18px; top: 50%; transform: translateY(-50%); z-index: 60; display: flex; flex-direction: column; gap: 6px; }
-  @media (max-width: 860px) { .jrail { display: none; } }
-  .jrail a { position: relative; display: flex; align-items: center; gap: 9px; text-decoration: none; padding: 4px 6px; border-radius: 8px; }
-  .jrail .jnum { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); transition: color .25s; }
-  .jrail .jlab { font-size: 0.78rem; color: #fff; background: rgba(12,14,20,0.72); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; padding: 5px 12px; white-space: nowrap; opacity: 0; transform: translateX(-8px); transition: opacity .25s, transform .25s; pointer-events: none; }
-  .jrail a:hover .jlab { opacity: 1; transform: none; }
-  .jrail a.on .jnum { color: #f5b21a; }
-  .jrail a.on .jlab { opacity: 1; transform: none; }
-  .jprog { position: absolute; left: -8px; top: 4px; bottom: 4px; width: 2px; background: rgba(255,255,255,0.14); border-radius: 1px; }
-  .jprog i { display: block; width: 100%; height: 0; background: #f5b21a; border-radius: 1px; transition: height .2s linear; }
-  /* flock */
-  .flock { position: fixed; left: 0; top: 0; z-index: 3; pointer-events: none; color: rgba(255,255,255,0.85); filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); transition: opacity .6s; }
-  .flock .bird { position: absolute; width: 30px; height: 12px; transform: translate(var(--dx), var(--dy)); animation: flap 1.6s ease-in-out infinite; }
-  .flock .b1 { animation-delay: .2s; width: 24px; } .flock .b2 { animation-delay: .35s; width: 24px; }
-  .flock .b3 { animation-delay: .5s; width: 19px; opacity: .8; } .flock .b4 { animation-delay: .65s; width: 19px; opacity: .8; }
-  @keyframes flap { 0%,100% { margin-top: 0; } 50% { margin-top: -5px; } }
-  /* hold-to-begin beat */
-  .holdwrap { display: flex; align-items: center; gap: 14px; margin: 26px 0 8px; }
-  .holdbtn { position: relative; width: 64px; height: 64px; border-radius: 50%; border: 0; background: rgba(12,14,20,0.45); backdrop-filter: blur(8px); cursor: pointer; display: grid; place-items: center; }
-  .holdbtn svg { position: absolute; inset: 0; transform: rotate(-90deg); }
-  .holdbtn .ring-bg { fill: none; stroke: rgba(255,255,255,0.22); stroke-width: 3; }
-  .holdbtn .ring-fill { fill: none; stroke: #f5b21a; stroke-width: 3; stroke-linecap: round; }
-  .holdbtn .sun { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #ffe9b8, #f5b21a 70%); box-shadow: 0 0 calc(6px + 22px * var(--glow, 0)) rgba(245,178,26, calc(0.4 + 0.6 * var(--glow, 0))); transition: box-shadow .15s; }
-  .holdlab { font-size: 0.86rem; color: rgba(255,255,255,0.8); text-shadow: 0 1px 8px rgba(0,0,0,0.6); }
-  /* name beat */
-  .namebeat { margin: 26px 0 6px; }
-  .namebeat label { display: block; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; opacity: 0.75; }
-  .namebeat input { background: rgba(255,255,255,0.5); border: 1px solid rgba(36,20,5,0.35); border-radius: 10px; padding: 10px 14px; font-size: 1rem; color: #241405; width: min(240px, 70vw); outline: none; }
-  .namebeat input:focus { border-color: #241405; }
-  .namebeat .ngreet { font-family: var(--font-serif, Georgia, serif); font-style: italic; font-size: clamp(1.2rem, 2.6vw, 1.7rem); margin: 14px 0 0; }
-  @media print { .jrail, .flock, .holdwrap { display: none !important; } .main > section { opacity: 1 !important; transform: none !important; filter: none !important; } }
-</style>
 </head>
-<body class="has-topnav dawn-mode">
-<nav class="topnav"><a href="Intro.html">Intro</a><a href="Portfolio Journey.html" class="active">Portfolio</a><a href="World.html">Room</a></nav>
-<!-- ===== Dawn cinematic background ===== -->
-<div class="dawn-stage" id="dawnStage" aria-hidden="true">
-  <!-- Single continuous clip, scrubbed to scroll. Drop the file path into data-src (e.g. assets/dawn.mp4). Until then the gradient sweep stands in. -->
-  <video class="dawn-vid" id="dawnVid" muted playsinline preload="auto" data-src="assets/dawn.mp4"></video>
-  <div class="dawn-grad" id="dawnGrad"></div>
-</div>
-<div class="dawn-scrim" aria-hidden="true"></div>
+<body>
 <a href="#home" class="skip-link">Skip to content</a>
 <div class="pt" id="pt"><div class="pt-mark">NS</div></div>
 <script src="assets/transition.js"></script>
@@ -568,17 +407,25 @@
 </div>
 
 <div class="shell">
-  
+  <nav class="crail" aria-label="Chapters">
+    <a href="#home" data-l="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg></a>
+    <a href="#about" data-l="About"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></a>
+    <a href="#work" data-l="Ventures"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></a>
+    <a href="#writing" data-l="Writing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></a>
+    <a href="#resume" data-l="Résumé"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></a>
+    <a href="#contact" data-l="Contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
+    <a href="world.html" class="crail-room" aria-label="My Room" data-l="My Room"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></a>
+  </nav>
   <!-- ============ SIDEBAR ============ -->
   <aside class="sidebar" id="sidebar">
     <nav class="sb-nav">
       <a class="navitem active" href="#home" data-spy="home"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg></span>Home</a>
       <a class="navitem" href="#about" data-spy="about"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span>About</a>
-      <a class="navitem" href="#tech" data-spy="tech"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>Ventures</a>
-      <a class="navitem" href="#making" data-spy="making"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Writing</a>
-      <a class="navitem" href="#receipts" data-spy="receipts"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></span>Résumé</a>
+      <a class="navitem" href="#work" data-spy="work"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></span>Ventures</a>
+      <a class="navitem" href="#writing" data-spy="writing"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Writing</a>
+      <a class="navitem" href="#resume" data-spy="resume"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></span>Résumé</a>
       <a class="navitem" href="#contact" data-spy="contact"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="m4 6 8 6 8-6"/></svg></span>Contact</a>
-      <a class="navitem" href="World.html" style="margin-top:10px;border:1px solid var(--border);"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></span>My Room</a>
+      <a class="navitem" href="world.html" style="margin-top:10px;border:1px solid var(--border);"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg></span>My Room</a>
     </nav>
 
     <div class="sb-foot">
@@ -592,7 +439,7 @@
           <span class="knob" data-theme-knob="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>
           <span class="knob" data-theme-knob="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg></span>
         </div>
-        <a href="Intro.html" aria-label="Replay intro" title="Replay intro" style="display:grid; place-items:center; width:40px; height:40px; border-radius:var(--r-pill); border:1px solid var(--border); background:var(--surface-2); color:var(--text-2); text-decoration:none;"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></a>
+        <a href="intro.html" aria-label="Replay intro" title="Replay intro" style="display:grid; place-items:center; width:40px; height:40px; border-radius:var(--r-pill); border:1px solid var(--border); background:var(--surface-2); color:var(--text-2); text-decoration:none;"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></a>
       </div>
     </div>
   </aside>
@@ -606,8 +453,15 @@
         <div class="hero-glow"></div>
         <canvas id="heroParticles" aria-hidden="true"></canvas>
         <div class="hero-photo" data-parallax="0.12" style="background-image:url('https://i.imgur.com/MVhoIC5.jpeg')"></div>
-        <h1 class="reveal" style="transition-delay:.05s; text-shadow: 0 3px 24px rgba(0,0,0,0.75), 0 1px 4px rgba(0,0,0,0.6);"><span style="display:block; color:#fff;">TEAM comes first.</span>Only together can we solve problems to <span class="hl-underline">better the world.</span></h1>
+        <h1 class="reveal" style="transition-delay:.05s">Only together can we solve problems to <span class="hl-underline">better the world.</span></h1>
+        <p class="lede reveal" style="transition-delay:.12s">I'm a high-school senior and IB Diploma candidate who enjoys solving problems — building things that are genuinely useful, bring people together, and make the world a little better.</p>
+        <div class="cta-row reveal" style="transition-delay:.18s">
+          <a class="btn btn-primary" href="#work">See what I've created <span class="arrow">→</span></a>
+          <a class="btn btn-secondary" href="#contact">Get in touch</a>
+        </div>
         <div class="meta-line reveal" style="transition-delay:.24s">
+          <b>Focus:</b> business × engineering
+          <span class="sep">·</span>
           <b>Based in:</b> Tampa, FL
         </div>
 
@@ -637,130 +491,136 @@
             </div>
             <ul class="cred">
               <li>IB Diploma candidate · Cum Laude (Top 10%)</li>
-              <li>Developed the first olfactory-integrated VR system</li>
-              <li>Top 16 · NFTE National Pitch · Conrad Innovator · Diamond Challenge Global Finalist</li>
-              <li>4× Class President · Student Body President · passed a federal foster-youth law</li>
+              <li>Created the first olfactory-integrated VR system</li>
+              <li>Top 16 · NFTE National Pitch · Conrad Innovator</li>
+              <li>3× Class President · Student Body President · passed a federal foster-youth law</li>
               <li>Academic Excellence Award in Engineering</li>
               <li>SAT 1540 · PSAT 1490</li>
             </ul>
           </div>
           <div class="story-right">
             <h2>Hi, I'm Nishant.</h2>
-            <p style="margin-top:0;margin-bottom:0;font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">My Leadership Equation:</p>
-            <div class="lead-eq" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:26px;">
+            <p>I believe every hard thing is the <strong>start of something new, and worth running toward.</strong> I've taken that to heart.</p>
+            <p>I like creating things, and figuring out the business around them. I helped build an olfactory-integrated VR project, a couple of AI tools, and picked up finance at a few investment firms. None of it was perfect, but I learned a lot. A product only matters if it reaches someone, so I learned to pitch and sell it too.</p>
+            <p>The rest comes from service: foster-youth advocacy, leading my student body, and a lot of nights on stage. But before any of that, I'm a son, the oldest of three brothers, and a friend to the people I care about. Nothing I've made happened alone. The best of it always came from working with others.</p>
+            <p style="margin-top:22px;margin-bottom:0;font-family:var(--font-mono);font-size:0.74rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);">My Leadership Equation:</p>
+            <div class="lead-eq" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:26px;">
               <span class="pill pill-accent" style="font-family: 'Helvetica Neue'">Empathy</span><span class="faint mono">+</span>
               <span class="pill" style="font-family: 'Helvetica Neue'">Humility</span><span class="faint mono">+</span>
-              <span class="pill" style="font-family: 'Helvetica Neue'">Selflessness</span><span class="faint mono">+</span>
               <span class="pill">Action</span><span class="faint mono">=</span>
               <span class="pill pill-green pill-dot">Leadership</span>
             </div>
-            <div class="bio-values">
-              <div class="bv-h">What I care about</div>
-              <ul>
-                <li><b>Collaboration.</b> Nothing worth doing happens alone. Lift as you climb. Always care for the collaborators around you.</li>
-                <li><b>Intellectual curiosity.</b> learning about things that I find interesting: fusion physics, finance, politics, quantum.</li>
-                <li><b>Helping others.</b> the most important work that I do begins with the people that I can give back to.</li>
-                <li><b>Solving problems.</b> Identify areas where the people around me need support. Build and iterate a solution. Deliver to those who need it.</li>
-                <li><b>Innovation &amp; technology.</b> new technology and agile innovation environments inspire me. As a result, I spend quite a bit of time researching fields like VR, AI, space, MedTech, FinTech, Energy, and more.</li>
-                <li><b>Art.</b> In a world increasingly dominated by AI, art reminds me of the value of keeping our lives and work human-centered. It also reminds me of what it means to be uniquely human: community, vulnerability, emotion.</li>
-              </ul>
-            </div>
           </div>
         </div>
 
-        
+        <div class="features">
+          <div class="capmatrix reveal"><div class="capmatrix-head"><span class="cm-proj">Project</span><span class="cm-cap" style="color:var(--accent)">Build</span><span class="cm-cap" style="color:var(--amber)">Business</span><span class="cm-cap" style="color:var(--green)">Lead</span></div><a class="cm-row" href="case-study.html?p=ecovision"><span class="cm-name">Eco-Vision<span class="cm-sub">olfactory VR</span></span><span class="cm-dot on b"></span><span class="cm-dot on m"></span><span class="cm-dot mid g"></span></a><a class="cm-row" href="case-study.html?p=deca"><span class="cm-name">Florida DECA<span class="cm-sub">exec VP</span></span><span class="cm-dot on b"></span><span class="cm-dot on m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=seeusnow"><span class="cm-name">See Us Now<span class="cm-sub">foster-youth policy</span></span><span class="cm-dot on b"></span><span class="cm-dot mid m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=studentcouncil"><span class="cm-name">Student Council<span class="cm-sub">3× president</span></span><span class="cm-dot mid b"></span><span class="cm-dot mid m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=ventureseek"><span class="cm-name">VentureSeek<span class="cm-sub">AI for VC</span></span><span class="cm-dot on b"></span><span class="cm-dot on m"></span><span class="cm-dot mid g"></span></a><a class="cm-row" href="case-study.html?p=tedx"><span class="cm-name">TEDx<span class="cm-sub">revived platform</span></span><span class="cm-dot on b"></span><span class="cm-dot mid m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=ebit"><span class="cm-name">EBIT Councils<span class="cm-sub">student consulting</span></span><span class="cm-dot mid b"></span><span class="cm-dot on m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=smif"><span class="cm-name">Patriot Portfolio<span class="cm-sub">investment fund</span></span><span class="cm-dot on b"></span><span class="cm-dot on m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=sbs"><span class="cm-name">Start Business Smart<span class="cm-sub">national platform</span></span><span class="cm-dot mid b"></span><span class="cm-dot on m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=decoy"><span class="cm-name">Decoy<span class="cm-sub">AI security</span></span><span class="cm-dot on b"></span><span class="cm-dot mid m"></span><span class="cm-dot mid g"></span></a><a class="cm-row" href="case-study.html?p=escaperoom"><span class="cm-name">Mobile Escape Room<span class="cm-sub">ops + finance</span></span><span class="cm-dot on b"></span><span class="cm-dot on m"></span><span class="cm-dot mid g"></span></a><a class="cm-row" href="case-study.html?p=capture"><span class="cm-name">Capture the Moment<span class="cm-sub">photo business</span></span><span class="cm-dot mid b"></span><span class="cm-dot on m"></span><span class="cm-dot mid g"></span></a><a class="cm-row" href="case-study.html?p=stage"><span class="cm-name">On Stage<span class="cm-sub">22 productions</span></span><span class="cm-dot mid b"></span><span class="cm-dot mid m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=internationalism"><span class="cm-name">Internationalism<span class="cm-sub">Round Square</span></span><span class="cm-dot mid b"></span><span class="cm-dot mid m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=speech"><span class="cm-name">Speech &amp; Debate<span class="cm-sub">captain</span></span><span class="cm-dot mid b"></span><span class="cm-dot mid m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=beta"><span class="cm-name">Senior Beta Club<span class="cm-sub">co-president</span></span><span class="cm-dot mid b"></span><span class="cm-dot mid m"></span><span class="cm-dot on g"></span></a><a class="cm-row" href="case-study.html?p=nextgen"><span class="cm-name">Next-Gen Learning<span class="cm-sub">tutoring firm</span></span><span class="cm-dot mid b"></span><span class="cm-dot on m"></span><span class="cm-dot mid g"></span></a><a class="cm-row" href="case-study.html?p=yis"><span class="cm-name">Young Investors Society<span class="cm-sub">analyst</span></span><span class="cm-dot mid b"></span><span class="cm-dot on m"></span><span class="cm-dot mid g"></span></a></div>
+        </div>
       </div>
     </section>
 
-
-    <!-- ---------- WHY DAWN ---------- -->
-    <section id="why" class="team-sec" data-screen-label="Why dawn">
-      <div class="wrap" style="max-width:820px;">
-        <div class="sc-kick reveal" style="font-family:var(--font-mono);font-size:0.76rem;letter-spacing:0.18em;text-transform:uppercase;color:#f5b21a;margin-bottom:18px;">Why dawn</div>
-        <p class="reveal" style="font-size:clamp(1.5rem,3.2vw,2.3rem);line-height:1.4;letter-spacing:-0.02em;margin:0;text-wrap:pretty;">My parents named me Nishant (निशान्त), Sanskrit for ‘Dawn.’ My goal is to embody this spirit of new beginnings in everything I do, by becoming a driven innovator, artist, and advocate who cares most about shedding light on the lives of those around me.</p>
-      </div>
-    </section>
-
-
-<!-- ===== T ===== -->
-    <section id="tech" class="team-sec t-mak" data-screen-label="teatre & the Arts">
+    <!-- ---------- IDENTITY / BEYOND ---------- -->
+    <section id="beyond" class="idsec" data-screen-label="Beyond">
       <div class="wrap">
-        <a class="team-feature reveal" href="Spike.html?s=T">
-          <div class="tf-photo"><img src="https://i.imgur.com/5tIZC8P.jpeg" alt="Theatre and the Arts" loading="lazy" /></div>
-          <div class="tf-body">
-            <div class="team-head"><span class="lt">T</span><h2>heatre &amp; the Arts</h2></div>
-            <p class="team-dek" style="color:#fff;">I participate in collaborative art forms (theatre and photography) that showcase the best parts of humanity: vulnerability, community, emotion.</p>
-            <div class="tf-metrics"><div class="tf-m"><div class="v">22</div><div class="k">stage productions</div></div><div class="tf-m"><div class="v">6</div><div class="k">Superior awards</div></div><div class="tf-m"><div class="v">1</div><div class="k">Congressional Art Award</div></div><div class="tf-m"><div class="v">1</div><div class="k">magazine cover</div></div></div>
-            <span class="tf-cta">Explore Theatre &amp; the Arts <span class="arrow">→</span></span>
-          </div>
-        </a>
+        <div class="eyebrow reveal"><span class="t">
+</span><span class="line"></span></div>
+        <h2 class="sec reveal">Who's behind it.</h2>
+        <p class="sec-dek reveal">The awards are the easy part to list. This part actually explains them: how I think, what I value, and who I am when the projects are set aside.</p>
+        <style>
+.idsec .id-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:30px;}
+.idsec .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px 26px;box-shadow:var(--shadow-1);}
+.idsec .panel h3{font-size:0.74rem;font-family:var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--text-3);margin:0 0 18px;}
+.idsec .c12{grid-column:span 12}.idsec .c8{grid-column:span 8}.idsec .c6{grid-column:span 6}.idsec .c4{grid-column:span 4}.idsec .c7{grid-column:span 7}.idsec .c5{grid-column:span 5}
+@media(max-width:820px){.idsec .id-grid>*{grid-column:span 12!important}.idsec .tools{grid-template-columns:1fr!important}.idsec .credits{columns:1!important}}
+.idsec .future{font-size:clamp(1.3rem,2.6vw,1.9rem);line-height:1.5;letter-spacing:-0.01em;color:var(--text);margin:0;}
+.idsec .future .em{color:var(--accent);}
+.idsec .principles{margin:0;padding:0;}
+.idsec .principles li{list-style:none;padding:15px 0;border-top:1px solid var(--border);color:var(--text);font-size:1.04rem;line-height:1.5;display:flex;gap:12px;}
+.idsec .principles li:first-child{border-top:0;padding-top:0;}
+.idsec .principles .n{color:var(--accent);font-family:var(--font-mono);font-size:.8rem;flex:0 0 auto;}
+.idsec .tools{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.idsec .tool .k{font-weight:600;color:var(--text);}
+.idsec .tool .v{color:var(--text-2);font-size:.9rem;}
+.idsec .qlist{margin:0;padding:0;}
+.idsec .qlist li{list-style:none;padding:13px 0;border-top:1px dashed var(--border);color:var(--text-2);font-size:1.02rem;line-height:1.45;}
+.idsec .qlist li:first-child{border-top:0;padding-top:0;}
+.idsec .stats{display:grid;gap:13px;}
+.idsec .stat{display:flex;justify-content:space-between;gap:14px;align-items:center;font-size:.95rem;color:var(--text);}
+.idsec .stat .bar{flex:1;height:6px;border-radius:3px;background:var(--surface-3);overflow:hidden;}
+.idsec .stat .bar i{display:block;height:100%;background:var(--accent);border-radius:3px;}
+.idsec .stat .v{color:var(--text-3);font-family:var(--font-mono);font-size:.8rem;min-width:54px;text-align:right;}
+.idsec .reading{margin:0;padding:0;}
+.idsec .reading li{list-style:none;padding:13px 0;border-top:1px solid var(--border);}
+.idsec .reading li:first-child{border-top:0;padding-top:0;}
+.idsec .reading .t{font-weight:600;color:var(--text);}
+.idsec .reading .w{color:var(--text-2);font-size:.88rem;}
+.idsec .badges{display:flex;flex-wrap:wrap;gap:10px;}
+.idsec .badge{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:var(--r-pill);background:var(--surface-2);border:1px solid var(--border);font-size:.84rem;color:var(--text);}
+.idsec .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
+.idsec .badge.amber .dot{background:var(--amber)}.idsec .badge.green .dot{background:var(--green)}
+.idsec .quote{font-size:clamp(1.2rem,2.4vw,1.6rem);line-height:1.5;letter-spacing:-0.01em;color:var(--text);margin:0;}
+.idsec .quote .by{display:block;margin-top:18px;font-size:.9rem;color:var(--text-3);font-family:var(--font-mono);}
+.idsec .credits{columns:2;column-gap:28px;color:var(--text-2);font-size:.95rem;line-height:1.95;margin:0;}
+.idsec .credits b{color:var(--text);font-weight:600;}
+.idsec .editnote{font-family:var(--font-mono);font-size:.66rem;color:var(--text-3);opacity:.7;margin-top:14px;letter-spacing:.04em;}
+.idsec .respaper{aspect-ratio:8.5/11;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:6px;margin-bottom:16px;box-shadow:var(--shadow-2);transition:transform .25s var(--ease);}
+.idsec .respaper:hover{transform:rotate(-1.5deg) translateY(-3px);}
+.idsec .respaper .ln{height:6px;border-radius:3px;background:var(--surface-3);}
+.idsec .respaper .ln.a{width:55%;background:var(--accent);opacity:.55}.idsec .respaper .ln.b{width:80%}.idsec .respaper .ln.c{width:68%}.idsec .respaper .ln.d{width:90%}
+        </style>
+        <div class="values"><div class="val reveal"><span class="vnum">01</span><div><h3>Collaboration</h3><p>Nothing I've made happened alone. I'll take a team that rises together over winner-take-all every time. The best of my work always came from other people.</p></div></div><div class="val reveal"><span class="vnum">02</span><div><h3>Intellectual curiosity</h3><p>I learn things no one assigned me: the physics behind a fusion essay, finance at real investment firms, AI, a dozen emerging fields. I'm curious for its own sake.</p></div></div><div class="val reveal"><span class="vnum">03</span><div><h3>A drive to help others</h3><p>The work that means the most to me starts with who it's hurting: foster youth the system forgets, patients who can't leave a hospital room.</p></div></div><div class="val reveal"><span class="vnum">04</span><div><h3>A drive to solve problems</h3><p>When I notice a problem, I build the thing that fixes it, then do whatever it takes to get it to the people who need it.</p></div></div><div class="val reveal"><span class="vnum">05</span><div><h3>An obsession with innovation &amp; technology</h3><p>I'm pulled toward what's next: VR, AI, space, MedTech. I'd rather build the future than read about it.</p></div></div><div class="val reveal"><span class="vnum">06</span><div><h3>An artist at heart</h3><p>Twenty-two stage productions, a screenplay, a camera I rarely put down. Art is how I learned to read a room, sit with discomfort, and find the human in a problem before I try to solve it. I think it's what keeps my engineering honest.</p></div></div></div>
       </div>
     </section>
 
-<!-- ===== E ===== -->
-    <section id="enterprise" class="team-sec t-tech" data-screen-label="eterprise & Engineering">
+    <!-- ---------- WORK / VENTURES ---------- -->
+    <section id="work" data-screen-label="Ventures">
       <div class="wrap">
-        <a class="team-feature reveal" href="Spike.html?s=E">
-          <div class="tf-photo"><img src="https://i.imgur.com/lUlvVeJ.jpeg" alt="Enterprise and Engineering" loading="lazy" /></div>
-          <div class="tf-body">
-            <div class="team-head"><span class="lt">E</span><h2>nterprise &amp; Engineering</h2></div>
-            <p class="team-dek" style="color:#fff;">The best technology is never built alone. Hardware, AI, and the businesses around them, grounded in physics and math, made real by the teams that build them.</p>
-            <div class="tf-metrics"><div class="tf-m"><div class="v">Top 16</div><div class="k">NFTE Nationals</div></div><div class="tf-m"><div class="v">$36K+</div><div class="k">revenue</div></div><div class="tf-m"><div class="v">Global</div><div class="k">Diamond finalist</div></div></div>
-            <span class="tf-cta">Explore Enterprise &amp; Engineering <span class="arrow">→</span></span>
-          </div>
-        </a>
+        <div class="eyebrow reveal"><span class="n">
+</span><span class="t">What I build, and why</span><span class="line"></span></div>
+        <h2 class="sec reveal">Problems worth solving.</h2>
+        <p class="sec-dek reveal">Every one of these started the same way: a problem I couldn't stop thinking about, usually because of who it was hurting. I build the thing, then figure out how to get it to the people who need it.</p>
+        <div class="work-grid bento-grid">
+          <a class="bento photo b-xl cat-create reveal" href="case-study.html?p=ecovision" data-cat="create"><div class="bg" style="background-image:url('https://i.imgur.com/lUlvVeJ.jpeg')"></div><div class="inner"><div class="bnum">Top 16</div><div class="blab">NFTE Nationals finalist · $7.5K in grants · Moffitt &amp; Mayo partners</div><div class="bfoot"><div><h3>Eco-Vision</h3><p>the first olfactory-integrated VR for patients</p></div><span class="bgo">→</span></div></div></a>
+          <a class="bento photo b-t cat-impact reveal" href="case-study.html?p=tedx" data-cat="impact"><div class="bg" style="background-image:url('https://i.imgur.com/JBmeda9.jpeg')"></div><div class="inner"><div class="bnum">1st in 7 yrs</div><div class="blab">revived a dormant TEDx — licensee, organizer &amp; speaker</div><div class="bfoot"><div><h3>TEDx CDS</h3><p>a platform for student ideas</p></div><span class="bgo">→</span></div></div></a>
+          <a class="bento b-w cat-create reveal" href="case-study.html?p=escaperoom" data-cat="create"><div><div class="bnum">P&amp;L</div><div class="blab">I own the financial model, pricing &amp; ops</div></div><div class="bfoot"><div><h3>Mobile Escape Room</h3><p>experiential entertainment</p></div><span class="bgo">→</span></div></a>
+          <a class="bento b-w cat-impact reveal" href="case-study.html?p=speech" data-cat="impact"><div><div class="bnum">4th</div><div class="blab">NCFL Nationals · Speech Captain</div></div><div class="bfoot"><div><h3>Speech &amp; Debate</h3><p>coach + competitor</p></div><span class="bgo">→</span></div></a>
+          <a class="bento b-w cat-impact reveal" href="case-study.html?p=beta" data-cat="impact"><div><div class="bnum">100+</div><div class="blab">service events a year · $10K+ raised</div></div><div class="bfoot"><div><h3>Senior Beta Club</h3><p>Co-President · largest on campus</p></div><span class="bgo">→</span></div></a>
+          <a class="bento photo b-w cat-impact reveal" href="case-study.html?p=seeusnow" data-cat="impact"><div class="bg" style="background-image:url('https://i.imgur.com/Z2eUg3r.jpeg')"></div><div class="inner"><div class="bnum">48 states</div><div class="blab">led a National Awareness Week, helped pass a federal law, spoke at the UN &amp; WHO</div><div class="bfoot"><div><h3>See Us Now</h3></div><span class="bgo">→</span></div></div></a>
+          <a class="bento b-t cat-impact reveal" href="case-study.html?p=studentcouncil" data-cat="impact"><div><div class="bnum">$29K+</div><div class="blab">raised · 3× Class Pres · Student Body Pres</div></div><div class="bfoot"><div><h3>Student Council</h3><p>reshaped policy &amp; culture</p></div><span class="bgo">→</span></div></a>
+          <a class="bento photo b-t cat-arts reveal" href="case-study.html?p=capture" data-cat="arts"><div class="bg" style="background-image:url('assets/photos/p10.jpg')"></div><div class="inner"><div class="bnum">5 figures</div><div class="blab">photography business · Congressional Art Award</div><div class="bfoot"><div><h3>Capture the Moment</h3><p>Tampa Bay Mag cover</p></div><span class="bgo">→</span></div></div></a>
+          <a class="bento b-w cat-create reveal" href="case-study.html?p=ventureseek" data-cat="create"><div><div class="bnum">AI</div><div class="blab">an all-in-one sourcing &amp; diligence platform for venture firms — finds, scores &amp; researches startups</div></div><div class="bfoot"><div><h3>VentureSeek</h3><p>AI deal pipeline for VC</p></div><span class="bgo">→</span></div></a>
+          <a class="bento photo b-w cat-arts reveal" href="case-study.html?p=stage" data-cat="arts"><div class="bg" style="background-image:url('https://i.imgur.com/5tIZC8P.jpeg')"></div><div class="inner"><div class="bnum">22</div><div class="blab">productions · 6 Superior awards</div><div class="bfoot"><div><h3>On stage</h3><p>lead roles · Thespian President</p></div><span class="bgo">→</span></div></div></a>
+          <a class="bento b-w cat-business reveal" href="case-study.html?p=sbs" data-cat="business"><div><div class="bnum">50→400+</div><div class="blab">members scaled nationally</div></div><div class="bfoot"><div><h3>Start Business Smart</h3><p>Head of Strategy</p></div><span class="bgo">→</span></div></a>
+          <a class="bento b-xl cat-business reveal" href="case-study.html?p=ebit" data-cat="business"><div><div class="bnum">5 councils</div><div class="blab">real consulting for CharityBuzz, Magnolia Pictures &amp; the Schwarzenegger Institute</div></div><div class="bfoot"><div><h3>EBIT Youth Advisory Councils</h3><p>students advising real organizations</p></div><span class="bgo">→</span></div></a>
+          <a class="bento b-xl cat-business reveal deca-card" href="case-study.html?p=deca" data-cat="business" style="background:linear-gradient(145deg,#0a2a5e,#061b3f);overflow:hidden;"><img src="assets/logos/deca-mark.png" alt="" aria-hidden="true" style="position:absolute;right:-26px;top:50%;transform:translateY(-50%);width:54%;opacity:0.25;pointer-events:none;"><div style="position:relative;z-index:2"><div class="bnum" style="color:#fff">18,000+</div><div class="blab" style="color:rgba(255,255,255,0.82)">elected Florida DECA Executive VP</div></div><div class="bfoot" style="position:relative;z-index:2"><div><h3 style="color:#fff">Florida DECA</h3><p style="color:rgba(255,255,255,0.72)">+200% intl success</p></div><span class="bgo" style="color:#fff">→</span></div></a>
+          <a class="bento b-t cat-business reveal" href="case-study.html?p=smif" data-cat="business" style="overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#2a0a14,#160109);"><div style="flex:1;display:grid;place-items:center;padding:14px 0;"><img src="assets/logos/patriot-eagle.png" alt="Patriot Portfolio" style="width:74%;max-height:118px;object-fit:contain;pointer-events:none;filter:drop-shadow(0 4px 14px rgba(0,0,0,0.4));"></div><div class="bfoot"><div><h3 style="color:#fff;">Patriot Portfolio</h3><p style="color:rgba(255,255,255,0.72);">Fundra Labs · investment fund</p></div><span class="bgo" style="color:#fff;">→</span></div></a>
+          <a class="bento b-t cat-impact reveal" href="case-study.html?p=internationalism" data-cat="impact"><div><div class="bnum">Global</div><div class="blab">Round Square · Baraza Leader · delegate to Spain</div></div><div class="bfoot"><div><h3>Internationalism</h3><p>cross-cultural leadership</p></div><span class="bgo">→</span></div></a>
+          <a class="bento b-w cat-create reveal" href="case-study.html?p=decoy" data-cat="create"><div><div class="bnum">Live</div><div class="blab">AI, deception-based cybersecurity</div></div><div class="bfoot"><div><h3>Decoy</h3><p>lures &amp; traps intruders</p></div><span class="bgo">→</span></div></a>
+          <a class="bento b-t cat-business reveal" href="case-study.html?p=yis" data-cat="business" style="overflow:hidden;display:flex;flex-direction:column;"><div style="flex:1;display:grid;place-items:center;padding:6px 0;"><span style="background:#fff;border-radius:14px;padding:18px 20px;display:grid;place-items:center;box-shadow:var(--shadow-1);"><img src="assets/logos/yis-color.svg" alt="Young Investors Society" style="width:150px;max-width:100%;object-fit:contain;display:block;pointer-events:none;"></span></div><div class="bfoot"><div><div class="bnum" style="font-size:1.2rem;">Analyst</div><p>National Board · equity research</p></div><span class="bgo">→</span></div></a>
+          <a class="bento b-w cat-business reveal" href="case-study.html?p=nextgen" data-cat="business"><div><div class="bnum">50+</div><div class="blab">tutoring clients &amp; a team of tutors</div></div><div class="bfoot"><div><h3>Next-Gen Learning</h3><p>executive-function tutoring</p></div><span class="bgo">→</span></div></a>
+        </div>
       </div>
     </section>
 
-<!-- ===== A ===== -->
-    <section id="advocacy" class="team-sec t-adv" data-screen-label="avocacy & Service">
+    <!-- ---------- WRITING ---------- -->
+    <section id="writing" data-screen-label="Writing">
       <div class="wrap">
-        <a class="team-feature reveal" href="Spike.html?s=A">
-          <div class="tf-photo"><img src="assets/photos/sun-nasdaq.jpg" alt="Advocacy and Service" loading="lazy" /></div>
-          <div class="tf-body">
-            <div class="team-head"><span class="lt">A</span><h2>dvocacy &amp; Service</h2></div>
-            <p class="team-dek" style="color:#fff;">One act of kindness and giving inspires another, and another, and another. The power of giving is derived from the humanity’s willingness to give when inspired by a simple act of advocacy or service.</p>
-            <div class="tf-metrics"><div class="tf-m"><div class="v">1</div><div class="k">federal law</div></div><div class="tf-m"><div class="v">48</div><div class="k">states reached</div></div><div class="tf-m"><div class="v">1,000+</div><div class="k">service hours</div></div><div class="tf-m"><div class="v">UN/WHO</div><div class="k">delegate</div></div></div>
-            <span class="tf-cta">Explore Advocacy &amp; Service <span class="arrow">→</span></span>
-          </div>
-        </a>
-      </div>
-    </section>
-
-<!-- ===== M ===== -->
-    <section id="making" class="team-sec t-ent" data-screen-label="mbilizing & Leadership">
-      <div class="wrap">
-        <a class="team-feature reveal" href="Spike.html?s=M">
-          <div class="tf-photo"><img src="assets/photos/deca-team.jpg" alt="Mobilizing and Leadership" loading="lazy" /></div>
-          <div class="tf-body">
-            <div class="team-head"><span class="lt">M</span><h2>obilizing &amp; Leadership</h2></div>
-            <p class="team-dek" style="color:#fff;">Leadership is not a hierarchy. It is not a command or duty. It is a responsibility to lift as you climb and tackle something bigger than any one of us.</p>
-            <div class="tf-metrics"><div class="tf-m"><div class="v">18,000+</div><div class="k">members led</div></div><div class="tf-m"><div class="v">4×</div><div class="k">Class President</div></div><div class="tf-m"><div class="v">$29K+</div><div class="k">raised</div></div><div class="tf-m"><div class="v">100+</div><div class="k">service events</div></div></div>
-            <span class="tf-cta">Explore Mobilizing &amp; Leadership <span class="arrow">→</span></span>
-          </div>
-        </a>
-      </div>
-    </section>
-
-<!-- ---------- WORDS & RESEARCH ---------- -->
-    <section id="writing" data-screen-label="Words & research">
-      <div class="wrap">
-        <div class="team-mak-writing reveal">
-          <div class="eyebrow reveal"><span class="n"></span><span class="t">
+        <div class="eyebrow reveal"><span class="n"></span><span class="t">
 </span><span class="line"></span></div>
         <h2 class="sec reveal">Words &amp; research.</h2>
+        <p class="sec-dek reveal">Building is only half of it. The other half is trying to understand a market, an argument, or a person. This is how I think when no one's grading me.</p>
         <div class="wfilter reveal"><button class="wf-btn" id="wfBtn" aria-haspopup="true" aria-expanded="false"><span id="wfLabel">All topics</span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></button><div class="wf-menu" id="wfMenu" role="menu"><button role="menuitem" data-f="all" class="active">All topics</button><button role="menuitem" data-f="tech">Emerging Tech</button><button role="menuitem" data-f="arts">Arts</button><button role="menuitem" data-f="finance">Finance</button></div></div>
-        <div class="wcar" id="wcar"><a class="wslide wc-finance" data-cat="finance tech" href="https://drive.google.com/file/d/1xpwSFmCuKguRNOOkt3sl77yTCYEzmHbe/view?usp=sharing" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="fabric8labs.com"></span><span class="wtag">VC deck</span><span class="wtitle">VC investment deck, Fabric8Labs (electrochemical 3D metal printing)</span><span class="wgo"><span class="wmeta">Finance · Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-arts" data-cat="arts" href="#"><span class="ologo wlogo" data-domain="artandwriting.org"></span><span class="wtag">Drama</span><span class="wtitle">An original screenplay, Scholastic National Gold Medal &amp; Voices of America</span><span class="wgo"><span class="wmeta">Arts</span><span class="arr">→</span></span></a><a class="wslide wc-arts" data-cat="arts" href="https://docs.google.com/document/d/1HMuWBXo9IXhIpI_4RzycAaLibSZ3ciAllisZvjbrA1k/edit?usp=sharing" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="johnlockeinstitute.com"></span><span class="wtag">Essay</span><span class="wtitle">John Locke Essay Competition, High Commendation</span><span class="wgo"><span class="wmeta">Arts</span><span class="arr">→</span></span></a><a class="wslide wc-finance" data-cat="finance" href="https://www.youtube.com/watch?v=EXf636lzRps" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="rolls-royce.com"></span><span class="wtag">Video pitch</span><span class="wtitle">Investment pitch: is Rolls-Royce a buy?</span><span class="wgo"><span class="wmeta">Finance</span><span class="arr">→</span></span></a><a class="wslide wc-finance" data-cat="finance" href="https://drive.google.com/file/d/12yF-S2m38KjczRs4qxbl6VR9dmWiQIx2/view?usp=sharing" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="capitalone.com"></span><span class="wtag">Deck</span><span class="wtitle">Investment brief: valuing Capital One</span><span class="wgo"><span class="wmeta">Finance</span><span class="arr">→</span></span></a><a class="wslide wc-tech" data-cat="tech" href="#"><span class="ologo wlogo" data-domain="ibo.org"></span><span class="wtag">Research</span><span class="wtitle">IB Extended Essay, the physics of nuclear fusion</span><span class="wgo"><span class="wmeta">Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-tech" data-cat="tech" href="#"><span class="ologo wlogo" data-domain="ibo.org"></span><span class="wtag">Research</span><span class="wtitle">IB Global Politics IA, the tension between stakeholders in the data-center market</span><span class="wgo"><span class="wmeta">Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-tech" data-cat="tech" href="#"><span class="ologo wlogo" data-domain="ibo.org"></span><span class="wtag">In progress</span><span class="wtitle">IB Mathematics IA</span><span class="wgo"><span class="wmeta">Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-tech" data-cat="tech" href="#"><span class="ologo wlogo" data-domain="ibo.org"></span><span class="wtag">In progress</span><span class="wtitle">IB Physics IA</span><span class="wgo"><span class="wmeta">Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-finance" data-cat="finance" href="https://www.amazon.com/Re-Wired-Wealth-Financial-Attachment-Actually-ebook/dp/B0FCJNXYLV" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="amazon.com"></span><span class="wtag">Book</span><span class="wtitle">Re-Wired for Wealth, the psychology of money for teens</span><span class="wgo"><span class="wmeta">Editor · Finance</span><span class="arr">→</span></span></a></div><div class="wcar-hint reveal">drag / scroll horizontally →</div>
-        </div>
+        <div class="wcar" id="wcar"><a class="wslide wc-finance" data-cat="finance tech" href="https://drive.google.com/file/d/1xpwSFmCuKguRNOOkt3sl77yTCYEzmHbe/view?usp=sharing" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="fabric8labs.com"></span><span class="wtag">VC deck</span><span class="wtitle">VC investment deck — Fabric8Labs (electrochemical 3D metal printing)</span><span class="wgo"><span class="wmeta">Finance · Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-arts" data-cat="arts" href="#"><span class="ologo wlogo" data-domain="artandwriting.org"></span><span class="wtag">Drama</span><span class="wtitle">An original screenplay — Scholastic National Gold Medal &amp; Voices of America</span><span class="wgo"><span class="wmeta">Arts</span><span class="arr">→</span></span></a><a class="wslide wc-arts" data-cat="arts" href="https://docs.google.com/document/d/1HMuWBXo9IXhIpI_4RzycAaLibSZ3ciAllisZvjbrA1k/edit?usp=sharing" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="johnlockeinstitute.com"></span><span class="wtag">Essay</span><span class="wtitle">John Locke Essay Competition — High Commendation</span><span class="wgo"><span class="wmeta">Arts</span><span class="arr">→</span></span></a><a class="wslide wc-finance" data-cat="finance" href="https://www.youtube.com/watch?v=EXf636lzRps" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="rolls-royce.com"></span><span class="wtag">Video pitch</span><span class="wtitle">Investment pitch: is Rolls-Royce a buy?</span><span class="wgo"><span class="wmeta">Finance</span><span class="arr">→</span></span></a><a class="wslide wc-finance" data-cat="finance" href="https://drive.google.com/file/d/12yF-S2m38KjczRs4qxbl6VR9dmWiQIx2/view?usp=sharing" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="capitalone.com"></span><span class="wtag">Deck</span><span class="wtitle">Investment brief: valuing Capital One</span><span class="wgo"><span class="wmeta">Finance</span><span class="arr">→</span></span></a><a class="wslide wc-tech" data-cat="tech" href="#"><span class="ologo wlogo" data-domain="ibo.org"></span><span class="wtag">Research</span><span class="wtitle">IB Extended Essay — the physics of nuclear fusion</span><span class="wgo"><span class="wmeta">Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-tech" data-cat="tech" href="#"><span class="ologo wlogo" data-domain="ibo.org"></span><span class="wtag">Research</span><span class="wtitle">IB Global Politics IA — the tension between stakeholders in the data-center market</span><span class="wgo"><span class="wmeta">Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-tech" data-cat="tech" href="#"><span class="ologo wlogo" data-domain="ibo.org"></span><span class="wtag">In progress</span><span class="wtitle">IB Mathematics IA</span><span class="wgo"><span class="wmeta">Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-tech" data-cat="tech" href="#"><span class="ologo wlogo" data-domain="ibo.org"></span><span class="wtag">In progress</span><span class="wtitle">IB Physics IA</span><span class="wgo"><span class="wmeta">Emerging Tech</span><span class="arr">→</span></span></a><a class="wslide wc-finance" data-cat="finance" href="https://www.amazon.com/Re-Wired-Wealth-Financial-Attachment-Actually-ebook/dp/B0FCJNXYLV" target="_blank" rel="noopener"><span class="ologo wlogo" data-domain="amazon.com"></span><span class="wtag">Book</span><span class="wtitle">Re-Wired for Wealth — the psychology of money for teens</span><span class="wgo"><span class="wmeta">Editor · Finance</span><span class="arr">→</span></span></a></div><div class="wcar-hint reveal">drag / scroll horizontally →</div>
       </div>
     </section>
 
-<!-- ---------- RESUME ---------- -->
-    <section id="receipts" data-screen-label="Receipts">
+    <!-- ---------- RESUME ---------- -->
+    <section id="resume" data-screen-label="Résumé">
       <div class="wrap">
-        <div class="receipts-head reveal" style="display:none;"><span class="lt">Measurable change.</span></div>
-        <div style="margin:36px 0 46px;">
+        <div class="eyebrow reveal"><span class="n"></span><span class="t"></span><span class="line"></span></div>
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:46px;">
           <h2 class="sec reveal" style="margin-bottom:0;">Experience</h2>
+          <a class="btn btn-secondary reveal" href="#" onclick="window.print();return false;" style="transition-delay:.06s">Download full CV <span class="arrow">↓</span></a>
         </div>
         
 
@@ -768,38 +628,30 @@
 
         <div class="subhead reveal">Service &amp; community <span class="line"></span></div>
         <div class="roster reveal">
-          <div class="it"><span class="ologo" data-domain="ryannecefoundation.org" data-mono="R"></span><div><div class="nm">Ryan Nece Foundation <span class="svc-team sA" title="Action in Advocacy">A</span></div><div class="ds">Student Service Program</div></div><span class="wn">11–12</span></div>
-          <div class="it"><span class="ologo" data-domain="penguinproject.org" data-mono="P"></span><div><div class="nm">Penguin Project <span class="svc-team sM" title="Meaning in Making">M</span></div><div class="ds">Peer mentor, theater with students with disabilities</div></div><span class="wn">10–12</span></div>
-          <div class="it"><span class="ologo" data-src="assets/logos/seeusnow.png"></span><div><div class="nm">See Us Now <span class="svc-team sA" title="Action in Advocacy">A</span></div><div class="ds">Foster-youth advocacy, national awareness &amp; policy</div></div><span class="wn">10–12</span></div>
+          <div class="it"><span class="ologo" data-domain="ryannecefoundation.org" data-mono="R"></span><div><div class="nm">Ryan Nece Foundation</div><div class="ds">Student Service Program — the 4 T's</div></div><span class="wn">11–12</span></div>
+          <div class="it"><span class="ologo" data-domain="penguinproject.org" data-mono="P"></span><div><div class="nm">Penguin Project</div><div class="ds">Peer mentor — theater with students with disabilities</div></div><span class="wn">10–12</span></div>
+          <div class="it"><span class="ologo" data-src="assets/logos/seeusnow.png"></span><div><div class="nm">See Us Now</div><div class="ds">Foster-youth advocacy — national awareness &amp; policy</div></div><span class="wn">10–12</span></div>
           
-          <div class="it"><span class="ologo" data-domain="hillsboroughcounty.org" data-mono="H"></span><div><div class="nm">HCYLC <span class="svc-team sA" title="Action in Advocacy">A</span></div><div class="ds">Hillsborough County Youth Leadership Council</div></div><span class="wn">11–12</span></div>
-          <div class="it"><span class="ologo" data-domain="metromin.org" data-mono="M"></span><div><div class="nm">Metropolitan Ministries <span class="svc-team sA" title="Action in Advocacy">A</span></div><div class="ds">Volunteer, meals &amp; services for at-risk families</div></div><span class="wn">9–12</span></div>
-          <div class="it"><span class="spico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.5"></circle><path d="M5.6 5.6l3.4 3.4M15 15l3.4 3.4M18.4 5.6L15 9M9 15l-3.4 3.4"></path></svg></span><div><div class="nm">Disaster Relief <span class="svc-team sA" title="Action in Advocacy">A</span></div><div class="ds">Responded to four major environmental disasters</div></div><span class="wn">, </span></div>
+          <div class="it"><span class="ologo" data-domain="hillsboroughcounty.org" data-mono="H"></span><div><div class="nm">HCYLC</div><div class="ds">Hillsborough County Youth Leadership Council</div></div><span class="wn">11–12</span></div>
+          <div class="it"><span class="ologo" data-domain="metromin.org" data-mono="M"></span><div><div class="nm">Metropolitan Ministries</div><div class="ds">Volunteer — meals &amp; services for at-risk families</div></div><span class="wn">9–12</span></div>
+          <div class="it"><span class="spico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.5"></circle><path d="M5.6 5.6l3.4 3.4M15 15l3.4 3.4M18.4 5.6L15 9M9 15l-3.4 3.4"></path></svg></span><div><div class="nm">Disaster Relief</div><div class="ds">Responded to four major environmental disasters</div></div><span class="wn">—</span></div>
         </div>
         <p class="muted reveal" style="margin-top:14px;font-size:.92rem;">1,000+ hours of community service · 3× Presidential Volunteer Gold Service Award.</p>
 
         <div class="subhead reveal">Internships &amp; pre-professional <span class="line"></span></div>
         <div class="card moment reveal">
           <img src="https://i.imgur.com/0IXTlPK.jpeg" alt="Nishant Shah with Governor Arnold Schwarzenegger at the Austrian World Summit" />
-          <div class="cap">With Gov. Arnold Schwarzenegger, Austrian World Summit · Schwarzenegger Climate Initiative</div>
+          <div class="cap">With Gov. Arnold Schwarzenegger — Austrian World Summit · Schwarzenegger Climate Initiative</div>
         </div>
         <div class="intern-grid reveal">
-          <div class="intern"><div class="ohead"><span class="ologo" data-domain="atkinsrealis.com" data-mono="A"></span><div class="o">AtkinsRéalis <span class="svc-team sT" title="Teamwork in Technology">T</span></div></div><div class="r">Finance intern (US/LatAm), analysis for a C-suite Q2 QBR, ROI/NPV on a growth investment, M&amp;A valuation &amp; diligence, book-close, and accounting position papers on the Gorgon Gas Project.</div><div class="when">2 weeks</div></div>
-          <div class="intern"><div class="ohead"><span class="ologo" data-domain="magpictures.com" data-mono="M"></span><div class="o">Magnolia Pictures <span class="svc-team sM" title="Meaning in Making">M</span></div></div><div class="r">Created film-distribution strategy, evaluated acquisitions, and ran revenue &amp; profitability analyses.</div><div class="when">2 weeks</div></div>
-          <div class="intern"><div class="ohead"><span class="ologo" data-domain="charitybuzz.com" data-mono="C"></span><div class="o">CharityBuzz <span class="svc-team sE" title="Empathy in Enterprise">E</span></div></div><div class="r">AI deep-research that surfaced 10,000+ ICP-fit prospects; built a Youth Advisory Council framework and partnership proposals (Sidemen, FIFA World Cup).</div><div class="when">2 months</div></div>
-          <div class="intern"><div class="ohead"><span class="ologo" data-domain="austrianworldsummit.com" data-mono="A"></span><div class="o">Austrian World Summit <span class="svc-team sA" title="Action in Advocacy">A</span></div></div><div class="r">Social-media campaign for the Schwarzenegger Climate Initiative, content, interviews, event planning.</div><div class="when">3 weeks</div></div>
-          <div class="intern"><div class="ohead"><span class="ologo" data-domain="house.gov" data-mono="C"></span><div class="o">U.S. Congressional Office, FL-15 <span class="svc-team sA" title="Action in Advocacy">A</span></div></div><div class="r">Constituent casework, legislative research, and drafted official correspondence and proclamations.</div><div class="when">3 weeks</div></div>
-          <div class="intern"><div class="ohead"><span class="ologo" data-src="assets/logos/safehouse.png"></span><div class="o">Safe House Project <span class="svc-team sA" title="Action in Advocacy">A</span></div></div><div class="r">Helped launch the first National Missing &amp; Trafficked Foster Care Awareness Week; supported anti-trafficking policy and awareness.</div><div class="when">3 months</div></div>
-          <div class="intern"><div class="ohead"><span class="ologo" data-domain="usf.edu" data-mono="S"></span><div class="o">Summer shadowing <span class="svc-team sT" title="Teamwork in Technology">T</span></div></div><div class="r">Gelis Labs biochemistry (USF), Florida Pain Medicine, and Hill Ward Henderson law firm.</div><div class="when">3 weeks</div></div>
-          <div class="intern"><div class="o" style="margin-bottom:7px;">Aevum Capital <span class="svc-team sT" title="Teamwork in Technology">T</span></div><div class="r">Investment associate, investor outreach, pitch materials, and capital-raising for an insurance-arbitrage manager.</div><div class="when">1 year</div></div>
-          <div class="intern"><div class="ohead"><span class="ologo" data-src="assets/logos/osceola.png"></span><div class="o">Osceola Capital <span class="svc-team sT" title="Teamwork in Technology">T</span></div></div><div class="r">PE AI Integration Project Intern, building AI-driven workflows to streamline private-equity operations and diligence.</div><div class="when">2 months</div></div>
-          <div class="intern"><div class="ohead"><span class="ologo" data-src="assets/logos/dirtondemand.png"></span><div class="o">Dirt on Demand <span class="svc-team sT" title="Teamwork in Technology">T</span></div></div><div class="r">AI Logistics Integration Project Intern, integrating AI into logistics and operations to improve routing and efficiency.</div><div class="when">2 months</div></div>
-        </div>
-
-        <div class="subhead reveal">Misc. clubs <span class="line"></span></div>
-        <div class="roster reveal">
-          <div class="it"><span class="spico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 14l3-4 3 2 4-6"></path></svg></span><div><div class="nm">Economics Club</div><div class="ds">Wharton Investment Comp · National Econ Challenge · National Personal Finance Challenge</div></div><span class="wn">10–12</span></div>
-          <div class="it"><span class="ologo" data-src="assets/logos/cds.png"></span><div><div class="nm">US Ambassadors / Eagle Emissaries</div><div class="ds">Chosen to represent the school at admissions events and give speeches</div></div><span class="wn">10–12</span></div>
+          <div class="intern"><div class="ohead"><span class="ologo" data-domain="atkinsrealis.com" data-mono="A"></span><div class="o">AtkinsRéalis</div></div><div class="r">Finance intern (US/LatAm) — analysis for a C-suite Q2 QBR, ROI/NPV on a growth investment, M&amp;A valuation &amp; diligence, book-close, and accounting position papers on the Gorgon Gas Project.</div><div class="when">2 weeks</div></div>
+          <div class="intern"><div class="ohead"><span class="ologo" data-domain="magpictures.com" data-mono="M"></span><div class="o">Magnolia Pictures</div></div><div class="r">Created film-distribution strategy, evaluated acquisitions, and ran revenue &amp; profitability analyses.</div><div class="when">2 weeks</div></div>
+          <div class="intern"><div class="ohead"><span class="ologo" data-domain="charitybuzz.com" data-mono="C"></span><div class="o">CharityBuzz</div></div><div class="r">AI deep-research that surfaced 10,000+ ICP-fit prospects; built a Youth Advisory Council framework and partnership proposals (Sidemen, FIFA World Cup).</div><div class="when">2 months</div></div>
+          <div class="intern"><div class="ohead"><span class="ologo" data-domain="austrianworldsummit.com" data-mono="A"></span><div class="o">Austrian World Summit</div></div><div class="r">Social-media campaign for the Schwarzenegger Climate Initiative — content, interviews, event planning.</div><div class="when">3 weeks</div></div>
+          <div class="intern"><div class="ohead"><span class="ologo" data-domain="house.gov" data-mono="C"></span><div class="o">U.S. Congressional Office, FL-15</div></div><div class="r">Constituent casework, legislative research, and drafted official correspondence and proclamations.</div><div class="when">3 weeks</div></div>
+          <div class="intern"><div class="ohead"><span class="ologo" data-src="assets/logos/safehouse.png"></span><div class="o">Safe House Project</div></div><div class="r">Helped launch the first National Missing &amp; Trafficked Foster Care Awareness Week; supported anti-trafficking policy and awareness.</div><div class="when">3 months</div></div>
+          <div class="intern"><div class="ohead"><span class="ologo" data-domain="usf.edu" data-mono="S"></span><div class="o">Summer shadowing</div></div><div class="r">Gelis Labs biochemistry (USF), Florida Pain Medicine, and Hill Ward Henderson law firm.</div><div class="when">3 weeks</div></div>
+          <div class="intern"><div class="o" style="margin-bottom:7px;">Aevum Capital</div><div class="r">Investment associate — investor outreach, pitch materials, and capital-raising for an insurance-arbitrage manager.</div><div class="when">1 year</div></div>
         </div>
 
         <div class="subhead reveal">Athletics <span class="line"></span></div>
@@ -818,56 +670,57 @@
           </div>
           <div style="font-weight:600;">Full IB Diploma · 4.0 UW GPA</div>
           <div class="chips">
-            <span class="pill" style="font-family: 'Helvetica Neue'">HL Global Politics</span><span class="pill" style="font-family: 'Helvetica Neue'">HL Math: Analysis</span><span class="pill" style="font-family: 'Helvetica Neue'">HL English</span><span class="pill" style="font-family: 'Helvetica Neue'">HL Physics</span><span class="pill pill-accent" style="color:#fff;">Cum Laude · Top 10%</span>
+            <span class="pill" style="font-family: 'Helvetica Neue'">HL Global Politics</span><span class="pill" style="font-family: 'Helvetica Neue'">HL Math: Analysis</span><span class="pill" style="font-family: 'Helvetica Neue'">HL English</span><span class="pill" style="font-family: 'Helvetica Neue'">HL Physics</span><span class="pill pill-accent">Cum Laude · Top 10%</span>
           </div>
         </div>
         <div class="roster reveal">
           <div class="it"><span class="ologo" data-domain="ibo.org" data-mono="IB"></span><div><div class="nm">IB Diploma Programme</div><div class="ds">Candidate · Cum Laude Society · Top 10%</div></div><span class="wn">Class of '27</span></div>
-          <div class="it"><span class="ologo" data-domain="collegeboard.org" data-mono="CB"></span><div><div class="nm">SAT 1540 · PSAT 1490</div><div class="ds">4.0 UW GPA · weighted &gt; 4.2 · no grade below an A</div></div><span class="wn">, </span></div>
+          <div class="it"><span class="ologo" data-domain="collegeboard.org" data-mono="CB"></span><div><div class="nm">SAT 1540 · PSAT 1490</div><div class="ds">4.0 UW GPA · weighted &gt; 4.2 · no grade below an A</div></div><span class="wn">—</span></div>
           <div class="it"><span class="ologo" data-domain="nationalhonorsociety.org" data-mono="H"></span><div><div class="nm">Honor societies</div><div class="ds">NHS · Mu Alpha Theta · English · Science · Spanish</div></div><span class="wn">10–12</span></div>
           <div class="it"><span class="ologo" data-domain="yis.org" data-mono="Y"></span><div><div class="nm">Certified Young Investment Analyst</div><div class="ds">Young Investors Society</div></div><span class="wn">2025</span></div>
-                    <div class="it"><span class="ologo" data-domain="yale.edu" data-mono="Y"></span><div><div class="nm">Rocket Science</div><div class="ds">Yale University</div></div><span class="wn">2026</span></div>
           <div class="it"><span class="ologo" data-domain="nyu.edu" data-mono="N"></span><div><div class="nm">NYU Stern Future Business Leaders</div><div class="ds">Program graduate</div></div><span class="wn">2025</span></div>
-          <div class="it"><span class="ologo" data-domain="anthropic.com" data-mono="A"></span><div><div class="nm">AI Fluency for Small Businesses</div><div class="ds">Anthropic</div></div><span class="wn">Jun 2026</span></div>
-          <div class="it"><span class="ologo" data-domain="anthropic.com" data-mono="A"></span><div><div class="nm">Claude Code 101</div><div class="ds">Anthropic</div></div><span class="wn">Jun 2026</span></div>
-          <div class="it"><span class="ologo" data-src="assets/logos/ibm.png"></span><div><div class="nm">IBM AI Developer Specialization</div><div class="ds">IBM</div></div><span class="wn">Jun 2026</span></div>
-          <div class="it"><span class="ologo" data-domain="duke.edu" data-mono="D"></span><div><div class="nm">Agile Approaches for Modern Leadership</div><div class="ds">Duke University</div></div><span class="wn">Mar 2026</span></div>
-          <div class="it"><span class="ologo" data-src="assets/logos/ncpht.png"></span><div><div class="nm">Human Trafficking Prevention & Awareness</div><div class="ds">Natl Coalition</div></div><span class="wn">Jan 2026</span></div>
-          <div class="it"><span class="ologo" data-domain="umich.edu" data-mono="M"></span><div><div class="nm">Leading Teams</div><div class="ds">University of Michigan</div></div><span class="wn">Dec 2025</span></div>
-          <div class="it"><span class="ologo" data-domain="upenn.edu" data-mono="P"></span><div><div class="nm">Microeconomics: The Power of Markets</div><div class="ds">University of Pennsylvania</div></div><span class="wn">Dec 2025</span></div>
-          <div class="it"><span class="ologo" data-src="assets/logos/uiuc.png"></span><div><div class="nm">Navigating Disruption in Energy, Biology, Quantum & Space</div><div class="ds">UIUC Gies</div></div><span class="wn">Dec 2025</span></div>
-          <div class="it"><span class="ologo" data-domain="upenn.edu" data-mono="P"></span><div><div class="nm">Managing Social & Human Capital</div><div class="ds">University of Pennsylvania</div></div><span class="wn">Oct 2025</span></div>
-          <div class="it"><span class="ologo" data-domain="upenn.edu" data-mono="P"></span><div><div class="nm">Introduction to Spreadsheets & Models</div><div class="ds">University of Pennsylvania</div></div><span class="wn">Oct 2025</span></div>
-          <div class="it"><span class="ologo" data-domain="upenn.edu" data-mono="P"></span><div><div class="nm">Fundamentals of Quantitative Modeling</div><div class="ds">University of Pennsylvania</div></div><span class="wn">Sep 2025</span></div>
+          <div class="it"><span class="ologo" data-domain="coursera.org" data-mono="C"></span><div><div class="nm">Coursera &amp; exec certificates</div><div class="ds">Duke (Agile Leadership), Wharton ×4, Michigan, Illinois &amp; IBM — finance, leadership &amp; software</div></div><span class="wn">—</span></div>
         </div>
 
         <div class="subhead reveal">Selected honors &amp; awards <span class="line"></span></div>
-        <div class="cloud reveal" style="justify-content:center;text-align:center;">
-          <span class="pill pill-amber pill-dot">Presidential Volunteer Gold Service Medal (2022, 2023, 2024)</span>
+        <div class="cloud reveal">
+          <span class="pill pill-amber pill-dot">3× Presidential Volunteer Gold</span>
           <span class="pill pill-accent">Top 16 · NFTE Nationals</span>
           <span class="pill">Conrad Innovator Award</span>
           <span class="pill pill-accent">Diamond Challenge Global Finalist</span>
           <span class="pill pill-accent">John Locke · High Commendation</span>
           <span class="pill pill-amber pill-dot">Congressional Art Award</span>
           <span class="pill">Tampa Bay Magazine cover</span>
-          <span class="pill pill-green pill-dot">National Speech Champion · Beta</span>
-          <span class="pill pill-green pill-dot">4th · NCFL Speech Nationals</span>
+          <span class="pill">National Speech Champion · Beta</span>
+          <span class="pill">4th · NCFL Speech Nationals</span>
+          <span class="pill">1st · Beta State Speech</span>
+          <span class="pill">Beta State Math · 2nd &amp; 3rd</span>
           <span class="pill pill-accent">DECA ICDC Roleplay Award</span>
+          <span class="pill">1st · DECA Business Finance</span>
+          <span class="pill">1st · DECA Entrepreneurship</span>
           <span class="pill">2nd · States DECA Entrepreneurship Team Decision Making</span>
-          <span class="pill pill-amber pill-dot">Scholastic National Gold Medalist</span>
+          <span class="pill pill-amber pill-dot">Scholastic National Medalist</span>
           <span class="pill">Voices of America Award</span>
-          <span class="pill">CDS Faculty Award</span>
-          <span class="pill">Engineering Excellence Award</span>
-          <span class="pill">Physics Excellence Award</span>
           <span class="pill pill-amber pill-dot">Broadway Stars of the Future</span>
           <span class="pill">6× Thespian Superior</span>
+          <span class="pill">Academic Excellence · Engineering</span>
+          <span class="pill">Physics Academic Excellence</span>
+          <span class="pill">Artistic Excellence · Drama</span>
           <span class="pill">Princeton Book Award</span>
+          <span class="pill">CDS Faculty Award</span>
           <span class="pill pill-accent">Cum Laude Society</span>
-          <span class="pill pill-accent">Duke of Edinburgh · Silver</span>
+          <span class="pill">Duke of Edinburgh · Silver</span>
           <span class="pill">Silver Congressional Award</span>
-          <span class="pill pill-accent">FL Boys State</span>
+          <span class="pill">FL Boys State</span>
           <span class="pill">$15K Annual Merit Scholarship</span>
         </div>
+      </div>
+    </section>
+
+    <!-- ---------- MANIFESTO ---------- -->
+    <section class="manifesto" data-screen-label="Manifesto" style="padding:clamp(80px,14vh,160px) 0;">
+      <div class="wrap" style="max-width:1100px;">
+        <p class="reveal" id="manifestoP" style="font-size:clamp(1.9rem,4.4vw,3.4rem);line-height:1.32;letter-spacing:-0.03em;margin:0;text-wrap:pretty;min-height:1.32em;"><span class="t1" data-t="I want to innovate solutions "></span><span class="t2" style="color:var(--text-3)" data-t="that better the world."></span><span class="tcaret">|</span></p>
       </div>
     </section>
 
@@ -882,6 +735,7 @@
         <p class="lede reveal">Shoot me an email anytime.</p>
         <div class="cta-row reveal">
           <a class="btn btn-primary" href="https://mail.google.com/mail/?view=cm&fs=1&to=nishantss2008@gmail.com" target="_blank" rel="noopener">Email me <span class="arrow">→</span></a>
+          <a class="btn btn-secondary" href="#" onclick="window.print();return false;">Download CV</a>
         </div>
         <div class="reveal"><a class="email-big" href="https://mail.google.com/mail/?view=cm&fs=1&to=nishantss2008@gmail.com" target="_blank" rel="noopener"><span class="roll"><span>nishantss2008@gmail.com</span><span aria-hidden="true">nishantss2008@gmail.com</span></span></a></div>
       </div>
@@ -889,6 +743,7 @@
 
     <footer>
       <div class="wrap foot">
+        <span>© <span data-year>2026</span> Nishant Shah.</span>
       </div>
     </footer>
 
@@ -902,80 +757,29 @@
     <a href="https://www.instagram.com/deca.nishant/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
     <a href="https://mail.google.com/mail/?view=cm&fs=1&to=nishantss2008@gmail.com" target="_blank" rel="noopener" aria-label="Email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
     <button onclick="window.__toggleTheme()" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
-    <a href="Intro.html" aria-label="Replay intro"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></a>
+    <a href="intro.html" aria-label="Replay intro"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></a>
   </div>
 </div>
-<script>/*easter-room #75*/(function(){var s='';addEventListener('keydown',function(e){s=(s+(e.key||'')).slice(-4).toLowerCase();if(s==='room'){location.href='World.html';}});try{console.log('%cpsst \u2014 type where all this came from\u2026','color:#2563eb;font-weight:700');}catch(_){}})();</script>
+<script>/*easter-room #75*/(function(){var s='';addEventListener('keydown',function(e){s=(s+(e.key||'')).slice(-4).toLowerCase();if(s==='room'){location.href='world.html';}});try{console.log('%cpsst \u2014 type where all this came from\u2026','color:#2563eb;font-weight:700');}catch(_){}})();</script>
 <script src="assets/image-slot.js"></script>
-<script src="assets/portfolio-team.js"></script>
+<script src="assets/portfolio.js"></script>
 <script src="assets/enhance.js"></script>
-<script>/* dawn single-clip scrub + gradient fallback */(function(){
-  var stage=document.getElementById('dawnStage'), vid=document.getElementById('dawnVid'), grad=document.getElementById('dawnGrad');
-  if(!stage)return;
-  var GRADS=['linear-gradient(160deg,#0a1430 0%,#14213f 42%,#2a3358 72%,#4a3a52 100%)','linear-gradient(165deg,#1a2547 0%,#3b3f6b 35%,#8a5a6a 70%,#d98c5f 100%)','linear-gradient(170deg,#33304f 0%,#6e5570 35%,#c97e54 70%,#f0a84f 100%)','linear-gradient(178deg,#26365e 0%,#7a6f86 30%,#e09a5c 65%,#ffd089 100%)','linear-gradient(185deg,#b9702f 0%,#f0a84f 45%,#ffe6ad 100%)'];
-  var src=vid&&vid.getAttribute('data-src');
-  var END_TRIM=3.0; // ignore last 3s of the clip
-  var targetT=0, hasClip=false, playing=false;
-  if(src){ vid.src=src; stage.classList.add('has-clip'); hasClip=true;
-    vid.addEventListener('loadedmetadata',function(){ onScroll();
-      // prime: paint first frame + warm the decoder so scrubbing responds from the very top
-      try{ vid.play().then(function(){ setTimeout(function(){ try{ vid.pause(); vid.currentTime=targetT; }catch(e){} }, 80); }).catch(function(){}); }catch(e){}
-      tick(); }); }
-  var gi=-1;
-  function usable(){ var d=vid.duration||0; return Math.max(0.1, d-END_TRIM); }
-  function onScroll(){
-    var max=document.body.scrollHeight-innerHeight; var p=max>0?Math.min(1,Math.max(0,scrollY/max)):0;
-    if(hasClip){ targetT=p*usable(); }
-    else { var i=Math.min(GRADS.length-1,Math.floor(p*GRADS.length)); if(i!==gi){ gi=i; grad.style.background=GRADS[i]; } }
-  }
-  function tick(){
-    raf=requestAnimationFrame(tick);
-    if(vid.readyState<2) return;
-    var t=vid.currentTime, diff=targetT-t;
-    if(Math.abs(diff)<0.015){ if(!vid.paused){ vid.pause(); } return; } // settled → hold frame
-    if(Math.abs(diff)>1.4){ try{ vid.currentTime=targetT; }catch(e){} return; } // big jump → one resync
-    if(diff>0){
-      // forward: native decode = smooth
-      var rate=Math.max(0.25, Math.min(4, diff*3.0));
-      try{ vid.playbackRate=rate; if(vid.paused){ vid.play().catch(function(){}); } }catch(e){}
-    } else {
-      // reverse: native can't play backward → ease the playhead back each frame
-      if(!vid.paused) vid.pause();
-      try{ vid.currentTime = t + diff*0.16; }catch(e){}
-    }
-  }
-  var raf=0;
-  addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); onScroll();
-})();</script>
-<script>/* presentation-style section reveals */(function(){
-  document.body.classList.add('anim-on');
-  var secs=[].slice.call(document.querySelectorAll('.main > section'));
-  if(!('IntersectionObserver' in window)){ secs.forEach(function(s){s.classList.add('in-view');}); return; }
-  var io=new IntersectionObserver(function(es){
-    es.forEach(function(e){
-      if(e.isIntersecting){ e.target.classList.add('in-view'); }
-      else if(e.boundingClientRect.top>0){ e.target.classList.remove('in-view'); } // re-arm only when it leaves downward (below viewport)
-    });
-  },{ threshold:0.18, rootMargin:'-8% 0px -12% 0px' });
-  secs.forEach(function(s){ io.observe(s); });
-})();</script>
 <script>/*ologo-loader*/(function(){document.querySelectorAll(".ologo").forEach(function(el){var direct=el.getAttribute("data-src");if(direct){var di=new Image();di.alt="";di.onerror=function(){el.remove();};di.src=direct;el.appendChild(di);return;}var dom=el.getAttribute("data-domain");var mono=el.getAttribute("data-mono")||"\u2022";if(!dom){el.remove();return;}var img=new Image();img.alt="";var stage=0;img.onerror=function(){stage++;if(stage===1){img.src="https://www.google.com/s2/favicons?domain="+dom+"&sz=128";}else{el.remove();}};img.src="https://favicon.im/"+dom+"?larger=true";el.appendChild(img);});})();</script>
-
+<script>
+(function(){var d=[].slice.call(document.querySelectorAll('.crail a'));var s=d.map(function(a){return document.querySelector(a.getAttribute('href'));});function u(){var y=window.scrollY+innerHeight*0.35,c=0;s.forEach(function(x,i){if(x&&x.offsetTop<=y)c=i;});d.forEach(function(a,i){a.classList.toggle('on',i===c);});}addEventListener('scroll',u,{passive:true});addEventListener('resize',u);u();})();
+</script>
 <div class="award-modal" id="awardModal"><div class="am-card"><button class="am-x" id="amX" aria-label="Close">×</button><div class="am-logo" id="amLogo"></div><h3 id="amT"></h3><p id="amP"></p></div></div>
 <script>
 (function(){
-const AW={"2nd · States DECA Entrepreneurship Team Decision Making":"Second place at the Florida DECA State Career Development Conference in Entrepreneurship Team Decision Making.","Diamond Challenge Global Finalist":"Global finalist in the Diamond Challenge, one of the world's largest high-school entrepreneurship competitions, for Eco-Vision.","Presidential Volunteer Gold Service Medal (2022, 2023, 2024)":"The President's Volunteer Service Award (Gold) for 250+ hours of service in a year, earned three years running.","Top 16 · NFTE Nationals":"Top 16 in the country at the NFTE National Pitch Competition for Eco-Vision, my MedTech VR startup.","Conrad Innovator Award":"Recognized as a Conrad Challenge Innovator for Eco-Vision's olfactory-integrated VR.","John Locke · High Commendation":"High Commendation in the John Locke Institute's global essay competition.","Congressional Art Award":"Winner of the Congressional Art Competition for a photographic piece.","Tampa Bay Magazine cover":"A photograph of mine was featured on the cover of Tampa Bay Magazine.","National Speech Champion · Beta":"National Speech Champion at the Beta Club National Convention.","4th · NCFL Speech Nationals":"4th place at the National Catholic Forensic League Grand National Tournament.","1st · Beta State Speech":"1st place in Speech at the Florida Beta State Convention.","Beta State Math · 2nd & 3rd":"2nd and 3rd place in Mathematics at the Beta State Convention.","DECA ICDC Roleplay Award":"Roleplay award winner (Business Finance, top 10) at DECA's International Career Development Conference.","1st · DECA Business Finance":"1st place in Business Finance at DECA Districts.","1st · DECA Entrepreneurship":"1st place, Entrepreneurship Team, at DECA Districts.","Scholastic National Medalist":"National Medalist in the Scholastic Art & Writing Awards for an original screenplay.","Voices of America Award":"Voices of America Award for creative writing.","Broadway Stars of the Future":"Outstanding Lead Performer in a Musical, Broadway Stars of the Future recognition.","6× Thespian Superior":"Six Superior ratings, the top mark, at the Florida District Thespian Festival.","Academic Excellence · Engineering":"School Academic Excellence Award in Engineering.","Physics Academic Excellence":"School Academic Excellence Award in Physics.","Artistic Excellence · Drama":"School Artistic Excellence Award in Drama.","Princeton Book Award":"The Princeton University Book Award, given to a standout junior.","CDS Faculty Award":"The Carrollwood Day School Faculty Award.","Cum Laude Society":"Inducted into the Cum Laude Society, top 10% of the class.","Duke of Edinburgh · Silver":"Silver Award in the Duke of Edinburgh's International Award for service, skill, recreation and adventure.","Silver Congressional Award":"The Silver Congressional Award, the U.S. Congress's award for young people.","FL Boys State":"Selected for Florida Boys State, a competitive citizenship and leadership program.","$15K Annual Merit Scholarship":"A $15,000 annual merit scholarship to Carrollwood Day School."};
-const AWLOGO={"Scholastic National Gold Medalist":"artandwriting.org","Voices of America Award":"voanews.com","2nd · States DECA Entrepreneurship Team Decision Making":"deca.org","Diamond Challenge Global Finalist":"diamondchallenge.org","3\u00d7 Presidential Volunteer Gold":"presidentialserviceawards.gov","Top 16 \u00b7 NFTE Nationals":"nfte.org","Conrad Innovator Award":"conradchallenge.org","John Locke \u00b7 High Commendation":"johnlockeinstitute.com","Congressional Art Award":"house.gov","Tampa Bay Magazine cover":"tampabaymagazine.com","National Speech Champion \u00b7 Beta":"betaclub.org","4th \u00b7 NCFL Speech Nationals":"ncfl.org","1st \u00b7 Beta State Speech":"betaclub.org","Beta State Math \u00b7 2nd & 3rd":"betaclub.org","DECA ICDC Roleplay Award":"deca.org","1st \u00b7 DECA Business Finance":"deca.org","1st \u00b7 DECA Entrepreneurship":"deca.org","Scholastic National Medalist":"artandwriting.org","6\u00d7 Thespian Superior":"schooltheatre.org","Academic Excellence \u00b7 Engineering":"carrollwooddayschool.org","Physics Academic Excellence":"carrollwooddayschool.org","Artistic Excellence \u00b7 Drama":"carrollwooddayschool.org","Princeton Book Award":"princeton.edu","CDS Faculty Award":"carrollwooddayschool.org","Cum Laude Society":"cumlaudesociety.org","Duke of Edinburgh \u00b7 Silver":"dofe.org","Silver Congressional Award":"congressionalaward.org"};
+const AW={"2nd · States DECA Entrepreneurship Team Decision Making":"Second place at the Florida DECA State Career Development Conference in Entrepreneurship Team Decision Making.","Diamond Challenge Global Finalist":"Global finalist in the Diamond Challenge, one of the world's largest high-school entrepreneurship competitions — for Eco-Vision.","3× Presidential Volunteer Gold":"The President's Volunteer Service Award (Gold) for 250+ hours of service in a year — earned three years running.","Top 16 · NFTE Nationals":"Top 16 in the country at the NFTE National Pitch Competition for Eco-Vision, my MedTech VR startup.","Conrad Innovator Award":"Recognized as a Conrad Challenge Innovator for Eco-Vision's olfactory-integrated VR.","John Locke · High Commendation":"High Commendation in the John Locke Institute's global essay competition.","Congressional Art Award":"Winner of the Congressional Art Competition for a photographic piece.","Tampa Bay Magazine cover":"A photograph of mine was featured on the cover of Tampa Bay Magazine.","National Speech Champion · Beta":"National Speech Champion at the Beta Club National Convention.","4th · NCFL Speech Nationals":"4th place at the National Catholic Forensic League Grand National Tournament.","1st · Beta State Speech":"1st place in Speech at the Florida Beta State Convention.","Beta State Math · 2nd & 3rd":"2nd and 3rd place in Mathematics at the Beta State Convention.","DECA ICDC Roleplay Award":"Roleplay award winner (Business Finance, top 10) at DECA's International Career Development Conference.","1st · DECA Business Finance":"1st place in Business Finance at DECA Districts.","1st · DECA Entrepreneurship":"1st place, Entrepreneurship Team, at DECA Districts.","Scholastic National Medalist":"National Medalist in the Scholastic Art & Writing Awards for an original screenplay.","Voices of America Award":"Voices of America Award for creative writing.","Broadway Stars of the Future":"Outstanding Lead Performer in a Musical — Broadway Stars of the Future recognition.","6× Thespian Superior":"Six Superior ratings — the top mark — at the Florida District Thespian Festival.","Academic Excellence · Engineering":"School Academic Excellence Award in Engineering.","Physics Academic Excellence":"School Academic Excellence Award in Physics.","Artistic Excellence · Drama":"School Artistic Excellence Award in Drama.","Princeton Book Award":"The Princeton University Book Award, given to a standout junior.","CDS Faculty Award":"The Carrollwood Day School Faculty Award.","Cum Laude Society":"Inducted into the Cum Laude Society — top 10% of the class.","Duke of Edinburgh · Silver":"Silver Award in the Duke of Edinburgh's International Award for service, skill, recreation and adventure.","Silver Congressional Award":"The Silver Congressional Award, the U.S. Congress's award for young people.","FL Boys State":"Selected for Florida Boys State, a competitive citizenship and leadership program.","$15K Annual Merit Scholarship":"A $15,000 annual merit scholarship to Carrollwood Day School."};
+const AWLOGO={"2nd · States DECA Entrepreneurship Team Decision Making":"deca.org","Diamond Challenge Global Finalist":"diamondchallenge.org","3\u00d7 Presidential Volunteer Gold":"presidentialserviceawards.gov","Top 16 \u00b7 NFTE Nationals":"nfte.org","Conrad Innovator Award":"conradchallenge.org","John Locke \u00b7 High Commendation":"johnlockeinstitute.com","Congressional Art Award":"house.gov","Tampa Bay Magazine cover":"tampabaymagazine.com","National Speech Champion \u00b7 Beta":"betaclub.org","4th \u00b7 NCFL Speech Nationals":"ncfl.org","1st \u00b7 Beta State Speech":"betaclub.org","Beta State Math \u00b7 2nd & 3rd":"betaclub.org","DECA ICDC Roleplay Award":"deca.org","1st \u00b7 DECA Business Finance":"deca.org","1st \u00b7 DECA Entrepreneurship":"deca.org","Scholastic National Medalist":"artandwriting.org","6\u00d7 Thespian Superior":"schooltheatre.org","Academic Excellence \u00b7 Engineering":"carrollwooddayschool.org","Physics Academic Excellence":"carrollwooddayschool.org","Artistic Excellence \u00b7 Drama":"carrollwooddayschool.org","Princeton Book Award":"princeton.edu","CDS Faculty Award":"carrollwooddayschool.org","Cum Laude Society":"cumlaudesociety.org","Duke of Edinburgh \u00b7 Silver":"dofe.org","Silver Congressional Award":"congressionalaward.org"};
 const m=document.getElementById('awardModal'),t=document.getElementById('amT'),p=document.getElementById('amP'),lg=document.getElementById('amLogo');
 function close(){m.classList.remove('show');}
-function setLogo(n){lg.className='am-logo';lg.textContent='';var AWIMG={"Engineering Excellence Award":"assets/logos/cds.png","Physics Excellence Award":"assets/logos/cds.png","CDS Faculty Award":"assets/logos/cds.png","6× Thespian Superior":"assets/logos/thespian.png","Broadway Stars of the Future":"assets/logos/thespian.png","Presidential Volunteer Gold Service Medal (2022, 2023, 2024)":"assets/logos/pvsa.png","Top 16 · NFTE Nationals":"assets/logos/nfte.png","4th · NCFL Speech Nationals":"assets/logos/ncfl.png","Academic Excellence · Engineering":"assets/logos/cds.png","Physics Academic Excellence":"assets/logos/cds.png","Artistic Excellence · Drama":"assets/logos/cds.png","CDS Faculty Award":"assets/logos/cds.png","FL Boys State":"assets/logos/boysstate.png","National Speech Champion · Beta":"assets/logos/beta.png","1st · Beta State Speech":"assets/logos/beta.png","Beta State Math · 2nd & 3rd":"assets/logos/beta.png","Broadway Stars of the Future":"assets/logos/broadway.png","Cum Laude Society":"assets/logos/cumlaude.png"};var src=AWIMG[n];if(src){lg.style.display='';var im=new Image();im.alt='';im.onerror=function(){lg.style.display='none';};im.src=src;lg.appendChild(im);return;}var dom=AWLOGO[n];var mono=(n||'?').replace(/[^A-Za-z0-9]/g,'').charAt(0).toUpperCase()||'\u2605';lg.style.display='';if(!dom){lg.style.display='none';return;}var img=new Image();img.alt='';var stage=0;img.onerror=function(){stage++;if(stage===1){img.src='https://www.google.com/s2/favicons?domain='+dom+'&sz=128';}else{lg.style.display='none';}};img.src='https://icons.duckduckgo.com/ip3/'+dom+'.ico';lg.appendChild(img);}
-var AWPHOTO={"Duke of Edinburgh · Silver":"assets/photos/duke-edinburgh.jpg"};
-var lastFocus=null;var xbtn=document.getElementById('amX');document.querySelectorAll('.cloud .pill').forEach(function(el){el.setAttribute('tabindex','0');el.setAttribute('role','button');function open(){var n=el.textContent.trim();t.textContent=n;p.innerHTML=(AW[n]||"")+(AWPHOTO[n]?'<img src="'+AWPHOTO[n]+'" alt="" style="width:100%;border-radius:12px;display:block;margin-top:14px;" />':"");setLogo(n);m.classList.add('show');lastFocus=el;setTimeout(function(){xbtn.focus();},50);}el.addEventListener('click',open);el.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();open();}});});function closeM(){m.classList.remove('show');if(lastFocus)lastFocus.focus();}xbtn.addEventListener('click',closeM);m.addEventListener('click',function(ev){if(ev.target===m)closeM();});document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&m.classList.contains('show'))closeM();});
+function setLogo(n){lg.className='am-logo';lg.textContent='';var AWIMG={"6× Thespian Superior":"assets/logos/thespian.png","Broadway Stars of the Future":"assets/logos/thespian.png","3× Presidential Volunteer Gold":"assets/logos/pvsa.png","Top 16 · NFTE Nationals":"assets/logos/nfte.png","4th · NCFL Speech Nationals":"assets/logos/ncfl.png","Academic Excellence · Engineering":"assets/logos/cds.png","Physics Academic Excellence":"assets/logos/cds.png","Artistic Excellence · Drama":"assets/logos/cds.png","CDS Faculty Award":"assets/logos/cds.png","FL Boys State":"assets/logos/boysstate.png","National Speech Champion · Beta":"assets/logos/beta.png","1st · Beta State Speech":"assets/logos/beta.png","Beta State Math · 2nd & 3rd":"assets/logos/beta.png","Broadway Stars of the Future":"assets/logos/broadway.png","Cum Laude Society":"assets/logos/cumlaude.png"};var src=AWIMG[n];if(src){lg.style.display='';var im=new Image();im.alt='';im.onerror=function(){lg.style.display='none';};im.src=src;lg.appendChild(im);return;}var dom=AWLOGO[n];var mono=(n||'?').replace(/[^A-Za-z0-9]/g,'').charAt(0).toUpperCase()||'\u2605';lg.style.display='';if(!dom){lg.style.display='none';return;}var img=new Image();img.alt='';var stage=0;img.onerror=function(){stage++;if(stage===1){img.src='https://www.google.com/s2/favicons?domain='+dom+'&sz=128';}else{lg.style.display='none';}};img.src='https://icons.duckduckgo.com/ip3/'+dom+'.ico';lg.appendChild(img);}
+var lastFocus=null;var xbtn=document.getElementById('amX');document.querySelectorAll('.cloud .pill').forEach(function(el){el.setAttribute('tabindex','0');el.setAttribute('role','button');function open(){var n=el.textContent.trim();t.textContent=n;p.textContent=AW[n]||"";setLogo(n);m.classList.add('show');lastFocus=el;setTimeout(function(){xbtn.focus();},50);}el.addEventListener('click',open);el.addEventListener('keydown',function(ev){if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();open();}});});function closeM(){m.classList.remove('show');if(lastFocus)lastFocus.focus();}xbtn.addEventListener('click',closeM);m.addEventListener('click',function(ev){if(ev.target===m)closeM();});document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&m.classList.contains('show'))closeM();});
 m.addEventListener('click',function(e){if(e.target===m)closeM();});
 })();
 </script>
 <script>/*wfilter+coverflow*/(function(){var wf=document.querySelector(".wfilter");if(!wf)return;var btn=document.getElementById("wfBtn"),menu=document.getElementById("wfMenu"),label=document.getElementById("wfLabel"),car=document.getElementById("wcar");var slides=[].slice.call(car.querySelectorAll(".wslide"));function flow(){var mid=car.scrollLeft+car.clientWidth/2;slides.forEach(function(sl){if(sl.style.display==="none")return;var cc=sl.offsetLeft+sl.offsetWidth/2,d=(cc-mid)/car.clientWidth,rot=Math.max(-28,Math.min(28,-d*55)),sc=Math.max(0.8,1-Math.abs(d)*0.24);sl.style.transform="rotateY("+rot+"deg) scale("+sc+")";sl.style.zIndex=String(100-Math.round(Math.abs(d)*100));sl.style.opacity=Math.max(0.32,1-Math.abs(d)*0.72).toFixed(2);});}car.addEventListener("scroll",flow,{passive:true});window.addEventListener("resize",flow);car.addEventListener("wheel",function(ev){if(Math.abs(ev.deltaY)>Math.abs(ev.deltaX)){car.scrollLeft+=ev.deltaY;ev.preventDefault();}},{passive:false});setTimeout(flow,60);setTimeout(flow,500);car.setAttribute("tabindex","0");car.setAttribute("aria-label","Writing carousel, use arrow keys");car.addEventListener("keydown",function(ev){if(ev.key==="ArrowRight"||ev.key==="ArrowLeft"){var vis=slides.filter(function(s){return s.style.display!=="none";});var mid=car.scrollLeft+car.clientWidth/2;var idx=0,best=1e9;vis.forEach(function(s,n){var cc=s.offsetLeft+s.offsetWidth/2;if(Math.abs(cc-mid)<best){best=Math.abs(cc-mid);idx=n;}});var ni=Math.max(0,Math.min(vis.length-1,idx+(ev.key==="ArrowRight"?1:-1)));var t=vis[ni];car.scrollTo({left:t.offsetLeft-(car.clientWidth-t.offsetWidth)/2,behavior:"smooth"});ev.preventDefault();}});btn.addEventListener("click",function(e){e.stopPropagation();wf.classList.toggle("open");});document.addEventListener("click",function(){wf.classList.remove("open");});menu.querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){var f=b.getAttribute("data-f");label.textContent=b.textContent;menu.querySelectorAll("button").forEach(function(x){x.classList.toggle("active",x===b);});slides.forEach(function(sl){var c=(sl.getAttribute("data-cat")||"").split(" ");sl.style.display=(f==="all"||c.indexOf(f)>-1)?"":"none";});wf.classList.remove("open");car.scrollLeft=0;setTimeout(flow,40);});});})();</script>
-<script src="assets/journey.js"></script>
-<script src="assets/dj-hud.js"></script>
 </body>
 </html>
