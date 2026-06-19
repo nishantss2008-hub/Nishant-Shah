@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nishant Shah</title>
+<style>
+  /* minimal styling only */
+  body { font-family: Times New Roman, serif; margin: 16px; }
+  .name { font-weight: bold; font-size: 24px; font-style: italic; }
+  nav a { margin-right: 14px; }
+  nav a:hover { font-family: Arial, sans-serif; font-style: italic; text-decoration: underline; color: navy; }
+  img.profile { width: 150px; height: 150px; }
+  img.logo { width: 20px; height: 20px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<!-- name top-left -->
+<div class="name">Nishant Shah</div>
+
+<!-- home icon -->
+<a href="#top" title="Home">&#127968; Home</a>
+
+<!-- navigation -->
+<nav>
+  <a href="#about">About</a>
+  <a href="#projects">Project details</a>
+  <a href="#skills">Skills</a>
+  <a href="#recommendations">Recommendations</a>
+</nav>
+
+<hr />
+
+<!-- About Me -->
+<h2 id="about">About Me</h2>
+<img class="profile" src="https://i.imgur.com/MVhoIC5.jpeg" alt="Nishant Shah" />
+<h3>Nishant Shah</h3>
+<p>
+  I am a high-school senior and IB Diploma candidate who likes solving problems with other people.
+  I work across business, engineering, advocacy, and the arts &mdash; building things that are useful,
+  bring people together, and leave the world a little better. I have founded ventures, led an
+  18,000-member DECA organization, advocated for foster youth, and performed in 22 stage productions.
+</p>
+
+<hr />
+
+<!-- Skills -->
+<h2 id="skills">Skills</h2>
+<ul>
+  <li><img class="logo" src="https://www.google.com/s2/favicons?domain=python.org&sz=64" alt="Python" /> Python</li>
+  <li><img class="logo" src="https://www.google.com/s2/favicons?domain=figma.com&sz=64" alt="Figma" /> Figma</li>
+  <li><img class="logo" src="https://www.google.com/s2/favicons?domain=notion.so&sz=64" alt="Notion" /> Notion</li>
+  <li><img class="logo" src="https://www.google.com/s2/favicons?domain=google.com&sz=64" alt="Sheets" /> Financial modeling (Sheets)</li>
+  <li><img class="logo" src="https://www.google.com/s2/favicons?domain=canva.com&sz=64" alt="Canva" /> Public speaking &amp; pitching</li>
+</ul>
+
+<hr />
+
+<!-- Projects -->
+<h2 id="projects">Project details</h2>
+<ol>
+  <li>
+    <b>Eco-Vision</b> &mdash; the first olfactory-integrated VR system for bedridden patients.
+    Top 16 at NFTE Nationals, $7,500 in grants, trialed with Moffitt &amp; Mayo.
+  </li>
+  <li>
+    <b>VentureSeek</b> &mdash; an AI sourcing and diligence platform for venture-capital firms that
+    finds, scores, and researches startups.
+  </li>
+  <li>
+    <b>See Us Now</b> &mdash; a foster-youth advocacy organization that ran a national awareness week
+    and helped pass a federal foster-youth law.
+  </li>
+</ol>
+
+<hr />
+
+<!-- Recommendations -->
+<h2 id="recommendations">Recommendations</h2>
+<ul id="recList">
+  <li>"Nishant treats a setback as data, not a verdict &mdash; and pulls the people around him up with him." &mdash; Teacher</li>
+  <li>"One of the most driven students I have worked with. He turns ideas into things that actually ship." &mdash; DECA Advisor</li>
+  <li>"He leads quietly and generously. The team always comes first." &mdash; Theater Director</li>
+</ul>
+
+<h3>Add a recommendation</h3>
+<form id="recForm">
+  <p>Name: <input type="text" id="recName" required /></p>
+  <p>Recommendation:<br /><textarea id="recText" rows="3" cols="40" required></textarea></p>
+  <p><button type="submit">Submit</button></p>
+</form>
+
+<script>
+  document.getElementById('recForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('recName').value;
+    var text = document.getElementById('recText').value;
+    var li = document.createElement('li');
+    li.textContent = '"' + text + '" \u2014 ' + name;
+    document.getElementById('recList').appendChild(li);
+    document.getElementById('recForm').reset();
+    alert('Thank you! Your recommendation has been added.');
+  });
+</script>
+
+</body>
+</html>

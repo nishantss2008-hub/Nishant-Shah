@@ -1,0 +1,15 @@
+# Files that should NOT be deployed to Vercel.
+# The live site = index.html, intro.html, portfolio.html, world.html, spike.html,
+# case-study.html, design-system.html, team-video.html, /assets, and /api.
+
+archive/
+screenshots/
+uploads/
+DEPLOY.md
+DEPLOYMENT.md
+.thumbnail
+.DS_Store
+**/.DS_Store
+*.tmp
+node_modules/
+.git/

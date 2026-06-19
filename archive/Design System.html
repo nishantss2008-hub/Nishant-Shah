@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Design System — derived from Units</title>
+<link rel="stylesheet" href="assets/tokens.css" />
+<style>
+  /* ---------- Page chrome ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; letter-spacing: -0.02em; }
+  .monogram {
+    width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+    background: var(--accent); color: #fff; font-size: 13px; font-weight: 700; letter-spacing: 0;
+    font-family: var(--font-sans);
+  }
+  .brand small { color: var(--text-3); font-weight: 500; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .toc { display: flex; gap: 4px; }
+  .toc a { font-size: 0.82rem; color: var(--text-2); padding: 6px 11px; border-radius: var(--r-pill); transition: background var(--dur-1), color var(--dur-1); }
+  .toc a:hover { color: var(--text); background: var(--surface-2); }
+  @media (max-width: 860px) { .toc { display: none; } }
+
+  /* theme toggle */
+  .theme-toggle {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: var(--r-pill); padding: 6px; cursor: pointer; color: var(--text-2);
+    transition: border-color var(--dur-1);
+  }
+  .theme-toggle:hover { border-color: var(--text-3); }
+  .theme-toggle .knob { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; transition: background var(--dur-1), color var(--dur-1); }
+  .theme-toggle .knob.active { background: var(--accent); color: #fff; }
+
+  /* ---------- Sections ---------- */
+  section { padding: clamp(56px, 8vw, 110px) 0; border-bottom: 1px solid var(--border); }
+  .sec-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 48px; flex-wrap: wrap; }
+  .sec-head h2 { font-size: clamp(1.8rem, 3.4vw, 2.8rem); }
+  .sec-head .num { font-family: var(--font-mono); color: var(--accent); font-size: 0.8rem; letter-spacing: 0.1em; }
+  .lead { font-size: clamp(1.05rem, 1.6vw, 1.3rem); color: var(--text-2); max-width: 60ch; line-height: 1.55; }
+
+  /* hero */
+  .hero { padding-top: clamp(60px, 9vw, 120px); }
+  .hero h1 { font-size: clamp(3rem, 8.5vw, 6.6rem); line-height: 0.95; }
+  .hero .sub { margin-top: 28px; font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--text-2); max-width: 54ch; line-height: 1.5; }
+  .assume {
+    margin-top: 44px; display: grid; gap: 1px; background: var(--border);
+    border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 760px) { .assume { grid-template-columns: 1fr; } }
+  .assume > div { background: var(--surface); padding: 22px 24px; }
+  .assume h4 { font-size: 0.95rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .assume p { font-size: 0.92rem; color: var(--text-2); line-height: 1.5; }
+
+  /* color grid */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .swatch { border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; cursor: pointer; background: var(--surface); transition: transform var(--dur-1) var(--ease), border-color var(--dur-1); }
+  .swatch:hover { transform: translateY(-3px); border-color: var(--border-strong); }
+  .swatch .chip { height: 76px; box-shadow: inset 0 0 0 1px rgba(128,128,128,0.18); }
+  .swatch .meta { padding: 10px 12px; }
+  .swatch .meta b { font-size: 0.82rem; font-weight: 600; display: block; }
+  .swatch .meta code { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-3); }
+  .copied-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--text); color: var(--bg); padding: 10px 18px; border-radius: var(--r-pill);
+    font-family: var(--font-mono); font-size: 0.8rem; opacity: 0; pointer-events: none;
+    transition: opacity var(--dur-2), transform var(--dur-2); z-index: 100;
+  }
+  .copied-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* type scale */
+  .type-row { display: flex; align-items: baseline; gap: 24px; padding: 20px 0; border-bottom: 1px solid var(--border); }
+  .type-row:last-child { border-bottom: 0; }
+  .type-row .spec { flex: 0 0 130px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-3); line-height: 1.5; }
+  .type-row .sample { flex: 1; min-width: 0; overflow: hidden; }
+
+  .fonts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+  @media (max-width: 760px) { .fonts { grid-template-columns: 1fr; } }
+  .fontcard { padding: 26px; }
+  .fontcard .big { font-size: 3rem; line-height: 1; margin-bottom: 14px; }
+  .fontcard .name { font-size: 0.95rem; font-weight: 600; }
+  .fontcard .role { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-3); margin-top: 4px; }
+
+  /* spacing + radius */
+  .scale-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .scale-row .label { flex: 0 0 90px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-3); }
+  .scale-bar { height: 22px; background: var(--accent); border-radius: 4px; }
+  .radius-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 16px; }
+  .radius-demo { aspect-ratio: 1; background: var(--surface-2); border: 1px solid var(--border-strong); display: grid; place-items: end; padding: 10px; }
+  .radius-demo span { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-3); }
+
+  /* component grid */
+  .demo-grid { display: grid; gap: 20px; }
+  .demo { padding: 28px; }
+  .demo .label { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 18px; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 860px) { .cols-2, .cols-3 { grid-template-columns: 1fr; } }
+
+  /* sidebar nav demo */
+  .navdemo { display: flex; flex-direction: column; gap: 4px; max-width: 280px; }
+  .navitem { display: flex; align-items: center; gap: 14px; padding: 11px 14px; border-radius: var(--r-md); color: var(--text-2); cursor: pointer; transition: background var(--dur-1), color var(--dur-1); }
+  .navitem:hover { background: var(--surface-2); color: var(--text); }
+  .navitem.active { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
+  .navitem .ico { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex: 0 0 26px; }
+  .navitem.active .ico { background: var(--text); color: var(--bg); }
+  .navitem svg { width: 17px; height: 17px; }
+
+  /* content card demo */
+  .ccard { overflow: hidden; }
+  .ccard .art { height: 170px; position: relative; background: linear-gradient(160deg, var(--surface-2), var(--surface-3)); display: grid; place-items: center; overflow: hidden; }
+  .ccard .art svg { width: 78%; height: 70%; opacity: 0.9; }
+  .ccard .body { padding: 20px 22px 22px; }
+  .ccard h4 { font-size: 1.15rem; display: flex; align-items: center; gap: 7px; }
+  .ccard p { color: var(--text-2); font-size: 0.92rem; margin-top: 8px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .ccard .meta { display: flex; align-items: center; gap: 18px; margin-top: 18px; font-size: 0.85rem; color: var(--text-2); }
+  .ccard .meta .star { color: var(--amber); }
+  .ccard .meta .spacer { flex: 1; }
+  .meta-item { display: inline-flex; align-items: center; gap: 5px; }
+  .meta-item svg { width: 15px; height: 15px; }
+
+  /* checklist demo */
+  .checklist { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 14px; }
+  .checklist li { display: flex; gap: 12px; align-items: flex-start; font-size: 0.95rem; color: var(--text); line-height: 1.4; }
+  .check { flex: 0 0 22px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; margin-top: 1px; }
+  .check svg { width: 13px; height: 13px; }
+  .check.blue { background: var(--accent-soft); color: var(--accent); }
+  .check.green { background: var(--green-soft); color: var(--green); }
+  .check.amber { background: var(--amber-soft); color: var(--amber); }
+
+  footer { padding: 60px 0 80px; border-bottom: 0; }
+  .foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; color: var(--text-3); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<!-- ===================== TOP BAR ===================== -->
+<header class="topbar">
+  <div class="brand">
+    <span class="monogram">NS</span>
+    <span>Design System <small>v1 · ex-Units</small></span>
+  </div>
+  <nav class="topbar-right">
+    <div class="toc">
+      <a href="#foundations">Foundations</a>
+      <a href="#color">Color</a>
+      <a href="#type">Type</a>
+      <a href="#components">Components</a>
+      <a href="#motion">Motion</a>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <span class="knob" data-mode="dark">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </span>
+      <span class="knob" data-mode="light">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></svg>
+      </span>
+    </button>
+  </nav>
+</header>
+
+<!-- ===================== HERO ===================== -->
+<div class="container hero">
+  <p class="kicker reveal">Design system reference · For Nishant Shah</p>
+  <h1 class="display reveal" style="margin-top:20px;">A system for the<br><span class="hl-underline">ambitious</span> portfolio.</h1>
+  <p class="sub reveal">Reverse-engineered from <span class="serif-i" style="font-size:1.1em;">units.school</span> — its near-black canvas, royal-blue conviction, heavy grotesque headlines, and editorial restraint. These are the tokens and components the portfolio is built from.</p>
+
+  <div class="assume reveal">
+    <div>
+      <h4><span class="pill pill-accent pill-dot">Assumption</span></h4>
+      <p>Dark is the primary surface, light is a full peer (you asked for a toggle). Every token is defined twice.</p>
+    </div>
+    <div>
+      <h4><span class="pill pill-green pill-dot">Decision</span></h4>
+      <p>One accent — royal blue <code class="mono">#2563EB</code> — carries all emphasis. Green &amp; amber are reserved for status &amp; ratings only.</p>
+    </div>
+    <div>
+      <h4><span class="pill pill-amber pill-dot">Next</span></h4>
+      <p>Once you sign off on these, I build the portfolio: hero, work, writing, résumé, contact &amp; a case-study template.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== FOUNDATIONS / COLOR ===================== -->
+<section id="color">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="num">01</span>
+      <h2 id="foundations">Color</h2>
+    </div>
+    <p class="lead reveal" style="margin-bottom:40px;">A near-black canvas with three lifted surface steps, hairline borders, and a single saturated blue. Click any swatch to copy its value.</p>
+
+    <p class="kicker reveal" style="margin-bottom:14px;">Surfaces &amp; text</p>
+    <div class="swatches reveal" style="margin-bottom:36px;" id="surfaceSwatches"></div>
+
+    <p class="kicker reveal" style="margin-bottom:14px;">Accent &amp; semantic</p>
+    <div class="swatches reveal" id="accentSwatches"></div>
+  </div>
+</section>
+
+<!-- ===================== TYPE ===================== -->
+<section id="type">
+  <div class="container">
+    <div class="sec-head reveal"><span class="num">02</span><h2>Typography</h2></div>
+    <p class="lead reveal" style="margin-bottom:40px;">A heavy grotesque does the talking, a mono labels the structure, and a serif adds the rare editorial flourish — exactly the Units balance.</p>
+
+    <div class="fonts reveal">
+      <div class="card fontcard">
+        <div class="big" style="font-family:var(--font-sans); font-weight:700; letter-spacing:-0.04em;">Ag</div>
+        <div class="name">Helvetica Neue</div>
+        <div class="role">Display + UI + body · 400 / 500 / 700</div>
+      </div>
+      <div class="card fontcard">
+        <div class="big serif-i">Ag</div>
+        <div class="name">Instrument Serif</div>
+        <div class="role">Editorial accent · italic</div>
+      </div>
+      <div class="card fontcard">
+        <div class="big mono" style="font-weight:500;">Ag</div>
+        <div class="name">JetBrains Mono</div>
+        <div class="role">Kickers · metadata · code</div>
+      </div>
+    </div>
+
+    <div class="card" style="padding: 8px 28px;">
+      <div class="type-row">
+        <div class="spec">Display<br>clamp 48–106px<br>700 · -0.035em</div>
+        <div class="sample"><span class="display" style="font-size:clamp(2.4rem,6vw,4.6rem);">Build in public.</span></div>
+      </div>
+      <div class="type-row">
+        <div class="spec">H2<br>28–45px<br>700 · -0.03em</div>
+        <div class="sample"><h2 style="font-size:clamp(1.6rem,3vw,2.4rem);">Selected work &amp; experiments</h2></div>
+      </div>
+      <div class="type-row">
+        <div class="spec">Serif accent<br>italic display</div>
+        <div class="sample"><span class="serif-i" style="font-size:clamp(1.8rem,4vw,3rem);">the things I actually made</span></div>
+      </div>
+      <div class="type-row">
+        <div class="spec">Lead<br>20–24px<br>400</div>
+        <div class="sample"><p style="font-size:clamp(1.05rem,1.6vw,1.35rem); color:var(--text-2);">High-school senior building at the seam of engineering, business and human-centered design.</p></div>
+      </div>
+      <div class="type-row">
+        <div class="spec">Body<br>17px · 400<br>1.6 line</div>
+        <div class="sample"><p style="color:var(--text-2);">The quick brown fox jumps over the lazy dog. Body copy stays at a comfortable 17px with a 1.6 line-height for long-form reading in case studies and writing.</p></div>
+      </div>
+      <div class="type-row">
+        <div class="spec">Kicker / mono<br>11.5px · 500<br>0.18em up</div>
+        <div class="sample"><span class="kicker">02 — Typography · Reference</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SPACING / RADIUS / ELEVATION ===================== -->
+<section>
+  <div class="container">
+    <div class="sec-head reveal"><span class="num">03</span><h2>Spacing, radius &amp; elevation</h2></div>
+    <div class="demo-grid cols-2">
+      <div class="card demo reveal">
+        <div class="label">Spacing scale · 4px base</div>
+        <div id="spacingScale"></div>
+      </div>
+      <div class="card demo reveal">
+        <div class="label">Radius</div>
+        <div class="radius-grid">
+          <div class="radius-demo" style="border-radius:var(--r-sm)"><span>sm 10</span></div>
+          <div class="radius-demo" style="border-radius:var(--r-md)"><span>md 14</span></div>
+          <div class="radius-demo" style="border-radius:var(--r-lg)"><span>lg 20</span></div>
+          <div class="radius-demo" style="border-radius:var(--r-xl)"><span>xl 28</span></div>
+        </div>
+        <div class="label" style="margin:26px 0 14px;">Elevation</div>
+        <div class="row">
+          <div style="width:90px;height:60px;border-radius:var(--r-md);background:var(--surface-2);box-shadow:var(--shadow-1);"></div>
+          <div style="width:90px;height:60px;border-radius:var(--r-md);background:var(--surface-2);box-shadow:var(--shadow-2);"></div>
+          <div style="width:90px;height:60px;border-radius:var(--r-md);background:var(--surface-2);box-shadow:var(--shadow-3);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== COMPONENTS ===================== -->
+<section id="components">
+  <div class="container">
+    <div class="sec-head reveal"><span class="num">04</span><h2>Components</h2></div>
+    <p class="lead reveal" style="margin-bottom:40px;">Lifted from the Units surface — buttons, pills, the pill-search, sidebar nav, icon-tile cards, content cards and checklists.</p>
+
+    <div class="demo-grid">
+      <!-- buttons + pills -->
+      <div class="demo-grid cols-2">
+        <div class="card demo reveal">
+          <div class="label">Buttons</div>
+          <div class="row" style="margin-bottom:14px;">
+            <button class="btn btn-primary">Join the Founding Class <span class="arrow">→</span></button>
+            <button class="btn btn-secondary">View work</button>
+            <button class="btn btn-ghost">Read the story →</button>
+          </div>
+          <div class="label" style="margin-top:24px;">Pills &amp; badges</div>
+          <div class="row">
+            <span class="pill pill-accent">New</span>
+            <span class="pill pill-green pill-dot">Available</span>
+            <span class="pill pill-amber pill-dot">Coming soon</span>
+            <span class="pill">OSSD · ENG4U</span>
+          </div>
+        </div>
+        <div class="card demo reveal">
+          <div class="label">Pill search &amp; input</div>
+          <div class="input" style="margin-bottom:14px;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="Search work, writing, tools…" />
+          </div>
+          <div class="input">
+            <input type="text" placeholder="you@example.com" />
+            <button class="btn btn-primary" style="padding:0.5em 1em; font-size:0.9rem;">Notify me</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- icon tiles + nav -->
+      <div class="demo-grid cols-2">
+        <div class="card demo reveal">
+          <div class="label">Icon tiles (axiom cards)</div>
+          <div class="row">
+            <div class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 4.8L19 9l-4 3.5 1.2 5.5L12 15l-4.2 3 1.2-5.5L5 9l5.1-1.2z"/></svg></div>
+            <div class="icon-tile green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2zM9 21h6"/></svg></div>
+            <div class="icon-tile amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg></div>
+            <div class="icon-tile ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+          </div>
+        </div>
+        <div class="card demo reveal">
+          <div class="label">Sidebar navigation</div>
+          <div class="navdemo">
+            <div class="navitem active"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg></span>Home</div>
+            <div class="navitem"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15 9-3.5 1.5L10 14l3.5-1.5z"/></svg></span>Work</div>
+            <div class="navitem"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Writing</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- content cards -->
+      <div>
+        <div class="label reveal" style="margin-bottom:16px;">Content cards</div>
+        <div class="demo-grid cols-3">
+          <div class="card card-hover ccard reveal">
+            <div class="art">
+              <svg viewBox="0 0 300 150" fill="none"><path d="M10 110 C 70 110, 90 40, 150 50 S 250 40, 290 30" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/><text x="14" y="135" font-family="JetBrains Mono" font-size="13" fill="var(--text-3)">f(x) growth curve</text></svg>
+            </div>
+            <div class="body">
+              <h4>Compiler in Rust <span class="verified"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 2l2.4 1.8 3-.2 1 2.8 2.6 1.5-.8 2.9.8 2.9-2.6 1.5-1 2.8-3-.2L12 22l-2.4-1.9-3 .2-1-2.8L3 16.2l.8-2.9L3 10.4l2.6-1.5 1-2.8 3 .2z"/><path d="M8.5 12.5l2.5 2.5 4.5-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></h4>
+              <p>A toy programming language with a hand-written lexer, parser and bytecode VM. Built to actually understand how code runs.</p>
+              <div class="meta">
+                <span class="meta-item"><span class="star">★</span> 4.9</span>
+                <span class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg>2.4k</span>
+                <span class="spacer"></span>
+                <span class="pill pill-accent">New</span>
+              </div>
+            </div>
+          </div>
+          <div class="card card-hover ccard reveal">
+            <div class="art">
+              <svg viewBox="0 0 300 150" fill="none"><path d="M10 75 Q 50 20 90 75 T 170 75 T 250 75 T 330 75" stroke="var(--green)" stroke-width="3.5" fill="none" stroke-linecap="round"/><text x="14" y="135" font-family="JetBrains Mono" font-size="13" fill="var(--text-3)">λ = 2π/k · signal</text></svg>
+            </div>
+            <div class="body">
+              <h4>Tide — habit app</h4>
+              <p>A calm, offline-first habit tracker. 1,200 downloads, 4.8 on the App Store, designed and shipped solo.</p>
+              <div class="meta">
+                <span class="meta-item"><span class="star">★</span> 4.8</span>
+                <span class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>8.1k</span>
+                <span class="spacer"></span>
+                <span class="pill pill-green pill-dot">Live</span>
+              </div>
+            </div>
+          </div>
+          <div class="card card-hover ccard reveal">
+            <div class="art">
+              <svg viewBox="0 0 300 150" fill="none"><g stroke="var(--amber)" stroke-width="3" fill="none"><path d="M120 30 q 30 25 0 50 q -30 25 0 50"/><path d="M180 30 q -30 25 0 50 q 30 25 0 50"/><path d="M120 45 h60M120 75 h60M120 105 h60"/></g><text x="14" y="135" font-family="JetBrains Mono" font-size="13" fill="var(--text-3)">helix · research</text></svg>
+            </div>
+            <div class="body">
+              <h4>Published research</h4>
+              <p>Co-authored a paper on low-cost air-quality sensing. Presented at a regional science fair, top 5%.</p>
+              <div class="meta">
+                <span class="meta-item"><span class="star">★</span> 5.0</span>
+                <span class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>1.2k</span>
+                <span class="spacer"></span>
+                <span class="pill pill-amber pill-dot">Award</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- checklists -->
+      <div class="demo-grid cols-3">
+        <div class="card demo reveal">
+          <div class="label">I build</div>
+          <ul class="checklist">
+            <li><span class="check blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>Full-stack web apps</li>
+            <li><span class="check blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>Systems &amp; tooling</li>
+            <li><span class="check blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>Interfaces from scratch</li>
+          </ul>
+        </div>
+        <div class="card demo reveal">
+          <div class="label">I ship</div>
+          <ul class="checklist">
+            <li><span class="check green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>Products with real users</li>
+            <li><span class="check green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>Writing people read</li>
+            <li><span class="check green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>Open-source code</li>
+          </ul>
+        </div>
+        <div class="card demo reveal">
+          <div class="label">Together</div>
+          <ul class="checklist">
+            <li><span class="check amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>Awards &amp; recognition</li>
+            <li><span class="check amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>Collaborations</li>
+            <li><span class="check amber"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>What's next</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MOTION ===================== -->
+<section id="motion">
+  <div class="container">
+    <div class="sec-head reveal"><span class="num">05</span><h2>Motion principles</h2></div>
+    <div class="demo-grid cols-3">
+      <div class="card demo reveal">
+        <div class="label">Reveal on scroll</div>
+        <p class="muted" style="font-size:0.95rem;">Sections rise 22px and fade over 600ms on the <code class="mono">--ease-out</code> curve as they enter the viewport. Respects reduced-motion.</p>
+      </div>
+      <div class="card demo reveal">
+        <div class="label">Hover lift</div>
+        <p class="muted" style="font-size:0.95rem;">Cards translate <code class="mono">-4px</code> and gain elevation over 320ms. Arrows nudge <code class="mono">+3px</code>. Quick, never bouncy.</p>
+      </div>
+      <div class="card demo reveal">
+        <div class="label">Theme cross-fade</div>
+        <p class="muted" style="font-size:0.95rem;">Background and text transition over 320ms so the dark↔light switch feels deliberate, not jarring.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container foot">
+    <span>Design system v1 — derived from <span class="serif-i">units.school</span> for Nishant Shah.</span>
+    <span class="mono">© 2026 · Next: the portfolio</span>
+  </div>
+</footer>
+
+<div class="copied-toast" id="toast">copied</div>
+
+<script>
+  /* ---------- Theme toggle ---------- */
+  const root = document.documentElement;
+  const saved = localStorage.getItem('ds-theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  function paintToggle() {
+    const mode = root.getAttribute('data-theme') || 'dark';
+    document.querySelectorAll('.theme-toggle .knob').forEach(k => {
+      k.classList.toggle('active', k.dataset.mode === mode);
+    });
+  }
+  paintToggle();
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    const next = (root.getAttribute('data-theme') === 'light') ? 'dark' : 'light';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('ds-theme', next);
+    paintToggle();
+  });
+
+  /* ---------- Color swatches ---------- */
+  const surfaces = [
+    ['Canvas', '--bg', '#0a0a0a'], ['Surface', '--surface', '#141414'],
+    ['Surface 2', '--surface-2', '#1a1a1a'], ['Surface 3', '--surface-3', '#202020'],
+    ['Border', '--border', 'rgba(255,255,255,.09)'], ['Text', '--text', '#fafafa'],
+    ['Text 2', '--text-2', '#a6a6a6'], ['Text 3', '--text-3', '#6e6e6e'],
+  ];
+  const accents = [
+    ['Accent', '--accent', '#2563eb'], ['Accent bright', '--accent-bright', '#3b76ff'],
+    ['Accent press', '--accent-press', '#1d52cc'], ['Green', '--green', '#25b36b'],
+    ['Amber', '--amber', '#f5b21a'], ['Red', '--red', '#e5484d'],
+  ];
+  function renderSwatches(id, list) {
+    document.getElementById(id).innerHTML = list.map(([name, varname, val]) => `
+      <div class="swatch" data-copy="${val}">
+        <div class="chip" style="background:${val}"></div>
+        <div class="meta"><b>${name}</b><code>${val}</code></div>
+      </div>`).join('');
+  }
+  renderSwatches('surfaceSwatches', surfaces);
+  renderSwatches('accentSwatches', accents);
+
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  document.querySelectorAll('.swatch').forEach(s => {
+    s.addEventListener('click', () => {
+      const val = s.dataset.copy;
+      navigator.clipboard?.writeText(val);
+      toast.textContent = 'copied  ' + val;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1300);
+    });
+  });
+
+  /* ---------- Spacing scale ---------- */
+  const spaces = [['s-1',4],['s-2',8],['s-3',12],['s-4',16],['s-5',24],['s-6',32],['s-7',48],['s-8',64]];
+  document.getElementById('spacingScale').innerHTML = spaces.map(([n,px]) => `
+    <div class="scale-row"><span class="label">${n} · ${px}</span><div class="scale-bar" style="width:${px*2.4}px"></div></div>`).join('');
+
+  /* ---------- Scroll reveal (bulletproof: runs on load + scroll) ---------- */
+  const reveals = [...document.querySelectorAll('.reveal')];
+  function checkReveal() {
+    const h = window.innerHeight || document.documentElement.clientHeight;
+    for (const el of reveals) {
+      if (el.classList.contains('in')) continue;
+      const r = el.getBoundingClientRect();
+      if (r.top < h * 0.92 && r.bottom > 0) el.classList.add('in');
+    }
+  }
+  checkReveal();
+  requestAnimationFrame(checkReveal);
+  window.addEventListener('scroll', checkReveal, { passive: true });
+  window.addEventListener('resize', checkReveal);
+  window.addEventListener('load', () => { checkReveal(); setTimeout(checkReveal, 250); });
+</script>
+</body>
+</html>

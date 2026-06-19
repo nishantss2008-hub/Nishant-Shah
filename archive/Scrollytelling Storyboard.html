@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scrollytelling Storyboard — One Continuous Dawn</title>
+<link rel="stylesheet" href="assets/tokens.css" />
+<style>
+  body { margin: 0; background: #07080c; color: #f4f5f7; font-family: var(--font-sans, "Helvetica Neue", Arial, sans-serif); }
+  .head { max-width: 1080px; margin: 0 auto; padding: 60px 40px 24px; }
+  .kick { font-family: var(--font-mono, monospace); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; color: #f5b21a; }
+  .head h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); letter-spacing: -0.04em; line-height: 1.0; margin: 14px 0 0; }
+  .head p { color: #aeb4c0; font-size: 1.12rem; line-height: 1.6; max-width: 64ch; margin: 18px 0 0; }
+  .arc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; font-family: var(--font-mono, monospace); font-size: 0.8rem; }
+  .arc span { padding: 7px 13px; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; color: #cfd4dd; }
+  .board { max-width: 1080px; margin: 0 auto; padding: 30px 40px 120px; display: flex; flex-direction: column; gap: 26px; }
+  .scene { position: relative; border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; overflow: hidden; min-height: 420px; display: grid; grid-template-columns: 1.25fr 1fr; box-shadow: 0 30px 70px rgba(0,0,0,0.45); }
+  @media (max-width: 760px) { .scene { grid-template-columns: 1fr; } }
+  .frame { position: relative; overflow: hidden; }
+  .frame .sky { position: absolute; inset: 0; }
+  .frame .meta { position: absolute; top: 16px; left: 16px; z-index: 4; font-family: var(--font-mono, monospace); font-size: 0.72rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.92); background: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 8px; backdrop-filter: blur(4px); }
+  /* the text-safe zone marker */
+  .safe { position: absolute; left: 18px; bottom: 18px; z-index: 4; width: 44%; height: 38%; border: 1px dashed rgba(255,255,255,0.45); border-radius: 10px; display: flex; align-items: flex-end; padding: 10px; }
+  .safe b { font-family: var(--font-mono, monospace); font-size: 0.62rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); text-transform: uppercase; }
+  .demo-h { position: absolute; left: 22px; bottom: 70px; z-index: 5; font-size: clamp(1.2rem, 2.4vw, 1.7rem); font-weight: 700; letter-spacing: -0.02em; max-width: 60%; text-shadow: 0 2px 18px rgba(0,0,0,0.8); }
+  .vig { position: absolute; inset: 0; z-index: 3; background: radial-gradient(120% 90% at 75% 20%, transparent 30%, rgba(0,0,0,0.5)); }
+  .vig-bl { position: absolute; inset: 0; z-index: 3; background: linear-gradient(60deg, rgba(0,0,0,0.72) 0%, transparent 55%); }
+  .info { padding: 26px 28px; background: #0d0f15; display: flex; flex-direction: column; gap: 14px; }
+  .info .n { font-family: var(--font-mono, monospace); font-size: 0.74rem; letter-spacing: 0.12em; color: #f5b21a; }
+  .info h2 { font-size: 1.5rem; letter-spacing: -0.02em; margin: 0; }
+  .info .rep { color: #9aa0ac; font-style: italic; margin: 0; }
+  .info dl { margin: 6px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 0.9rem; }
+  .info dt { font-family: var(--font-mono, monospace); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7280; padding-top: 3px; }
+  .info dd { margin: 0; color: #c3c8d2; line-height: 1.5; }
+  .trans { display: flex; align-items: center; justify-content: center; gap: 14px; color: #f5b21a; font-family: var(--font-mono, monospace); font-size: 0.8rem; letter-spacing: 0.06em; }
+  .trans .line { height: 1px; flex: 1; max-width: 120px; background: linear-gradient(90deg, transparent, #f5b21a, transparent); }
+  .legend { max-width: 1080px; margin: 0 auto; padding: 0 40px 100px; }
+  .legend h3 { font-size: 1.1rem; letter-spacing: -0.01em; }
+  .legend ul { color: #aeb4c0; line-height: 1.7; font-size: 0.96rem; }
+  .stars { position:absolute; inset:0; }
+</style>
+</head>
+<body>
+<nav class="topnav"><a href="Intro.html">Intro</a><a href="Portfolio Journey.html">Portfolio</a><a href="World.html">Room</a></nav>
+
+<div class="head">
+  <div class="kick">Creative Direction · Storyboard</div>
+  <h1>One Continuous Dawn</h1>
+  <p>A single unbroken golden-hour rise — from your desk at first light, out the window, over the neighborhood, above the clouds, into the sun. One breath upward toward the light. Below is the scroll journey, scene by scene, with the camera move and the text-safe zone marked on each frame.</p>
+  <div class="arc">
+    <span>① Quiet wonder</span><span>→ ② Curiosity</span><span>→ ③ The work &amp; who it's for</span><span>→ ④ Ambition</span><span>→ ⑤ Hope / invitation</span>
+  </div>
+</div>
+
+<div class="board" id="board"></div>
+
+<div class="legend">
+  <h3>How it stays seamless (and performant)</h3>
+  <ul>
+    <li><b>Light does the stitching:</b> every clip ends on the brightness the next one begins on — a window flare, a cloud white-out — so a 0.5s cross-fade hides each seam.</li>
+    <li><b>Scroll-scrubbed, not autoplayed:</b> clip time maps to scroll position, so it feels truly scroll-driven and never janks.</li>
+    <li><b>5 short clips (≤8s, ≤1080p),</b> lazy-loaded, only the active scene decodes; poster frames prevent black gaps. ~15–20MB total.</li>
+    <li><b>Permanent dark text-safe zone, lower-left</b> (dashed box on each frame) keeps headlines legible over moving footage.</li>
+    <li><b>Scene 1 IS the 360° room</b> — you arrive at the desk and the bedroom tour's hotspots live right there.</li>
+  </ul>
+</div>
+
+<script>
+var SCENES = [
+  { n:'Scene 01', t:'Bedroom, pre-dawn', rep:'Who I am', headline:'Only together can we solve problems to better the world.',
+    grad:'linear-gradient(160deg,#0a1430 0%,#14213f 40%,#2a3358 70%,#4a3a52 100%)', warm:true,
+    time:'Pre-dawn, ~5:50am', cam:'Slow dolly-in toward the desk', light:'Warm lamp + monitor glow vs. cool blue window',
+    trans:'Push through the monitor / window glass — bloom flare hides the cut' },
+  { n:'Scene 02', t:'Out the window — rooftop', rep:'What I\'m curious about', headline:'A curiosity that doesn\'t wait to be assigned.',
+    grad:'linear-gradient(165deg,#1a2547 0%,#3b3f6b 35%,#8a5a6a 70%,#d98c5f 100%)', warm:true,
+    time:'First light', cam:'Rising crane up and over the sill', light:'Indigo shadow giving way to first amber',
+    trans:'Lift up — the rooftop edge wipes down past camera into the streets below' },
+  { n:'Scene 03', t:'Over the neighborhood', rep:'The work, and who it\'s for', headline:'Built with people, for people.',
+    grad:'linear-gradient(170deg,#33304f 0%,#6e5570 35%,#c97e54 70%,#f0a84f 100%)', warm:true,
+    time:'Golden hour', cam:'Low forward drone drift above streets', light:'Long shadows, sun raking across rooftops',
+    trans:'Tilt up toward the sky — a bank of cloud rises to white-out the frame' },
+  { n:'Scene 04', t:'Above the clouds', rep:'Where it\'s all going', headline:'Aiming past the horizon.',
+    grad:'linear-gradient(175deg,#26365e 0%,#7a6f86 30%,#e09a5c 65%,#ffd089 100%)', warm:true, silhouette:true,
+    time:'Sunrise, cloud layer', cam:'Continued rise, silhouette enters lower frame', light:'Backlit haze, the existing dawn-silhouette shot',
+    trans:'The sun crests the cloud — lens flare blooms the frame to warm white' },
+  { n:'Scene 05', t:'The sun crests', rep:'Let\'s build together', headline:'Let\'s solve problems — together.',
+    grad:'linear-gradient(180deg,#f0a84f 0%,#ffd089 45%,#fff3d6 100%)', warm:true, bright:true,
+    time:'Full sunrise', cam:'Settle / ease to a stop in open light', light:'Full warm wash, gentle flare',
+    trans:'Hands off to the bright Contact / Measurable-Change section' }
+];
+
+var board = document.getElementById('board');
+SCENES.forEach(function(s, i){
+  var sc = document.createElement('div');
+  sc.className = 'scene';
+  var sun = s.bright ? '<div style="position:absolute;width:220px;height:220px;border-radius:50%;left:55%;top:30%;background:radial-gradient(circle,#fff8e6,rgba(255,220,150,0));filter:blur(6px);"></div>'
+    : s.silhouette ? '<div style="position:absolute;right:14%;bottom:0;width:120px;height:160px;background:#0a0a12;border-radius:60px 60px 0 0;"></div><div style="position:absolute;width:120px;height:120px;border-radius:50%;left:60%;top:26%;background:radial-gradient(circle,#ffe9bd,rgba(255,200,120,0));"></div>'
+    : s.warm && i>0 ? '<div style="position:absolute;width:90px;height:90px;border-radius:50%;right:18%;top:24%;background:radial-gradient(circle,#ffdca0,rgba(255,180,110,0));"></div>' : '';
+  var lamp = i===0 ? '<div style="position:absolute;left:30%;top:46%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(255,196,120,0.5),transparent 70%);"></div>' : '';
+  sc.innerHTML =
+    '<div class="frame">'
+      + '<div class="sky" style="background:'+s.grad+'"></div>'
+      + sun + lamp
+      + (i===2||i===1 ? '<div class="vig-bl"></div>' : '<div class="vig"></div>')
+      + '<div class="meta">'+s.cam+'</div>'
+      + '<div class="demo-h">'+s.headline+'</div>'
+      + '<div class="safe"><b>text-safe zone</b></div>'
+    + '</div>'
+    + '<div class="info">'
+      + '<div class="n">'+s.n+'</div>'
+      + '<h2>'+s.t+'</h2>'
+      + '<p class="rep">"'+s.rep+'"</p>'
+      + '<dl>'
+        + '<dt>Time</dt><dd>'+s.time+'</dd>'
+        + '<dt>Camera</dt><dd>'+s.cam+'</dd>'
+        + '<dt>Light</dt><dd>'+s.light+'</dd>'
+      + '</dl>'
+    + '</div>';
+  board.appendChild(sc);
+  if (i < SCENES.length-1) {
+    var tr = document.createElement('div');
+    tr.className = 'trans';
+    tr.innerHTML = '<span class="line"></span><span>↓ '+s.trans+'</span><span class="line"></span>';
+    board.appendChild(tr);
+  }
+});
+</script>
+</body>
+</html>

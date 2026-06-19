@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nishant Shah</title>
+<link rel="stylesheet" href="assets/tokens.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  html, body { height: 100%; margin: 0; overflow: hidden; background: #000; }
+  #stage { position: fixed; inset: 0; z-index: 1; }
+  .dawn { position: fixed; inset: 0; z-index: 0; opacity: 0; transition: opacity 2s var(--ease-out);
+    background: radial-gradient(120% 90% at 50% 115%, rgba(245,178,26,0.22), rgba(217,119,87,0.10) 35%, transparent 65%); }
+  .dawn.on { opacity: 1; }
+
+  .skip { position: fixed; top: 22px; right: 24px; z-index: 10; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); transition: color var(--dur-1); }
+  .skip:hover { color: #fff; }
+
+  .copy { position: fixed; z-index: 5; left: 50%; top: 50%; transform: translate(-50%,-50%); width: min(760px, 88vw); text-align: center; pointer-events: none; transition: opacity var(--dur-2) var(--ease), transform var(--dur-2) var(--ease); }
+  .copy.out { opacity: 0; transform: translate(-50%, calc(-50% + 14px)); }
+  .copy.low { top: 63%; }
+  .copy::before { content: ""; position: absolute; inset: -16% -12%; z-index: -1; background: radial-gradient(58% 56% at 50% 50%, rgba(0,0,0,0.62), rgba(0,0,0,0.28) 55%, transparent 78%); pointer-events: none; filter: blur(10px); }
+  .copy .kick { display: none; }
+  .copy .namecard { font-family: var(--font-sans); font-weight: 700; font-size: clamp(1.05rem, 2.2vw, 1.6rem); letter-spacing: -0.01em; color: #fff; margin-bottom: 16px; text-shadow: 0 1px 18px rgba(0,0,0,0.7); }
+  .copy h1 { font-size: clamp(2.4rem, 6.5vw, 5rem); line-height: 1.0; letter-spacing: -0.04em; color: #fff; margin: 0; text-shadow: 0 2px 34px rgba(0,0,0,0.75), 0 1px 5px rgba(0,0,0,0.6); }
+  .copy h1 .serif-i { font-family: var(--font-serif); font-weight: 400; }
+  .copy .sub { margin-top: 24px; font-size: clamp(1.05rem, 2vw, 1.4rem); color: rgba(255,255,255,0.82); line-height: 1.5; text-shadow: 0 1px 18px rgba(0,0,0,0.7); }
+  .copy .triad { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 30px; pointer-events: auto; }
+  .copy .triad span:hover { border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.08); }
+  .copy .triad span { font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; border: 1px solid rgba(255,255,255,0.18); border-radius: var(--r-pill); padding: 10px 18px; background: rgba(255,255,255,0.04); }
+  .copy .enter { margin-top: 38px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; pointer-events: auto; }
+
+  .prompt { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 16px; transition: opacity var(--dur-2); }
+  .prompt.hide { opacity: 0; pointer-events: none; }
+  .dots { display: flex; gap: 9px; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.22); transition: background var(--dur-2), transform var(--dur-2); cursor: pointer; }
+  .dots i.on { background: var(--accent); transform: scale(1.35); }
+  .nexthint { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.4); display: flex; align-items: center; gap: 9px; }
+  .nexthint .key { border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; padding: 2px 7px; }
+
+  .btn-glass { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+  .btn-glass:hover { background: rgba(255,255,255,0.12); }
+  .loading { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: #000; color: rgba(255,255,255,0.4); font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.16em; transition: opacity var(--dur-3); }
+  .loading.hide { opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<nav class="topnav"><a href="Intro.html" class="active">Intro</a><a href="Portfolio Dawn.html">Portfolio</a><a href="World.html">Room</a></nav>
+<div class="pt" id="pt"><div class="pt-mark">NS</div></div>
+<script src="assets/transition.js"></script>
+  <div class="dawn" id="dawn"></div>
+  <div id="stage"></div>
+  <a class="skip" href="Portfolio Dawn.html">Skip intro →</a>
+
+  <div class="copy" id="copy"></div>
+
+  <div class="prompt" id="prompt">
+    <div class="dots" id="dots"></div>
+    <div class="nexthint"><span class="key">click</span> or <span class="key">→</span> to continue</div>
+  </div>
+
+  <div class="loading" id="loading">ENTERING…</div>
+
+<script>
+/* ===== narrative beats ===== */
+const CH = [
+  { shape:'sphere', img:'assets/intro/portrait.png', kick:'Nishant',
+    html:'<div class="namecard">Nishant Shah</div><h1>Every hard thing is the <span class="serif-i">start of something new.</span></h1><div class="sub">And worth running toward. That is how I try to live.</div>' },
+  { shape:'clusters', kick:'What I lead with',
+    html:'<h1>Empathy. Humility. Action.</h1><div class="triad"><span>Empathy</span><span>Humility</span><span>Action</span></div>' },
+  { shape:'ring', kick:'Who I am',
+    html:'<h1>I’ve worn a lot of <span class="serif-i">hats.</span></h1><div class="sub">Founder, student-council president, advocate, performer — and still figuring out where it all goes.</div>' },
+  { shape:'core', kick:'What persists',
+    html:'<h1>Engineering \u00d7 Business <span class="serif-i">\u00d7 people.</span></h1><div class="sub">I engineer the thing, create the business around it, and bring people with me.</div>' },
+  { shape:'grid', kick:'Where I’m going',
+    html:'<h1>The frontiers I’m <span class="serif-i">curious about.</span></h1><div class="triad"><span>VR</span><span>Entertainment</span><span>Energy</span><span>Space</span><span>Cybersecurity</span><span>MedTech</span><span>FinTech</span><span>Policy</span><span>AI</span><span>Arts</span></div>' },
+  { shape:'ring', kick:'How I work',
+    html:'<h1>Win together, <span class="serif-i">lose together.</span></h1><div class="sub">I’ll take a team that rises together over winner-take-all, every time. The best things I’ve been part of, I never did alone.</div>' },
+  { shape:'wave', img:'assets/intro/arts.png', kick:'What makes me different',
+    html:'<h1>I think like an <span class="serif-i">artist,</span> too.</h1><div class="sub">Theater, photography, a DJ booth. The arts keep me grounded in empathy and story — something I never want to lose.</div>' },
+  { shape:'bloom', kick:'Welcome',
+    html:'<h1>Come have a <span class="serif-i">look around.</span></h1><div class="sub">A portfolio of the things I’ve gotten to create so far.</div><div class="enter"><a class="btn btn-primary" href="Portfolio Dawn.html">Enter the portfolio <span class="arrow">\u2192</span></a><a class="btn btn-glass" href="World.html">My Room \u00b7 360\u00b0</a></div>' },
+];
+
+const N = 1500;
+const stage = document.getElementById('stage');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+camera.position.z = 6.2;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+stage.appendChild(renderer.domElement);
+
+/* shape target generators */
+function rand(s){ return (Math.random()-0.5)*s; }
+function genSphere(r){ const a=[]; for(let i=0;i<N;i++){ const u=Math.random(),v=Math.random(); const th=2*Math.PI*u, ph=Math.acos(2*v-1); a.push(r*Math.sin(ph)*Math.cos(th), r*Math.sin(ph)*Math.sin(th), r*Math.cos(ph)); } return a; }
+function genClusters(){ const a=[]; const c=[[-3,0.2,0],[0,0.2,0],[3,0.2,0]]; for(let i=0;i<N;i++){ const k=c[i%3]; a.push(k[0]+rand(1.5), k[1]+rand(1.8), k[2]+rand(1.5)); } return a; }
+function genRing(R){ const a=[]; for(let i=0;i<N;i++){ const t=Math.random()*Math.PI*2; const rr=R+rand(0.5); a.push(Math.cos(t)*rr, Math.sin(t)*rr*0.5+rand(0.3), Math.sin(t)*rr); } return a; }
+function genCore(){ const a=[]; for(let i=0;i<N;i++){ a.push(rand(1.3), rand(1.3), rand(1.3)); } return a; }
+function genBloom(){ return genSphere(3.7); }
+function genGrid(){ const a=[]; const s=11, gap=0.5, off=(s-1)*gap/2; for(let i=0;i<N;i++){ const x=i%s, y=Math.floor(i/s)%s, z=Math.floor(i/(s*s))%s; a.push(x*gap-off+rand(0.06), y*gap-off+rand(0.06), z*gap-off+rand(0.06)); } return a; }
+function genWave(){ const a=[]; for(let i=0;i<N;i++){ const x=rand(6.5), z=rand(6.5); a.push(x, Math.sin(x*0.9)*Math.cos(z*0.9)*0.9, z); } return a; }
+function solid(hex){ const c=new THREE.Color(hex); const a=new Float32Array(N*3); for(let i=0;i<N;i++){ a[i*3]=c.r; a[i*3+1]=c.g; a[i*3+2]=c.b; } return a; }
+const BLUE='#2f6bff', AMBER='#f5b21a', WARM='#d97757';
+const SHAPES = {
+  sphere:{pos:genSphere(2.7),col:solid(BLUE)}, clusters:{pos:genClusters(),col:solid(BLUE)},
+  ring:{pos:genRing(3.2),col:solid(BLUE)}, core:{pos:genCore(),col:solid(BLUE)},
+  bloom:{pos:genBloom(),col:solid(AMBER)}, grid:{pos:genGrid(),col:solid(BLUE)}, wave:{pos:genWave(),col:solid(WARM)}
+};
+
+const pos = new Float32Array(SHAPES.sphere.pos);
+const colA = new Float32Array(SHAPES.sphere.col);
+const geo = new THREE.BufferGeometry();
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geo.setAttribute('color', new THREE.BufferAttribute(colA, 3));
+const mat = new THREE.PointsMaterial({ size: 0.055, sizeAttenuation: true, transparent: true, opacity: 0.92, vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false });
+const points = new THREE.Points(geo, mat);
+scene.add(points);
+
+/* create a particle shape from an uploaded image (sampled pixels, full colour) */
+function imgShape(src){ return new Promise(function(res){ const im=new Image(); im.crossOrigin='anonymous';
+  im.onload=function(){ const S=170, ar=im.width/im.height; let w=S,h=S; if(ar>=1){h=Math.round(S/ar);}else{w=Math.round(S*ar);}
+    const cv=document.createElement('canvas'); cv.width=w; cv.height=h; const cx=cv.getContext('2d'); cx.drawImage(im,0,0,w,h);
+    const d=cx.getImageData(0,0,w,h).data, cand=[], br=d[0], bgg=d[1], bb=d[2]; for(let p=0;p<w*h;p++){ const i=p*4; if(d[i+3]<110) continue; const dr=d[i]-br, dg=d[i+1]-bgg, dbl=d[i+2]-bb; if(dr*dr+dg*dg+dbl*dbl<1500) continue; cand.push(i); }
+    if(cand.length<50){ res(null); return; }
+    const sc=5.4, md=Math.max(w,h), P=new Float32Array(N*3), C=new Float32Array(N*3);
+    for(let n=0;n<N;n++){ const i=cand[(Math.random()*cand.length)|0], pix=i/4, px=pix%w, py=(pix/w)|0;
+      P[n*3]=(px/w-0.5)*sc*(w/md); P[n*3+1]=-(py/h-0.5)*sc*(h/md); P[n*3+2]=(Math.random()-0.5)*0.3;
+      C[n*3]=d[i]/255; C[n*3+1]=d[i+1]/255; C[n*3+2]=d[i+2]/255; }
+    res({pos:Array.from(P),col:Array.from(C)}); };
+  im.onerror=function(){ res(null); }; im.src=src; }); }
+
+/* canvas-drawn shapes for the values chapter */
+function sampleCanvas(cv,color,scl){ const w=cv.width,h=cv.height,d=cv.getContext('2d').getImageData(0,0,w,h).data,cand=[]; for(let p=0;p<w*h;p++){const i=p*4; if(d[i+3]>80) cand.push(i);} const c=new THREE.Color(color), sc=scl||5.0, md=Math.max(w,h), P=new Float32Array(N*3), C=new Float32Array(N*3); for(let n=0;n<N;n++){ const i=cand.length?cand[(Math.random()*cand.length)|0]:0, pix=i/4, px=pix%w, py=(pix/w)|0; P[n*3]=(px/w-0.5)*sc*(w/md); P[n*3+1]=-(py/h-0.5)*sc*(h/md); P[n*3+2]=(Math.random()-0.5)*0.3; C[n*3]=c.r; C[n*3+1]=c.g; C[n*3+2]=c.b; } return {pos:Array.from(P),col:Array.from(C)}; }
+function drawShape(draw,color,scl){ const S=200, cv=document.createElement('canvas'); cv.width=S; cv.height=S; const x=cv.getContext('2d'); x.fillStyle='#fff'; x.strokeStyle='#fff'; draw(x,S); return sampleCanvas(cv,color,scl); }
+function dHeart(x,s){ const cx=s/2, cy=s*0.42, r=s*0.15; x.beginPath(); x.arc(cx-r,cy,r,0,Math.PI*2); x.arc(cx+r,cy,r,0,Math.PI*2); x.fill(); x.beginPath(); x.moveTo(cx-2*r-1,cy+r*0.25); x.lineTo(cx+2*r+1,cy+r*0.25); x.lineTo(cx,cy+2.3*r); x.closePath(); x.fill(); }
+function dScale(x,s){ x.lineWidth=s*0.038; x.lineCap='round'; const cx=s/2, beamY=s*0.33, hb=s*0.26, panY=s*0.6; x.beginPath(); x.moveTo(cx,beamY); x.lineTo(cx,s*0.72); x.stroke(); x.beginPath(); x.ellipse(cx,s*0.74,s*0.13,s*0.03,0,0,Math.PI*2); x.fill(); x.beginPath(); x.moveTo(cx-hb,beamY); x.lineTo(cx+hb,beamY); x.stroke(); x.beginPath(); x.arc(cx,beamY,s*0.03,0,Math.PI*2); x.fill(); for(const dir of [-1,1]){ const ex=cx+dir*hb; x.beginPath(); x.moveTo(ex,beamY); x.lineTo(ex-s*0.06,panY); x.moveTo(ex,beamY); x.lineTo(ex+s*0.06,panY); x.stroke(); x.beginPath(); x.arc(ex,panY,s*0.09,0,Math.PI,false); x.stroke(); } }
+function dRunner(x,s){ x.lineWidth=s*0.05; x.lineCap='round'; const cx=s*0.52, cy=s*0.28; x.beginPath(); x.arc(cx,cy,s*0.075,0,Math.PI*2); x.fill(); x.beginPath(); x.moveTo(cx,cy+s*0.075); x.lineTo(cx-s*0.05,cy+s*0.30); x.moveTo(cx-s*0.02,cy+s*0.14); x.lineTo(cx+s*0.14,cy+s*0.09); x.moveTo(cx-s*0.02,cy+s*0.14); x.lineTo(cx-s*0.17,cy+s*0.20); x.moveTo(cx-s*0.05,cy+s*0.30); x.lineTo(cx+s*0.11,cy+s*0.42); x.moveTo(cx-s*0.05,cy+s*0.30); x.lineTo(cx-s*0.15,cy+s*0.46); x.stroke(); }
+function dBook(x,s){ x.lineWidth=s*0.034; x.lineJoin='round'; x.lineCap='round'; const cx=s/2, topY=s*0.32, botY=s*0.7; x.beginPath(); x.moveTo(cx,topY); x.lineTo(cx,botY); x.stroke(); x.beginPath(); x.moveTo(cx,topY); x.quadraticCurveTo(cx-s*0.26,topY-s*0.05,cx-s*0.36,topY+s*0.03); x.lineTo(cx-s*0.36,botY-s*0.03); x.quadraticCurveTo(cx-s*0.26,botY-s*0.09,cx,botY); x.stroke(); x.beginPath(); x.moveTo(cx,topY); x.quadraticCurveTo(cx+s*0.26,topY-s*0.05,cx+s*0.36,topY+s*0.03); x.lineTo(cx+s*0.36,botY-s*0.03); x.quadraticCurveTo(cx+s*0.26,botY-s*0.09,cx,botY); x.stroke(); x.lineWidth=s*0.018; for(let k=0;k<3;k++){ const yy=topY+s*0.1+k*s*0.1; x.beginPath(); x.moveTo(cx-s*0.28,yy); x.lineTo(cx-s*0.06,yy-s*0.012); x.moveTo(cx+s*0.06,yy-s*0.012); x.lineTo(cx+s*0.28,yy); x.stroke(); } }
+function dHammer(x,s){ const cx=s*0.48; x.lineJoin='round'; x.lineCap='round'; x.beginPath(); x.moveTo(cx-s*0.032,s*0.32); x.lineTo(cx-s*0.05,s*0.86); x.quadraticCurveTo(cx,s*0.9,cx+s*0.05,s*0.86); x.lineTo(cx+s*0.032,s*0.32); x.closePath(); x.fill(); x.beginPath(); x.moveTo(cx+s*0.04,s*0.14); x.lineTo(cx+s*0.16,s*0.14); x.quadraticCurveTo(cx+s*0.31,s*0.14,cx+s*0.31,s*0.25); x.quadraticCurveTo(cx+s*0.31,s*0.35,cx+s*0.16,s*0.35); x.lineTo(cx+s*0.02,s*0.35); x.quadraticCurveTo(cx-s*0.14,s*0.37,cx-s*0.3,s*0.30); x.quadraticCurveTo(cx-s*0.2,s*0.27,cx-s*0.15,s*0.23); x.quadraticCurveTo(cx-s*0.1,s*0.25,cx-s*0.06,s*0.24); x.quadraticCurveTo(cx-s*0.12,s*0.18,cx-s*0.07,s*0.12); x.quadraticCurveTo(cx-s*0.02,s*0.08,cx+s*0.04,s*0.14); x.closePath(); x.fill(); }
+function canvasOf(draw){ const S=200,cv=document.createElement('canvas');cv.width=S;cv.height=S;const x=cv.getContext('2d');x.fillStyle='#fff';x.strokeStyle='#fff';draw(x,S);return cv; }
+function sampleInto(P,C,start,count,cv,color,offX,scale){ const w=cv.width,h=cv.height,d=cv.getContext('2d').getImageData(0,0,w,h).data,cand=[]; for(let p=0;p<w*h;p++){const i=p*4; if(d[i+3]>80) cand.push(i);} const c=new THREE.Color(color),md=Math.max(w,h); for(let n=0;n<count;n++){ const idx=start+n, i=cand.length?cand[(Math.random()*cand.length)|0]:0, pix=i/4, px=pix%w, py=(pix/w)|0; P[idx*3]=offX+(px/w-0.5)*scale*(w/md); P[idx*3+1]=-(py/h-0.5)*scale*(h/md)+0.25; P[idx*3+2]=(Math.random()-0.5)*0.3; C[idx*3]=c.r;C[idx*3+1]=c.g;C[idx*3+2]=c.b; } }
+function combinedValues(){ const P=new Float32Array(N*3),C=new Float32Array(N*3),t=Math.floor(N/3),sc=2.5,gap=3.1; sampleInto(P,C,0,t,canvasOf(dHeart),'#ff5a7a',-gap,sc); sampleInto(P,C,t,t,canvasOf(dBook),'#4f86ff',0,sc); sampleInto(P,C,2*t,N-2*t,canvasOf(dHammer),'#f5b21a',gap,sc); return {pos:Array.from(P),col:Array.from(C)}; }
+const VALCOMBO = combinedValues();
+/* emerging-tech particle icons (line-art, sampled to particles) */
+function rr(x,X,Y,W,H,r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+W,Y,X+W,Y+H,r); x.arcTo(X+W,Y+H,X,Y+H,r); x.arcTo(X,Y+H,X,Y,r); x.arcTo(X,Y,X+W,Y,r); x.closePath(); }
+function dVR(x,s){ x.lineWidth=s*0.045; x.lineJoin='round'; const cx=s/2,cy=s/2,w=s*0.62,hh=s*0.34; rr(x,cx-w/2,cy-hh/2,w,hh,s*0.08); x.stroke(); x.beginPath(); x.arc(cx-w*0.22,cy,s*0.085,0,Math.PI*2); x.stroke(); x.beginPath(); x.arc(cx+w*0.22,cy,s*0.085,0,Math.PI*2); x.stroke(); x.beginPath(); x.moveTo(cx-w/2,cy-hh*0.18); x.lineTo(cx-w/2-s*0.09,cy-hh*0.55); x.moveTo(cx+w/2,cy-hh*0.18); x.lineTo(cx+w/2+s*0.09,cy-hh*0.55); x.stroke(); }
+function dPlay(x,s){ x.lineWidth=s*0.045; const cx=s/2,cy=s/2,r=s*0.28; x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.stroke(); x.beginPath(); x.moveTo(cx-s*0.08,cy-s*0.13); x.lineTo(cx+s*0.15,cy); x.lineTo(cx-s*0.08,cy+s*0.13); x.closePath(); x.stroke(); }
+function dBolt(x,s){ x.lineWidth=s*0.045; x.lineJoin='round'; const cx=s/2; x.beginPath(); x.moveTo(cx+s*0.07,s*0.16); x.lineTo(cx-s*0.16,s*0.52); x.lineTo(cx,s*0.52); x.lineTo(cx-s*0.07,s*0.84); x.lineTo(cx+s*0.2,s*0.44); x.lineTo(cx+s*0.02,s*0.44); x.closePath(); x.stroke(); }
+function dRocket(x,s){ x.lineWidth=s*0.04; x.lineJoin='round'; const cx=s/2; x.beginPath(); x.moveTo(cx,s*0.16); x.quadraticCurveTo(cx+s*0.14,s*0.4,cx+s*0.1,s*0.64); x.lineTo(cx-s*0.1,s*0.64); x.quadraticCurveTo(cx-s*0.14,s*0.4,cx,s*0.16); x.closePath(); x.stroke(); x.beginPath(); x.arc(cx,s*0.42,s*0.05,0,Math.PI*2); x.stroke(); x.beginPath(); x.moveTo(cx-s*0.1,s*0.56); x.lineTo(cx-s*0.21,s*0.72); x.lineTo(cx-s*0.1,s*0.64); x.moveTo(cx+s*0.1,s*0.56); x.lineTo(cx+s*0.21,s*0.72); x.lineTo(cx+s*0.1,s*0.64); x.stroke(); x.beginPath(); x.moveTo(cx-s*0.05,s*0.66); x.lineTo(cx,s*0.82); x.lineTo(cx+s*0.05,s*0.66); x.stroke(); }
+function dShield(x,s){ x.lineWidth=s*0.045; x.lineJoin='round'; const cx=s/2; x.beginPath(); x.moveTo(cx,s*0.16); x.lineTo(cx+s*0.22,s*0.27); x.lineTo(cx+s*0.22,s*0.52); x.quadraticCurveTo(cx+s*0.22,s*0.74,cx,s*0.84); x.quadraticCurveTo(cx-s*0.22,s*0.74,cx-s*0.22,s*0.52); x.lineTo(cx-s*0.22,s*0.27); x.closePath(); x.stroke(); x.beginPath(); x.arc(cx,s*0.46,s*0.05,0,Math.PI*2); x.stroke(); x.beginPath(); x.moveTo(cx,s*0.51); x.lineTo(cx,s*0.63); x.stroke(); }
+function dMed(x,s){ const cx=s/2,cy=s/2; x.lineWidth=s*0.035; x.beginPath(); x.arc(cx,cy,s*0.32,0,Math.PI*2); x.stroke(); x.lineWidth=s*0.055; x.lineCap='round'; const a=s*0.16; x.beginPath(); x.moveTo(cx,cy-a); x.lineTo(cx,cy+a); x.moveTo(cx-a,cy); x.lineTo(cx+a,cy); x.stroke(); }
+function dDollar(x,s){ const cx=s/2,cy=s/2; x.lineWidth=s*0.05; x.lineCap='round'; x.beginPath(); x.moveTo(cx+s*0.13,cy-s*0.14); x.quadraticCurveTo(cx-s*0.17,cy-s*0.26,cx-s*0.12,cy-s*0.01); x.quadraticCurveTo(cx-s*0.06,cy+s*0.09,cx+s*0.09,cy+s*0.07); x.quadraticCurveTo(cx+s*0.22,cy+s*0.13,cx-s*0.02,cy+s*0.23); x.quadraticCurveTo(cx-s*0.18,cy+s*0.26,cx-s*0.15,cy+s*0.11); x.stroke(); x.beginPath(); x.moveTo(cx,cy-s*0.3); x.lineTo(cx,cy+s*0.32); x.stroke(); }
+function dPolicy(x,s){ x.lineWidth=s*0.038; x.lineCap='round'; const cx=s/2,top=s*0.34,baseY=s*0.7; x.beginPath(); x.moveTo(cx-s*0.3,top); x.lineTo(cx,s*0.2); x.lineTo(cx+s*0.3,top); x.closePath(); x.stroke(); for(let k=-2;k<=2;k++){ const xk=cx+k*s*0.12; x.beginPath(); x.moveTo(xk,top+s*0.04); x.lineTo(xk,baseY); x.stroke(); } x.beginPath(); x.moveTo(cx-s*0.34,baseY); x.lineTo(cx+s*0.34,baseY); x.stroke(); }
+function dAI(x,s){ const cx=s/2,cy=s/2; const nd=[[cx,cy-s*0.27],[cx-s*0.27,cy-s*0.02],[cx+s*0.27,cy-s*0.02],[cx-s*0.16,cy+s*0.27],[cx+s*0.16,cy+s*0.27],[cx,cy]]; const E=[[0,5],[1,5],[2,5],[3,5],[4,5],[0,1],[0,2],[1,3],[2,4]]; x.lineWidth=s*0.02; x.beginPath(); for(const e of E){ x.moveTo(nd[e[0]][0],nd[e[0]][1]); x.lineTo(nd[e[1]][0],nd[e[1]][1]); } x.stroke(); for(const n of nd){ x.beginPath(); x.arc(n[0],n[1],s*0.038,0,Math.PI*2); x.fill(); } }
+function dArts(x,s){ const cx=s/2; x.lineWidth=s*0.04; x.beginPath(); x.ellipse(cx-s*0.05,s*0.66,s*0.095,s*0.07,-0.4,0,Math.PI*2); x.fill(); x.beginPath(); x.moveTo(cx+s*0.04,s*0.64); x.lineTo(cx+s*0.04,s*0.26); x.stroke(); x.beginPath(); x.moveTo(cx+s*0.04,s*0.26); x.quadraticCurveTo(cx+s*0.22,s*0.33,cx+s*0.12,s*0.48); x.stroke(); }
+const TECH = { VR:[dVR,BLUE], Entertainment:[dPlay,WARM], Energy:[dBolt,AMBER], Space:[dRocket,BLUE], Cybersecurity:[dShield,BLUE], MedTech:[dMed,'#ff5a7a'], FinTech:[dDollar,'#2fb36b'], Policy:[dPolicy,BLUE], AI:[dAI,BLUE], Arts:[dArts,WARM] };
+const TECHSHAPES = {}; for(const k in TECH){ TECHSHAPES[k]=drawShape(TECH[k][0], TECH[k][1], 8.5); }
+function attachTechHovers(){ const sp=copy.querySelectorAll('.triad span'); sp.forEach(function(el){ const key=el.textContent.trim(); if(!TECHSHAPES[key]) return; el.style.cursor='pointer'; el.addEventListener('mouseenter',function(){ morphTo(TECHSHAPES[key]); }); el.addEventListener('mouseleave',function(){ morphTo(SHAPES.grid); }); el.addEventListener('click',function(ev){ ev.stopPropagation(); }); }); }
+
+/* morph state */
+let fromP=Array.from(pos), toP=Array.from(pos), fromC=Array.from(colA), toC=Array.from(colA), morph=1;
+function morphTo(t){ if(!t) return; fromP=Array.from(geo.attributes.position.array); toP=t.pos; fromC=Array.from(geo.attributes.color.array); toC=t.col; morph=0; }
+
+let ch = -1, valTimer = null;
+const copy = document.getElementById('copy');
+const dotsWrap = document.getElementById('dots');
+CH.forEach((_, i) => { const d = document.createElement('i'); d.addEventListener('click', () => goTo(i)); dotsWrap.appendChild(d); });
+
+function setChapter(i){
+  ch = i;
+  copy.classList.add('out');
+  setTimeout(() => { copy.innerHTML = '<div class="kick">'+CH[i].kick+'</div>'+CH[i].html; copy.classList.remove('out'); if(CH[i].shape==='grid') attachTechHovers(); }, 220);
+  clearInterval(valTimer);
+  if(i===1){ morphTo(VALCOMBO); }
+  else { morphTo(CH[i]._img || SHAPES[CH[i].shape]); }
+  points.position.y = 0;
+  [...dotsWrap.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+  document.getElementById('dawn').classList.toggle('on', i===CH.length-1);
+  document.getElementById('prompt').classList.toggle('hide', i===CH.length-1);
+}
+function goTo(i){ if(i<0||i>=CH.length||i===ch) return; setChapter(i); }
+function next(){ if(ch<CH.length-1) goTo(ch+1); }
+function prev(){ if(ch>0) goTo(ch-1); }
+
+/* interactions */
+addEventListener('click', e => { if(e.target.closest('a')||e.target.closest('.dots')) return; next(); });
+addEventListener('keydown', e => { if(e.key==='ArrowRight'||e.key===' ') { e.preventDefault(); next(); } if(e.key==='ArrowLeft') prev(); });
+let wheelLock = 0;
+addEventListener('wheel', e => { const now=Date.now(); if(now-wheelLock<700) return; if(Math.abs(e.deltaY)<18) return; wheelLock=now; if(e.deltaY>0) next(); else prev(); }, { passive:true });
+
+/* render */
+const clock = new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = clock.getDelta();
+  if(morph < 1){ morph = Math.min(1, morph + dt*0.62); const e = 1-Math.pow(1-morph,3); const p = geo.attributes.position.array, c = geo.attributes.color.array;
+    for(let i=0;i<N*3;i++){ p[i] = fromP[i]+(toP[i]-fromP[i])*e; c[i] = fromC[i]+(toC[i]-fromC[i])*e; } geo.attributes.position.needsUpdate = true; geo.attributes.color.needsUpdate = true; }
+  points.rotation.y += dt*0.12; points.rotation.x = Math.sin(clock.elapsedTime*0.15)*0.15;
+  renderer.render(scene, camera);
+}
+animate();
+addEventListener('resize', () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+
+(async function(){ for(const c of CH){ if(c.img){ const s=await imgShape(c.img); if(s) c._img=s; } } document.getElementById('loading').classList.add('hide'); setChapter(0); })();
+setTimeout(()=>document.getElementById('loading').classList.add('hide'), 4000);
+</script>
+</body>
+</html>

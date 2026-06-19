@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nishant Shah — My Room</title>
+<link rel="stylesheet" href="assets/tokens.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  html, body { height: 100%; margin: 0; overflow: hidden; background: #000; }
+  #scene { position: fixed; inset: 0; cursor: grab; }
+  #scene.grabbing { cursor: grabbing; }
+  #scene canvas { display: block; }
+
+  /* ---- top bar / switcher ---- */
+  .wbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; padding: 16px 22px; pointer-events: none; }
+  .wbar > * { pointer-events: auto; }
+  .wbrand { display: flex; align-items: center; gap: 11px; }
+  .wbrand .monogram { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: var(--accent); color: #fff; font-weight: 700; font-size: 14px; box-shadow: 0 6px 18px var(--accent-soft); }
+  .wbrand .nm { font-weight: 700; letter-spacing: -0.02em; color: #fff; text-shadow: 0 1px 12px rgba(0,0,0,.6); }
+  .seg { display: inline-flex; background: rgba(20,20,20,0.6); border: 1px solid rgba(255,255,255,0.14); border-radius: var(--r-pill); padding: 4px; backdrop-filter: blur(12px); }
+  .seg a { font-size: 0.88rem; font-weight: 500; color: rgba(255,255,255,0.62); padding: 7px 16px; border-radius: var(--r-pill); transition: background var(--dur-1), color var(--dur-1); }
+  .seg a.on { background: var(--accent); color: #fff; }
+  .seg a:not(.on):hover { color: #fff; }
+
+  /* ---- hint ---- */
+  .hint { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 20; font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); background: rgba(20,20,20,0.5); border: 1px solid rgba(255,255,255,0.12); padding: 9px 16px; border-radius: var(--r-pill); backdrop-filter: blur(12px); display: flex; align-items: center; gap: 10px; transition: opacity var(--dur-2); }
+  .hint.hide { opacity: 0; }
+  .hint .k { color: var(--accent-bright); }
+
+  /* ---- pins ---- */
+  #pins { position: fixed; inset: 0; z-index: 15; pointer-events: none; }
+  .pin { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer; background: none; border: 0; padding: 0; }
+  .pin .ring { display: block; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(37,99,235,0.28), 0 4px 14px rgba(0,0,0,0.5); position: relative; transition: transform var(--dur-1) var(--ease); }
+  .pin .ring::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 0 rgba(37,99,235,0.5); animation: ping 2.4s var(--ease) infinite; }
+  @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(37,99,235,0.5); } 70%,100% { box-shadow: 0 0 0 16px rgba(37,99,235,0); } }
+  .pin:hover .ring { transform: scale(1.18); }
+  /* small numbered yellow dots */
+  .dotpin .dotnum { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--amber); color: #1a1205; font-weight: 700; font-size: 12px; line-height: 1; box-shadow: 0 1px 6px rgba(0,0,0,0.5); transition: transform .15s var(--ease); }
+  .dotpin:hover .dotnum { transform: scale(1.35); }
+  .pin .plabel { position: absolute; left: 50%; top: -10px; transform: translate(-50%, -100%); white-space: nowrap; font-size: 0.8rem; font-weight: 600; color: #fff; background: rgba(20,20,20,0.82); border: 1px solid rgba(255,255,255,0.14); padding: 6px 12px; border-radius: var(--r-pill); opacity: 0; transition: opacity var(--dur-1), transform var(--dur-1); pointer-events: none; backdrop-filter: blur(8px); }
+  .pin:hover .plabel { opacity: 1; transform: translate(-50%, -110%); }
+  .pin.amber .ring { background: var(--amber); box-shadow: 0 0 0 4px rgba(245,178,26,0.28), 0 4px 14px rgba(0,0,0,0.5); }
+  .pin.green .ring { background: var(--green); box-shadow: 0 0 0 4px rgba(37,179,107,0.28), 0 4px 14px rgba(0,0,0,0.5); }
+
+  /* ---- story card (bottom sheet) ---- */
+  .scrim { position: fixed; inset: 0; z-index: 40; background: transparent; opacity: 0; pointer-events: none; transition: opacity var(--dur-2); }
+  .scrim.show { opacity: 1; pointer-events: auto; }
+  #cardLine { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 41; pointer-events: none; opacity: 0; transition: opacity var(--dur-2); }
+  #cardLine line { stroke: #f5b21a; stroke-width: 1.6; stroke-dasharray: 5 5; }
+  #cardLine circle { display: none; }
+  #cardLine.show { opacity: 1; }
+  .sheet { position: fixed; z-index: 42; left: 0; top: 0; transform: translate(-50%, -50%) scale(0.92); transform-origin: center; opacity: 0; pointer-events: none; width: max-content; max-width: min(380px, 86vw); max-height: 72vh; overflow-y: auto; background: rgba(10,12,20,0.34); -webkit-backdrop-filter: blur(28px) saturate(1.5); backdrop-filter: blur(28px) saturate(1.5); border: 1px solid rgba(255,255,255,0.26); border-radius: 18px; padding: 22px 24px 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.45); transition: opacity var(--dur-2), transform var(--dur-2); }
+  .sheet.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+  .sheet .grip { display: none; }
+  .sheet .ctag { color: #ffe7b0; }
+  .sheet h2 { color: #fff; text-shadow: 0 1px 12px rgba(0,0,0,0.55); }
+  .sheet p { color: rgba(255,255,255,0.92); text-shadow: 0 1px 10px rgba(0,0,0,0.5); }
+  .sheet .skills .pill { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); color: #fff; }
+  .sheet .close { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); color: #fff; }
+  .sheet .ctag { font-family: var(--font-sans); font-weight: 600; font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: #ffe7b0; text-shadow: 0 1px 8px rgba(0,0,0,0.7); }
+  .sheet h2 { font-family: var(--font-sans); font-weight: 700; font-size: clamp(1.5rem, 3.4vw, 2rem); letter-spacing: -0.02em; margin: 9px 0 0; color: #fff; text-shadow: 0 1px 14px rgba(0,0,0,0.7); }
+  .sheet p { font-family: var(--font-sans); color: #fff; font-size: 1.02rem; line-height: 1.55; margin: 14px 0 0; text-shadow: 0 1px 10px rgba(0,0,0,0.65); }
+  .sheet .skills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+  .sheet .actions { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
+  .sheet .close { position: absolute; top: 18px; right: 18px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); cursor: pointer; display: grid; place-items: center; }
+  .sheet .close:hover { color: var(--text); border-color: var(--text-3); }
+  .sheet .close svg { width: 16px; height: 16px; }
+
+  .toast { position: fixed; top: 76px; left: 50%; transform: translateX(-50%); z-index: 50; background: var(--text); color: var(--bg); font-family: var(--font-mono); font-size: 0.78rem; padding: 9px 16px; border-radius: var(--r-pill); opacity: 0; transition: opacity var(--dur-2); }
+  .toast.show { opacity: 1; }
+
+  .loading { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: #0a0a0a; color: var(--text-3); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.1em; transition: opacity var(--dur-3); }
+  .loading.hide { opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<nav class="topnav"><a href="intro.html">Intro</a><a href="portfolio.html">Portfolio</a><a href="world.html" class="active">Room</a></nav>
+<div class="pt" id="pt"><div class="pt-mark">NS</div></div>
+<script src="assets/transition.js"></script>
+<script src="assets/music-hud.js"></script>
+  <div id="scene"></div>
+  <div id="pins"></div>
+  <div id="placeMarks"></div>
+
+  <!-- in-page placement tool -->
+  <button id="placeToggle" style="display:none; position:fixed; left:18px; bottom:18px; z-index:30; padding:10px 16px; border-radius:999px; border:1px solid rgba(255,255,255,0.2); background:rgba(20,20,24,0.7); backdrop-filter:blur(10px); color:#fff; font-size:0.85rem; cursor:pointer;">📍 Place mode: <b id="placeState">OFF</b></button>
+  <div id="placePanel" style="display:none; position:fixed; left:18px; bottom:64px; z-index:30; width:260px; max-height:50vh; overflow:auto; background:rgba(20,20,24,0.82); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.18); border-radius:14px; padding:14px; color:#fff; font-size:0.82rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><b>Clicked points</b><button id="placeClear" style="background:none;border:0;color:#9ab;cursor:pointer;font-size:0.78rem;">clear</button></div>
+    <ol id="placeList" style="margin:0; padding-left:18px; line-height:1.7;"></ol>
+    <div id="placeEmpty" style="color:#8a93a3;">Click any object in the room to drop a numbered marker and log its coordinates here.</div>
+  </div>
+
+  <div class="hint" id="hint"><span class="k">drag</span> to look around <span style="opacity:.4">·</span> click a <span class="k">pin</span></div>
+
+  <div class="scrim" id="scrim"></div>
+  <svg id="cardLine"><line x1="0" y1="0" x2="0" y2="0"></line><circle id="cardLineEnd" r="3.5"></circle></svg>
+  <div class="sheet" id="sheet">
+    <div class="grip"></div>
+    <button class="close" id="closeSheet" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <div class="ctag" id="sTag"></div>
+    <h2 id="sTitle"></h2>
+    <p id="sBlurb"></p>
+    <div class="skills" id="sSkills"></div>
+    <div class="actions" id="sActions"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="loading" id="loading">LOADING ROOM…</div>
+
+<script>
+/* ============================================================
+   WORLD VIEW — data block. Edit hotspots here.
+   lon/lat are degrees on the 360° sphere. Enter placement mode
+   by adding #place to the URL, then click objects to get coords.
+   ============================================================ */
+const HOTSPOTS = [
+  { id:'family',    lon:  88.6, lat: -5.3, label:'I Love My Family',               body:'The people that support me in everything I do. I couldn\u2019t be more grateful.', list:[['Dad','a doctor and relentless hard worker',''],['Mom','a physical therapist who keeps me grounded in all that I do',''],['Anshul','my middle brother, hard-working and driven, wants the world, wears his heart on his sleeve',''],['Shalen','my youngest brother (8th grade), one of the most emotionally mature people I know, kind, respectful, and loving',''],['Me','hard-working, a little delusional, and caring, sometimes to a fault','']] },
+  { id:'movies',    lon:-179.3, lat: -4.6, label:'Favorite Movies & Shows',        body:'A running list of the films and series I keep coming back to.', list:[
+    ['Star Wars','Favorite movie series','','assets/photos/movie-starwars.jpg'],
+    ['Suits','','','assets/photos/movie-suits.jpg'],
+    ['Prison Break','','','assets/photos/movie-prisonbreak.jpg'],
+    ['Phineas and Ferb','','','assets/photos/movie-phineas.jpg'],
+    ['Octonauts','','','assets/photos/movie-octonauts.jpg'],
+    ['Bunk’d','','','assets/photos/movie-bunkd.jpg'],
+    ['Gossip Girl','','','assets/photos/movie-gossipgirl.jpg'],
+    ['Whiplash','','','assets/photos/movie-whiplash.jpg'],
+    ['Cars 2','','','assets/photos/movie-cars2.jpg'],
+    ['Designated Survivor','','','assets/photos/movie-designatedsurvivor.jpg'],
+    ['The Night Agent','','','assets/photos/movie-nightagent.jpg'],
+    ['The Diplomat','','','assets/photos/movie-diplomat.jpg'],
+    ['Avatar: The Last Airbender','','','assets/photos/movie-avatar.jpg'],
+    ['Brooklyn Nine-Nine','','','assets/photos/movie-b99.jpg'],
+  ] },
+  { id:'photo',     lon: -83.4, lat:-10.1, label:'Photography',                    body:'', img:'assets/photos/p10.jpg' },
+  { id:'quotes',    lon: -62.3, lat: -6.7, label:'Quotes That Inspire Me',         body:'A daily dose of inspiration.', calendar:true, list:[
+    ['\u201cAs a creator of the new and a destroyer of the old, he is constantly in conflict with convention\u2026 He inhabits a world where belief precedes results, and where the best possibilities are usually invisible to others\u2026 he remains an outsider to the \u2018establishment.\u2019\u201d','Teddy Forstmann',''],
+    ['\u201cIf all you have is a hammer, everything looks like a nail.\u201d','Mark Twain',''],
+    ['\u201cPigs get fat, hogs get slaughtered.\u201d','Mark Cuban',''],
+    ['\u201cIt is not the critic who counts\u2026 The credit belongs to the man who is actually in the arena\u2026 who at the worst, if he fails, at least fails while daring greatly.\u201d','Theodore Roosevelt',''],
+    ['\u201cBe fearful when others are greedy. Be greedy when others are fearful.\u201d','Warren Buffett',''],
+    ['\u201cThe harder I work, the luckier I get.\u201d','Samuel Goldwyn',''],
+    ['\u201cIf you want to go fast, go alone. If you want to go far, go together.\u201d','African Proverb',''],
+    ['\u201cIf you are kind, people may accuse you of selfish ulterior motives. Be kind anyway. What you spend years building someone could destroy overnight. Build anyway. The good you do today people will often forget tomorrow. Do good anyway. Give the world the best you have and it may never be enough. Give the world the best you have anyway.\u201d','',''],
+    ['\u201cYou could be the master of fate, the captain of your soul. But you have to realize that life is coming from you, not at you.\u201d','',''],
+    ['\u201cEvery pit holds the promise of a mighty tree.\u201d','',''],
+    ['\u201cWorrying does not make the broth boil any faster.\u201d','',''],
+    ['\u201cIf things stay the same forever, they will lose their flavor.\u201d','',''],
+    ['\u201cThe greatest dishes come from the most unlikely ingredients.\u201d','',''],
+    ['\u201cIn any moment of decision, the best thing you can do is the right thing, the next best thing is the wrong thing, and the worst thing you can do is nothing.\u201d','Theodore Roosevelt','']
+  ] },
+  { id:'music',     lon: -72.2, lat:-19.2, label:'Favorite Music',                 body:'What\u2019s on repeat while I build, study, and unwind.', art:'song', list:[
+    ['Hamilton','Original Broadway Cast',''],
+    ['White Keys','',''],
+    ['Tengo','Santax',''],
+    ['Dracula','Tame Impala',''],
+    ['Phantoms and Friends','',''],
+    ['Sparks','Coldplay',''],
+    ['Vienna','Billy Joel',''],
+    ['Caf\u00e9 con Ron','Bad Bunny',''],
+    ['Runaway Baby','Bruno Mars',''],
+    ['Suavemente','',''],
+    ['Timeless','The Weeknd',''],
+    ['Chicago','Michael Jackson',''],
+    ['Butter','A Tribe Called Quest',''],
+    ['Paradise / a Burn','Frank Ocean','']
+  ] },
+  { id:'games',     lon: -66.5, lat:-28.9, label:'Favorite Family Board Games',    body:'', list:[
+    ['Sequence','','','assets/photos/game-sequence.jpg'],
+    ['Castle Risk','','','assets/photos/game-castlerisk.jpg'],
+    ['Catan','','','assets/photos/game-catan.jpg'],
+    ['Judgement','aka Spades','','assets/photos/game-cards.jpg'],
+    ['Texas Hold\u2019Em','','','assets/photos/game-cards.jpg'],
+    ['Bukaro','','','assets/photos/game-cards.jpg'],
+    ['Mafia','','','assets/photos/game-mafia.jpg'],
+  ] },
+  { id:'plays',     lon: -42.8, lat:  3.7, label:'Plays & Musicals I\u2019ve Done', body:'', playable:true, list:[
+    ['Grunch','Allen','Supporting','x'],
+    ['Wizard of Oz','Tin Man','Lead'],
+    ['101 Dalmatians','Horace','Supporting'],
+    ['Frozen','Hans','Supporting Lead'],
+    ['Brothers Grimm','Ensemble','','x'],
+    ['Zoodate','Praying Mantis, Bull, Beaver','Supporting Lead'],
+    ['Matilda Jr.','Mr. Wormwood','Supporting Lead','Matilda the Musical'],
+    ['Charlie Brown','Schroeder','Supporting Lead','You\u2019re a Good Man Charlie Brown'],
+    ['High School Musical','Troy','Lead','High School Musical on Stage'],
+    ['Fiddler on the Roof','Fyedka','Supporting'],
+    ['Annie','Daddy Warbucks','Lead','Annie Original Broadway Cast'],
+    ['Grunch','The Grunch','Lead','x'],
+    ['Seussical','Mr. Mayor','Supporting','Seussical the Musical'],
+    ['Curtains','Randy Dexter','Supporting','Curtains Original Broadway Cast'],
+    ['Terezin Promise','Lighting Technician',''],
+    ['Clue','Mr. Boddy','Supporting Lead','x'],
+    ['The Play That Goes Wrong','Backstage Technician','','x'],
+    ['Bye Bye Birdie','Stage Manager','','x'],
+    ['Shrek','Papa Bear','Supporting','Shrek the Musical'],
+    ['Pippin','King Charles','Supporting Lead'],
+    ['Mean Girls','Aaron Samuels','Supporting Lead','Mean Girls Original Broadway Cast'],
+    ['Chicago','Billy Flynn','Lead'],
+    ['Mamma Mia','Sam Carmichael','Lead'],
+    ['Hadestown','Hermes','Lead'],
+    ['Rumors','Lenny','Supporting Lead','x'],
+    ['24 Hr Project (shh\u2026 it\u2019s a secret)','Director',''],
+    ['Les Mis\u00e9rables','Jean Valjean','Lead','Les Miserables Original Broadway Cast'],
+  ] },
+  { id:'running',   lon: -25.2, lat:-36.2, label:'Running Shoes',                  body:'Cross country and track \u2014 where I clear my head.', img:'assets/photos/xc-team.jpg' },
+  { id:'piano',     lon:   6.3, lat:-19.1, label:'I Play Piano',                   body:'', tracks:[
+    { id:'piano1', name:'Piece I', src:'' },
+    { id:'piano2', name:'Piece II', src:'' }
+  ] },
+  { id:'space',     lon:  10.4, lat: -1.4, label:'Space & Space Travel',           body:'Endlessly intrigued by what\u2019s past the horizon.', img:'assets/photos/space-starship.jpg' },
+  { id:'projects',  lon:  37.2, lat:-10.6, label:'Patriot Portfolio & Projects',   body:'Where my ventures and builds live.', href:'portfolio.html#tech', hrefLabel:'See my projects' },
+  { id:'agent',     lon:  56.7, lat:-11.0, label:'Ask Me About Nishant',           body:'A little terminal. Boot it up and ask away.', agent:true },
+  { id:'soccer',    lon:  79.6, lat:-28.3, label:'Soccer',                         body:'The team sport that taught me to lose and win together.', img:'assets/photos/soccer-team.jpg' },
+  { id:'reads',     lon:  51.5, lat:  1.6, label:'Favorite Reads',                 body:'', list:[['Spy School','','','assets/photos/book-spyschool.jpg'],['Brotherband','','','assets/photos/book-brotherband.jpg'],['Ranger\u2019s Apprentice','','','assets/photos/book-rangers.jpg'],['One of Us Is Lying','','','assets/photos/book-oneofus.jpg'],['Shoe Dog','','','assets/photos/book-shoedog.jpg'],['1984','','','assets/photos/book-1984.jpg'],['Where the Red Fern Grows','','','assets/photos/book-redfern.jpg'],['The Outsiders','','','assets/photos/book-outsiders.jpg'],['Harry Potter','','','assets/photos/book-harrypotter.jpg'],['Artemis Fowl','','','assets/photos/book-artemis.jpg'],['To Kill a Mockingbird','','','assets/photos/book-mockingbird.jpg']] },
+  { id:'awards',    lon: 100.4, lat: -5.9, label:'Awards & Achievements',          body:'Starting with the Duke of Edinburgh.', img:'assets/photos/duke-edinburgh.jpg', href:'portfolio.html#receipts', hrefLabel:'See my awards' },
+  { id:'dj',        lon: 176.9, lat:-58.9, label:'DJ',                             body:'The controller on my bed \u2014 mixing is how I decompress. Pick a set:', mixes:true },
+];
+
+const W = () => window.innerWidth, H = () => window.innerHeight;
+let lon = 0, lat = 0, isDown = false, downX = 0, downY = 0, startLon = 0, startLat = 0, moved = 0, cardOpen = false;
+let placeMarks = [];
+let autorot = true;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(74, W()/H(), 1, 1100);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(W(), H());
+renderer.outputEncoding = THREE.sRGBEncoding;
+document.getElementById('scene').appendChild(renderer.domElement);
+
+const geo = new THREE.SphereGeometry(500, 64, 40);
+geo.scale(-1, 1, 1);
+const tex = new THREE.TextureLoader().load('assets/room360.png', () => {
+  document.getElementById('loading').classList.add('hide');
+});
+tex.encoding = THREE.sRGBEncoding;
+const sphere = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex }));
+scene.add(sphere);
+
+const target = new THREE.Vector3();
+const raycaster = new THREE.Raycaster();
+
+function lonLatToVec(lo, la, r) {
+  const phi = THREE.MathUtils.degToRad(90 - la);
+  const theta = THREE.MathUtils.degToRad(lo);
+  return new THREE.Vector3(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+}
+
+/* ---- build pins ---- */
+const pinsLayer = document.getElementById('pins');
+HOTSPOTS.forEach((hs, i) => {
+  hs._vec = lonLatToVec(hs.lon, hs.lat, 470);
+  const btn = document.createElement('button');
+  btn.className = 'pin dotpin';
+  btn.innerHTML = '<span class="plabel">' + hs.label + '</span><span class="dotnum">' + (i + 1) + '</span>';
+  btn.addEventListener('click', (e) => { e.stopPropagation(); openCard(hs); });
+  btn.addEventListener('mouseenter', () => { if (!isDown) openCard(hs); });
+  pinsLayer.appendChild(btn);
+  hs._el = btn;
+});
+
+function updatePins() {
+  const w = W(), h = H();
+  for (const hs of HOTSPOTS) {
+    const v = hs._vec.clone().project(camera);
+    const visible = v.z < 1;
+    if (!visible) { hs._el.style.display = 'none'; continue; }
+    hs._el.style.display = 'block';
+    hs._el.style.left = (v.x * 0.5 + 0.5) * w + 'px';
+    hs._el.style.top = (-v.y * 0.5 + 0.5) * h + 'px';
+  }
+  if (placeMarks.length) {
+    for (const mk of placeMarks) {
+      const v = mk.vec.clone().project(camera);
+      if (v.z < 1) { mk.el.style.display = 'grid'; mk.el.style.left = (v.x * 0.5 + 0.5) * w + 'px'; mk.el.style.top = (-v.y * 0.5 + 0.5) * h + 'px'; }
+      else { mk.el.style.display = 'none'; }
+    }
+  }
+}
+
+/* ---- render loop ---- */
+function animate() {
+  requestAnimationFrame(animate);
+  if (!isDown && !cardOpen && autorot) lon += 0.018;
+  lat = Math.max(-72, Math.min(72, lat));
+  const phi = THREE.MathUtils.degToRad(90 - lat);
+  const theta = THREE.MathUtils.degToRad(lon);
+  target.set(500 * Math.sin(phi) * Math.cos(theta), 500 * Math.cos(phi), 500 * Math.sin(phi) * Math.sin(theta));
+  camera.lookAt(target);
+  renderer.render(scene, camera);
+  updatePins();
+  if (cardOpen) positionCard();
+}
+animate();
+
+/* ---- drag controls ---- */
+const sceneEl = document.getElementById('scene');
+function down(x, y) { if (cardOpen) return; isDown = true; autorot = false; downX = x; downY = y; startLon = lon; startLat = lat; moved = 0; sceneEl.classList.add('grabbing'); hideHint(); }
+function move(x, y) {
+  if (!isDown) return;
+  const dx = x - downX, dy = y - downY;
+  moved += Math.abs(dx) + Math.abs(dy);
+  lon = startLon - dx * 0.13;
+  lat = startLat + dy * 0.13;
+}
+function up(x, y) {
+  if (!isDown) return;
+  isDown = false; sceneEl.classList.remove('grabbing');
+  if (moved < 6) handleTap(x, y);
+}
+sceneEl.addEventListener('mousedown', e => down(e.clientX, e.clientY));
+window.addEventListener('mousemove', e => move(e.clientX, e.clientY));
+window.addEventListener('mouseup', e => up(e.clientX, e.clientY));
+sceneEl.addEventListener('touchstart', e => { const t = e.touches[0]; down(t.clientX, t.clientY); }, { passive: true });
+window.addEventListener('touchmove', e => { const t = e.touches[0]; move(t.clientX, t.clientY); }, { passive: true });
+window.addEventListener('touchend', e => { const t = e.changedTouches[0]; up(t.clientX, t.clientY); });
+
+/* ---- placement mode: in-page toggle + numbered markers ---- */
+let placeMode = location.hash.indexOf('place') !== -1;
+const placeListEl = document.getElementById('placeList');
+const placeEmptyEl = document.getElementById('placeEmpty');
+const placeMarksLayer = document.getElementById('placeMarks');
+const placeToggle = document.getElementById('placeToggle');
+const placeStateEl = document.getElementById('placeState');
+const placePanel = document.getElementById('placePanel');
+function syncPlaceUI() {
+  placeStateEl.textContent = placeMode ? 'ON' : 'OFF';
+  placeToggle.style.background = placeMode ? 'rgba(37,99,235,0.85)' : 'rgba(20,20,24,0.7)';
+  placePanel.style.display = placeMode ? 'block' : 'none';
+  if (placeMode) autorot = false;
+}
+placeToggle.addEventListener('click', () => { placeMode = !placeMode; syncPlaceUI(); });
+document.getElementById('placeClear').addEventListener('click', () => {
+  placeMarks.length = 0; placeListEl.innerHTML = ''; placeMarksLayer.innerHTML = '';
+  placeEmptyEl.style.display = 'block';
+});
+function handleTap(x, y) {
+  if (!placeMode) return;
+  const ndc = { x: (x / W()) * 2 - 1, y: -(y / H()) * 2 + 1 };
+  raycaster.setFromCamera(ndc, camera);
+  const hit = raycaster.intersectObject(sphere)[0];
+  if (!hit) return;
+  const p = hit.point, r = p.length();
+  const la = 90 - THREE.MathUtils.radToDeg(Math.acos(p.y / r));
+  const lo = THREE.MathUtils.radToDeg(Math.atan2(p.z, p.x));
+  const n = placeMarks.length + 1;
+  const mk = { n, lon: +lo.toFixed(1), lat: +la.toFixed(1), vec: hit.point.clone().setLength(470) };
+  placeMarks.push(mk);
+  // visible numbered dot
+  const dot = document.createElement('div');
+  dot.className = 'place-dot'; dot.dataset.i = n - 1;
+  dot.style.cssText = 'position:absolute; transform:translate(-50%,-50%); width:26px; height:26px; border-radius:50%; background:#f5b21a; color:#1a1205; font-weight:700; font-size:13px; display:grid; place-items:center; box-shadow:0 2px 10px rgba(0,0,0,0.5); pointer-events:none;';
+  dot.textContent = n;
+  placeMarksLayer.appendChild(dot); mk.el = dot;
+  // list entry
+  placeEmptyEl.style.display = 'none';
+  const li = document.createElement('li');
+  li.textContent = 'lon: ' + mk.lon + ', lat: ' + mk.lat;
+  placeListEl.appendChild(li);
+  showToast('#' + n + '  lon: ' + mk.lon + ', lat: ' + mk.lat);
+}
+placeMarksLayer.style.cssText = 'position:fixed; inset:0; z-index:16; pointer-events:none;';
+syncPlaceUI();
+
+/* ---- story card ---- */
+const scrim = document.getElementById('scrim'), sheet = document.getElementById('sheet');
+const cardLineSvg = document.getElementById('cardLine'), cardLineEl = cardLineSvg.querySelector('line'), cardLineEnd = document.getElementById('cardLineEnd');
+let activeHS = null;
+function positionCard() {
+  if (!activeHS) return;
+  const v = activeHS._vec.clone().project(camera);
+  const behind = v.z > 1;
+  const px = (v.x * 0.5 + 0.5) * W(), py = (-v.y * 0.5 + 0.5) * H();
+  if (behind) { sheet.style.opacity = '0'; cardLineSvg.classList.remove('show'); return; }
+  sheet.style.opacity = ''; cardLineSvg.classList.add('show');
+  const cw = sheet.offsetWidth, ch = sheet.offsetHeight, M = 16;
+  let cx = px < W() / 2 ? px + 60 + cw / 2 : px - 60 - cw / 2;
+  let cy = py;
+  cx = Math.max(cw / 2 + M, Math.min(W() - cw / 2 - M, cx));
+  cy = Math.max(ch / 2 + M + 60, Math.min(H() - ch / 2 - M, cy));
+  sheet.style.left = cx + 'px'; sheet.style.top = cy + 'px';
+  const ex = Math.max(cx - cw / 2, Math.min(cx + cw / 2, px));
+  const ey = Math.max(cy - ch / 2, Math.min(cy + ch / 2, py));
+  cardLineEl.setAttribute('x1', px); cardLineEl.setAttribute('y1', py);
+  cardLineEl.setAttribute('x2', ex); cardLineEl.setAttribute('y2', ey);
+  cardLineEnd.setAttribute('cx', px); cardLineEnd.setAttribute('cy', py);
+}
+function playPianoTrack(tracks, id) {
+  var t = tracks.filter(function (x) { return x.id === id; })[0]; if (!t || !t.src) return;
+  if (window.MusicHUD) window.MusicHUD.pause();
+  var a = window.__pianoAudio || (window.__pianoAudio = new Audio());
+  window.__previewAudio = a;
+  if (a.src && a.src.indexOf(t.src) > -1 && !a.paused) { a.pause(); return; }
+  a.src = t.src; a.play().catch(function(){});
+}
+function openCard(hs) {
+  cardOpen = true; activeHS = hs;
+  if (window.MusicHUD && (hs.mixes || hs.tracks || hs.art === 'song')) { /* picker shown; don't auto-pause */ }
+  document.getElementById('sTag').textContent = hs.tag || 'In my room';
+  document.getElementById('sTitle').textContent = hs.label;
+  var blurbEl = document.getElementById('sBlurb');
+  if (hs.mixes || hs.tracks) {
+    var lib = hs.mixes ? (window.MusicHUD ? window.MusicHUD.mixes : []) : hs.tracks;
+    var via = hs.mixes ? 'hud' : 'piano';
+    blurbEl.innerHTML = (hs.body ? '<p style="margin:0 0 14px;">' + hs.body + '</p>' : '') +
+      '<div class="mixlist">' + lib.map(function (m) {
+        var ready = !!m.src;
+        return '<button class="mixrow" data-id="' + m.id + '" data-via="' + via + '"' + (ready ? '' : ' disabled') + ' style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);border-radius:12px;padding:11px 14px;margin-bottom:9px;color:#fff;cursor:' + (ready ? 'pointer' : 'default') + ';opacity:' + (ready ? '1' : '0.5') + ';">' +
+          '<span style="flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:' + (ready ? '#f5b21a' : 'rgba(255,255,255,0.14)') + ';color:#1a1205;display:grid;place-items:center;font-size:12px;">\u25B6</span>' +
+          '<span style="flex:1 1 auto;min-width:0;"><span style="display:block;font-weight:600;font-size:0.92rem;">' + m.name + '</span>' + (m.sub || (ready ? '' : 'coming soon')) ? '<span style="display:block;color:rgba(255,255,255,0.6);font-size:0.78rem;">' + (m.sub || (ready ? '' : 'coming soon')) + '</span>' : '' + '</span>' +
+        '</button>';
+      }).join('') + '</div>';
+    setTimeout(function () {
+      blurbEl.querySelectorAll('.mixrow').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation(); if (btn.disabled) return;
+          var id = btn.getAttribute('data-id');
+          if (btn.getAttribute('data-via') === 'hud') { if (window.MusicHUD) window.MusicHUD.play(id); }
+          else { playPianoTrack(hs.tracks, id); }
+        });
+      });
+    }, 0);
+  } else if (hs.calendar) {
+    var qs = hs.list;
+    var today = new Date();
+    var seed = Math.floor((Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())) / 86400000);
+    var startIdx = ((seed % qs.length) + qs.length) % qs.length;
+    var months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    var days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+    blurbEl.innerHTML =
+      '<p style="margin:0 0 14px;">' + (hs.body || '') + '</p>' +
+      '<div id="calWrap" style="perspective:1400px;">' +
+        '<div id="calPage" style="position:relative;background:#fbf7ee;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.4);color:#1a1408;overflow:hidden;transform-origin:top center;transition:transform .5s cubic-bezier(.6,0,.3,1),opacity .5s;">' +
+          '<div style="background:#b5402f;color:#fff;padding:12px 16px 10px;text-align:center;">' +
+            '<div id="calMonth" style="font-size:0.72rem;letter-spacing:0.22em;font-weight:700;"></div>' +
+            '<div id="calDay" style="font-size:2.6rem;font-weight:800;line-height:1;margin:2px 0;"></div>' +
+            '<div id="calWeekday" style="font-size:0.66rem;letter-spacing:0.2em;opacity:0.9;"></div>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;padding:5px 16px;border-bottom:1px dashed rgba(0,0,0,0.18);font-size:0.6rem;color:#9a8e78;letter-spacing:0.1em;">' +
+            '<span>NISHANT\u2019S DAILY QUOTE</span><span id="calNo"></span>' +
+          '</div>' +
+          '<div style="padding:24px 22px 20px;min-height:120px;display:flex;flex-direction:column;justify-content:center;">' +
+            '<div id="calQuote" style="font-size:1.02rem;line-height:1.5;font-style:italic;"></div>' +
+            '<div id="calAuthor" style="margin-top:12px;font-size:0.82rem;color:#8a6d2f;font-weight:600;text-align:right;"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="text-align:center;margin-top:14px;"><button id="calTear" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:999px;padding:9px 18px;font-size:0.82rem;cursor:pointer;">Tear to next \u2702</button></div>' +
+      '</div>';
+    setTimeout(function () {
+      var idx = startIdx, cnt = qs.length;
+      var page = document.getElementById('calPage');
+      function render(animate) {
+        var q = qs[idx];
+        var d = new Date(today); d.setDate(today.getDate() + (idx - startIdx));
+        document.getElementById('calMonth').textContent = months[d.getMonth()];
+        document.getElementById('calDay').textContent = d.getDate();
+        document.getElementById('calWeekday').textContent = days[d.getDay()];
+        document.getElementById('calNo').textContent = (idx + 1) + ' / ' + cnt;
+        document.getElementById('calQuote').textContent = q[0];
+        document.getElementById('calAuthor').textContent = q[1] ? '\u2014 ' + q[1] : '';
+      }
+      render();
+      document.getElementById('calTear').addEventListener('click', function (e) {
+        e.stopPropagation();
+        page.style.transform = 'rotateX(-95deg)'; page.style.opacity = '0';
+        setTimeout(function () {
+          idx = (idx + 1) % cnt; render();
+          page.style.transition = 'none'; page.style.transform = 'rotateX(75deg)';
+          requestAnimationFrame(function () { page.style.transition = 'transform .45s cubic-bezier(.5,1.4,.5,1),opacity .45s'; page.style.transform = 'rotateX(0deg)'; page.style.opacity = '1'; });
+        }, 360);
+      });
+      page.addEventListener('click', function (e) { e.stopPropagation(); document.getElementById('calTear').click(); });
+    }, 0);
+  } else if (hs.agent) {
+    blurbEl.innerHTML =
+      '<p style="margin:0 0 12px;">' + (hs.body || '') + '</p>' +
+      '<div id="agentTerm" style="background:#05060a;border:1px solid rgba(120,200,255,0.3);border-radius:10px;padding:12px;font-family:ui-monospace,Menlo,monospace;font-size:0.82rem;color:#8effc4;cursor:pointer;box-shadow:inset 0 0 30px rgba(40,120,90,0.12);">' +
+        '<div style="color:#3fe08a;">$ ./ask-nishant</div>' +
+        '<div style="color:#7aa8ff;margin-top:4px;">> a tiny agent that answers questions about me</div>' +
+        '<div id="agentBoot" style="color:#cfe;margin-top:8px;opacity:.85;">click to launch &#9608;</div>' +
+      '</div>' +
+      '<div id="agentUI" style="display:none;margin-top:10px;">' +
+        '<div id="agentLog" style="background:#05060a;border:1px solid rgba(120,200,255,0.25);border-radius:10px;padding:12px;height:200px;overflow:auto;font-family:ui-monospace,Menlo,monospace;font-size:0.82rem;line-height:1.5;"></div>' +
+        '<form id="agentForm" style="display:flex;gap:8px;margin-top:8px;">' +
+          '<input id="agentInput" autocomplete="off" placeholder="Ask about projects, awards, theater\u2026" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:9px 12px;color:#fff;font-size:0.85rem;outline:none;" />' +
+          '<button type="submit" style="background:#2fb36b;border:0;border-radius:8px;color:#fff;padding:9px 14px;font-weight:600;cursor:pointer;">Send</button>' +
+        '</form>' +
+      '</div>';
+    setTimeout(initAgent, 0);
+  } else if (hs.list && hs.art) {
+    blurbEl.innerHTML = (hs.body ? '<p style="margin:0 0 16px;">' + hs.body + '</p>' : '') +
+      '<div style="max-height:48vh; overflow:auto; margin:0 -4px; padding:0 4px;">' +
+      hs.list.map(function(r, i){ return '<div style="display:flex; align-items:center; gap:12px; padding:7px 0; border-top:1px solid rgba(255,255,255,0.18);">' +
+        '<span class="artthumb" data-q="' + encodeURIComponent((r[0] + ' ' + (r[1]||'')).trim()) + '" style="flex:0 0 auto; width:42px; height:42px; border-radius:7px; background:rgba(255,255,255,0.12); background-size:cover; background-position:center;"></span>' +
+        '<span style="flex:1 1 auto; color:#fff; text-shadow:0 1px 8px rgba(0,0,0,0.6); line-height:1.3;"><b>' + r[0] + '</b>' + (r[1] ? '<br><span style="color:rgba(255,255,255,0.7); font-size:0.82rem;">' + r[1] + '</span>' : '') + '</span>' +
+        (hs.art === 'song' ? '<button class="artplay" data-i="' + i + '" aria-label="Play preview" style="flex:0 0 auto; width:32px; height:32px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.12); color:#fff; cursor:pointer; display:grid; place-items:center; font-size:11px;">\u25B6</button>' : '') +
+      '</div>'; }).join('') + '</div>';
+    // fetch cover art + preview at runtime via Apple's public iTunes Search API (CORS-enabled)
+    setTimeout(function(){
+      var previews = {};
+      var audio = blurbEl._audio || (blurbEl._audio = new Audio());
+      window.__previewAudio = audio;
+      blurbEl.querySelectorAll('.artthumb').forEach(function(el, idx){
+        var q = el.getAttribute('data-q'); var ent = hs.art === 'game' ? '' : '&entity=song';
+        fetch('https://itunes.apple.com/search?term=' + q + ent + '&limit=1')
+          .then(function(r){ return r.json(); })
+          .then(function(d){ var res = d.results && d.results[0]; if (!res) return;
+            if (res.artworkUrl100) el.style.backgroundImage = "url('" + res.artworkUrl100.replace('100x100','200x200') + "')";
+            if (res.previewUrl) previews[idx] = res.previewUrl;
+          }).catch(function(){});
+      });
+      blurbEl.querySelectorAll('.artplay').forEach(function(btn){
+        btn.addEventListener('click', function(e){
+          e.stopPropagation(); var i = +btn.getAttribute('data-i'); var url = previews[i];
+          if (!url) return;
+          if (audio.src === url && !audio.paused) { audio.pause(); btn.textContent = '\u25B6'; return; }
+          if (window.MusicHUD) window.MusicHUD.pause();
+          blurbEl.querySelectorAll('.artplay').forEach(function(b){ b.textContent = '\u25B6'; });
+          audio.src = url; audio.play(); btn.textContent = '\u275A\u275A';
+          audio.onended = function(){ btn.textContent = '\u25B6'; };
+        });
+      });
+    }, 0);
+  } else if (hs.playable) {
+    blurbEl.innerHTML = (hs.body ? '<p style="margin:0 0 14px;">' + hs.body + '</p>' : '') +
+      '<div style="max-height:48vh; overflow:auto; margin:0 -4px; padding:0 4px;">' +
+      hs.list.map(function(r, i){ return '<div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid rgba(255,255,255,0.18);">' +
+        '<span style="flex:1 1 auto; min-width:0; color:#fff; text-shadow:0 1px 8px rgba(0,0,0,0.6); line-height:1.3;"><b>' + r[0] + '</b>' + (r[1] ? '<br><span style="color:rgba(255,255,255,0.7); font-size:0.82rem;">' + r[1] + (r[2] ? ' \u00b7 ' + r[2] : '') + '</span>' : '') + '</span>' +
+        (r[3] === 'x' ? '' : '<button class="playp" data-q="' + encodeURIComponent(r[3] || (r[0] + ' musical')) + '" data-i="' + i + '" aria-label="Play" style="display:none; flex:0 0 auto; width:30px; height:30px; border-radius:50%; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.12); color:#fff; cursor:pointer; place-items:center; font-size:10px;">\u25B6</button>') +
+      '</div>'; }).join('') + '</div>';
+    setTimeout(function(){
+      var pv = {}; var audio = window.__previewAudio = (blurbEl._audio || (blurbEl._audio = new Audio()));
+      blurbEl.querySelectorAll('.playp').forEach(function(btn){
+        var q = btn.getAttribute('data-q');
+        fetch('https://itunes.apple.com/search?term=' + q + '&entity=song&limit=1')
+          .then(function(r){ return r.json(); })
+          .then(function(d){ var res = d.results && d.results[0]; if (res && res.previewUrl){ pv[btn.getAttribute('data-i')] = res.previewUrl; btn.style.display = 'grid'; } })
+          .catch(function(){});
+      });
+      blurbEl.querySelectorAll('.playp').forEach(function(btn){
+        btn.addEventListener('click', function(e){ e.stopPropagation(); var url = pv[btn.getAttribute('data-i')]; if(!url) return;
+          if (audio.src === url && !audio.paused){ audio.pause(); btn.textContent='\u25B6'; return; }
+          if (window.MusicHUD) window.MusicHUD.pause();
+          blurbEl.querySelectorAll('.playp').forEach(function(b){ b.textContent='\u25B6'; });
+          audio.src = url; audio.play(); btn.textContent='\u275A\u275A'; audio.onended=function(){ btn.textContent='\u25B6'; };
+        });
+      });
+    }, 0);
+  } else if (hs.list) {
+    blurbEl.innerHTML = (hs.body ? '<p style="margin:0 0 16px;">' + hs.body + '</p>' : '') +
+      '<div style="max-height:46vh; overflow:auto; margin:0 -4px; padding:0 4px;">' +
+      hs.list.map(function(r){ return '<div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 0; border-top:1px solid rgba(255,255,255,0.18);">' +
+        '<span style="display:flex; align-items:center; gap:12px; min-width:0; color:#fff; text-shadow:0 1px 8px rgba(0,0,0,0.6);">' +
+        (r[3] ? '<img src="' + r[3] + '" alt="" style="flex:0 0 auto; width:38px; height:38px; border-radius:6px; object-fit:cover;" />' : '') +
+        '<span><b>' + r[0] + '</b>' + (r[1] ? ' \u2014 ' + r[1] : '') + '</span></span>' +
+        (r[2] ? '<span style="flex:0 0 auto; color:rgba(255,255,255,0.78); font-size:0.82rem;">' + r[2] + '</span>' : '') +
+      '</div>'; }).join('') + '</div>';
+  } else {
+    blurbEl.innerHTML = (hs.body ? '<p style="margin:0 0 12px;">' + hs.body + '</p>' : '') +
+      (hs.img ? '<img src="' + hs.img + '" alt="" style="width:100%;border-radius:12px;display:block;" />' : '');
+  }
+  document.getElementById('sSkills').innerHTML = (hs.skills || []).map(s => '<span class="pill">' + s + '</span>').join('');
+  document.getElementById('sActions').innerHTML =
+    (hs.href ? '<a class="btn btn-primary" href="' + hs.href + '">' + (hs.hrefLabel || 'See more') + ' <span class="arrow">→</span></a>' : '');
+  var dm = document.getElementById('dismiss'); if (dm) dm.addEventListener('click', closeCard);
+  scrim.classList.add('show'); sheet.classList.add('show');
+  positionCard();
+}
+function closeCard() { cardOpen = false; activeHS = null; scrim.classList.remove('show'); sheet.classList.remove('show'); sheet.style.opacity = ''; cardLineSvg.classList.remove('show'); }
+scrim.addEventListener('click', closeCard);
+
+/* ---- "Ask Me About Nishant" mini agent ---- */
+// "Ask Me About Nishant" now calls the /api/ask serverless function; the Mistral key lives in the MISTRAL_API_KEY env var.
+function localAnswer(q){
+  q = q.toLowerCase();
+  var f = [
+    [['eco','vision','vr','smell','olfactory','medtech'],"Eco-Vision is the first olfactory-integrated VR system, built to let bedridden hospital patients step outside without leaving the room \u2014 Top 16 at NFTE Nationals and a Diamond Challenge Global Finalist."],
+    [['deca'],"He was elected Florida DECA Executive Vice President by 18,000+ members, and ran on a platform called The DECA DAWN."],
+    [['theater','theatre','play','musical','stage','acting','act'],"He's done 27 productions \u2014 leads like Billy Flynn in Chicago and Jean Valjean in Les Mis \u2014 and founded the 24-Hour Project, taking a show from cold read to performance in a single day."],
+    [['foster','see us now','advocacy','sun','trafficking'],"Through See Us Now he advocates for foster youth \u2014 helping pass the Find & Protect Foster Youth Act and speaking at the UN ECOSOC Youth Forum and WHO."],
+    [['photo','camera','photography','congressional art','tampa bay mag'],"He runs a photography business that earned a Congressional Art Award and a Tampa Bay Magazine cover."],
+    [['president','student council','class president','leadership','lead'],"He's a 4\u00d7 Class President and Student Body President, Beta Club Co-President, and Speech & Debate Captain."],
+    [['invest','portfolio','fund','finance','patriot','fundra','money'],"He founded two student-led investing firms \u2014 Patriot Portfolio and Fundra \u2014 that manage real capital under real research and governance."],
+    [['speech','debate','ncfl'],"He's a Speech & Debate Captain who placed 4th at NCFL Nationals and led his team to a regional championship."],
+    [['name','dawn','nishant','mean'],"His name, Nishant (\u0928\u093f\u0936\u093e\u0928\u094d\u0924), means 'Dawn' in Sanskrit \u2014 the spirit of new beginnings he tries to bring to everything he does."],
+    [['ib','gpa','sat','academic','school','grade'],"He's a Full IB Diploma candidate with a 4.0 UW GPA, a 1540 SAT, and is in the Cum Laude Society at Carrollwood Day School."],
+    [['piano','dj','soccer','run','hobby','star wars','fun'],"Outside of work he plays piano, DJs, runs, plays soccer, and is a big Star Wars fan."],
+    [['ebit','entrepreneur','institute','start business','council'],"He built the CDS Entrepreneurial Institute and founded EBIT's Youth Advisory Councils, plus Start Business Smart, which he scaled from 50 to 400+ members."],
+    [['escape','room'],"Mobile Escape Room is a venture he runs with his brother \u2014 he handles engineering (puzzles, 3D models, Node-RED hardware, fitting it all in a trailer) and serves as CFO."],
+    [['family','dad','mom','brother','anshul','shalen','parent'],"His dad is a doctor and his mom is a physical therapist who keeps him grounded. He has two younger brothers \u2014 Anshul, hard-working and driven, and Shalen, who's emotionally mature, kind, and loving."],
+    [['book','read','novel','reading'],"Some of his favorite reads are Shoe Dog, 1984, To Kill a Mockingbird, The Outsiders, Where the Red Fern Grows, Harry Potter, Artemis Fowl, and Ranger's Apprentice."],
+    [['intern','internship','aevum','atkins','magnolia','charitybuzz','congressional','safe house','work experience'],"He's interned at Aevum Capital, AtkinsR\u00e9alis (finance), Magnolia Pictures (film distribution), CharityBuzz, the Schwarzenegger Institute, a U.S. Congressional office, and the Safe House Project."],
+    [['tedx','ted'],"He revived and built TEDx CDS, turning a lapsed license into a real platform for student ideas."],
+    [['college','apply','university','major','umich','ross','ibe'],"He's applying to integrated business + engineering programs and is drawn to work at the intersection of technology, enterprise, and human-centered impact."],
+    [['decoy','cyber','security'],"Decoy is his AI, deception-based cybersecurity project \u2014 it lures and traps intruders instead of just reacting to known threats."],
+    [['ventureseek','sourcing'],"VentureSeek is an AI platform he built that sources, scores, and researches startups for venture-capital firms."],
+    [['beta'],"He's Co-President of Beta Club, which he runs around character, leadership, and service \u2014 80+ service activities and $8,000+ raised for Relay for Life."],
+    [['award','honor','achievement','recognition','win','won'],"A few honors: 3\u00d7 Presidential Volunteer Gold, Conrad Innovator Award, John Locke High Commendation, Scholastic National Gold Medalist, Princeton Book Award, Duke of Edinburgh Silver, and FL Boys State."],
+    [['space','energy','fintech','emerging','tech','future','curious'],"He's curious about emerging tech \u2014 VR, AI, space and space travel, energy, MedTech, FinTech, and cybersecurity."],
+    [['ryan nece','giving','service hour','volunteer','community'],"Through the Ryan Nece Foundation's Power of Giving program and other work, he's logged 1,000+ service hours \u2014 he believes one act of kindness ripples outward like a rock in a pond."]
+  ];
+  for (var i=0;i<f.length;i++){ for (var j=0;j<f[i][0].length;j++){ if (q.indexOf(f[i][0][j])>-1) return f[i][1]; } }
+  if (q.indexOf('who')>-1 || q.indexOf('about')>-1 || q.indexOf('hi')===0 || q.indexOf('hello')===0)
+    return "Nishant Shah is a senior at Carrollwood Day School working across theatre, engineering & enterprise, advocacy, and leadership. Ask me about a project, an award, or a hobby!";
+  return "I mostly know about Nishant's projects, advocacy, theater, leadership, and academics \u2014 try asking about one of those!";
+}
+function initAgent(){
+  var term = document.getElementById('agentTerm'), ui = document.getElementById('agentUI');
+  if (!term) return;
+  term.addEventListener('click', function(){ term.style.display='none'; ui.style.display='block';
+    logMsg('agent', "Hi! I'm a little agent that knows about Nishant. Ask me anything \u2014 projects, awards, theater, hobbies."); positionCard();
+    var inp=document.getElementById('agentInput'); if(inp) inp.focus();
+  });
+  var form = document.getElementById('agentForm');
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var inp = document.getElementById('agentInput'); var q = inp.value.trim(); if(!q) return;
+    logMsg('you', q); inp.value=''; var thinking = logMsg('agent', '\u2026');
+    var ans;
+    {
+      try {
+        var r = await fetch('/api/ask', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ q: q }) });
+        var d = await r.json(); ans = d && d.answer; 
+      } catch(err){ ans = null; }
+    }
+    if (!ans) ans = localAnswer(q);
+    thinking.textContent = ans;
+    document.getElementById('agentLog').scrollTop = 99999;
+  });
+}
+function logMsg(who, text){
+  var log = document.getElementById('agentLog');
+  var row = document.createElement('div'); row.style.margin='0 0 8px';
+  var tag = who==='you' ? '<span style="color:#7aa8ff;">you ></span> ' : '<span style="color:#3fe08a;">nishant.ai ></span> ';
+  row.innerHTML = tag + '<span style="color:#e8f0ff;"></span>';
+  row.lastChild.textContent = text;
+  log.appendChild(row); log.scrollTop = 99999; return row.lastChild;
+}
+document.getElementById('closeSheet').addEventListener('click', closeCard);
+window.addEventListener('keydown', e => { if (e.key === 'Escape') closeCard(); });
+
+/* ---- misc ---- */
+let hintT = setTimeout(hideHint, 5000);
+function hideHint() { document.getElementById('hint').classList.add('hide'); }
+let toastT;
+function showToast(t) { const el = document.getElementById('toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('show'), 1800); }
+
+window.addEventListener('resize', () => {
+  camera.aspect = W() / H(); camera.updateProjectionMatrix(); renderer.setSize(W(), H());
+});
+
+/* fallback: hide loader after 2.5s even if texture load event misses */
+setTimeout(() => document.getElementById('loading').classList.add('hide'), 2500);
+</script>
+<script src="assets/dj-hud.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nishant Shah — Team Intro</title>
+<link rel="stylesheet" href="assets/tokens.css" />
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #fff; font-family: var(--font-sans, "Helvetica Neue", Arial, sans-serif); overflow: hidden; }
+  #stage { position: fixed; inset: 0; background: #000; }
+  #introVid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; }
+  /* tap-to-start overlay (shown only if autoplay-with-sound is blocked) */
+  #startOverlay { position: fixed; inset: 0; z-index: 5; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 22px; cursor: pointer;
+    background: radial-gradient(130% 110% at 50% 35%, rgba(20,33,63,0.6) 0%, rgba(7,8,12,0.86) 70%); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); }
+  #startOverlay.show { display: flex; }
+  #startOverlay .play { width: 96px; height: 96px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); display: grid; place-items: center; transition: transform .2s, background .2s; }
+  #startOverlay:hover .play { transform: scale(1.06); background: rgba(255,255,255,0.18); }
+  #startOverlay .play svg { width: 34px; height: 34px; fill: #fff; margin-left: 5px; }
+  #startOverlay .label { font-size: 1rem; letter-spacing: 0.04em; color: rgba(255,255,255,0.9); }
+  /* controls bar */
+  #bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; align-items: center; gap: 14px; padding: 16px 20px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.6), transparent); opacity: 0; transition: opacity .3s; }
+  #stage:hover #bar, #bar.show { opacity: 1; }
+  #bar button, #bar a { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22); color: #fff; border-radius: 999px; padding: 9px 16px; font-size: 0.85rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 7px; }
+  #bar button:hover, #bar a:hover { background: rgba(255,255,255,0.2); }
+  #bar .spacer { flex: 1; }
+  #bar svg { width: 15px; height: 15px; fill: currentColor; }
+  .topnav { z-index: 7; }
+</style>
+</head>
+<body>
+<nav class="topnav"><a href="intro.html" class="active">Intro</a><a href="portfolio.html">Portfolio</a><a href="world.html">Room</a></nav>
+
+<div id="stage">
+  <video id="introVid" src="assets/intro-video.mp4" playsinline preload="metadata"></video>
+
+  <div id="startOverlay">
+    <div class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+    <div class="label">Tap to play with sound</div>
+  </div>
+
+  <div id="bar">
+    <button id="playBtn" aria-label="Play / pause"><svg id="ppIcon" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+    <button id="muteBtn" aria-label="Mute / unmute"><svg id="muteIcon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg></button>
+    <button id="fsBtn" aria-label="Fullscreen"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+    <div class="spacer"></div>
+    <a href="portfolio.html">Skip to portfolio <svg viewBox="0 0 24 24"><path d="M8.6 5.4 14.2 11H4v2h10.2l-5.6 5.6L10 20l8-8-8-8z"/></svg></a>
+  </div>
+</div>
+
+<script>
+(function () {
+  var v = document.getElementById('introVid');
+  var overlay = document.getElementById('startOverlay');
+  var bar = document.getElementById('bar');
+  var ppIcon = document.getElementById('ppIcon');
+  var muteIcon = document.getElementById('muteIcon');
+
+  var ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
+  var ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+  var ICON_SOUND = '<path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16 8.5a4 4 0 0 1 0 7" fill="none" stroke="#fff" stroke-width="2"/>';
+  var ICON_MUTE = '<path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16 9l5 6M21 9l-5 6" stroke="#fff" stroke-width="2"/>';
+
+  function syncPP() { ppIcon.innerHTML = v.paused ? ICON_PLAY : ICON_PAUSE; }
+  function syncMute() { muteIcon.innerHTML = v.muted ? ICON_MUTE : ICON_SOUND; }
+
+  // Try to autoplay WITH sound. Browsers usually block this → fall back to tap overlay.
+  v.muted = false;
+  var p = v.play();
+  if (p && p.catch) {
+    p.then(function () { overlay.classList.remove('show'); syncPP(); syncMute(); })
+     .catch(function () { overlay.classList.add('show'); syncPP(); syncMute(); });
+  }
+
+  // Tap overlay → start with sound
+  overlay.addEventListener('click', function () {
+    v.muted = false;
+    v.play().then(function () { overlay.classList.remove('show'); syncPP(); syncMute(); }).catch(function () {});
+  });
+
+  document.getElementById('playBtn').addEventListener('click', function () { if (v.paused) v.play(); else v.pause(); });
+  document.getElementById('muteBtn').addEventListener('click', function () { v.muted = !v.muted; if (!v.muted && v.paused) v.play(); syncMute(); });
+  document.getElementById('fsBtn').addEventListener('click', function () {
+    var el = document.getElementById('stage');
+    if (document.fullscreenElement) document.exitFullscreen();
+    else (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+  });
+
+  v.addEventListener('play', syncPP);
+  v.addEventListener('pause', syncPP);
+  v.addEventListener('volumechange', syncMute);
+  v.addEventListener('click', function () { if (v.paused) v.play(); else v.pause(); });
+  // when it ends, surface controls + skip
+  v.addEventListener('ended', function () { bar.classList.add('show'); });
+
+  syncPP(); syncMute();
+})();
+</script>
+</body>
+</html>
