@@ -488,17 +488,10 @@
 </style>
 
 <style id="journey-css">
-  /* fixed-stage scene swap with per-chapter camera moves */
-  @media (prefers-reduced-motion: no-preference) {
-    .main > section { transition: opacity .85s var(--ease), transform .95s cubic-bezier(.22,.9,.24,1), filter .85s var(--ease); will-change: opacity, transform; }
-    .main > section:not(.ch-active) { opacity: 0.1; pointer-events: none; filter: blur(2px); }
-    .main > section[data-cam="rise"]:not(.ch-active) { transform: translateY(70px) scale(0.98); }
-    .main > section[data-cam="zoom"]:not(.ch-active) { transform: scale(1.07); filter: blur(4px); }
-    .main > section[data-cam="tilt"]:not(.ch-active) { transform: perspective(1000px) rotateX(9deg) translateY(54px); transform-origin: 50% 100%; }
-    .main > section[data-cam="panl"]:not(.ch-active) { transform: perspective(1000px) rotateY(-7deg) translateX(-70px); transform-origin: 0% 50%; }
-    .main > section[data-cam="panr"]:not(.ch-active) { transform: perspective(1000px) rotateY(7deg) translateX(70px); transform-origin: 100% 50%; }
-    .main > section.ch-active { opacity: 1; transform: none; filter: none; }
-  }
+  /* fixed-stage scene swap — camera dimming disabled: all sections stay fully visible for easy scrolling */
+  .main > section,
+  .main > section:not(.ch-active),
+  .main > section.ch-active { opacity: 1; transform: none; filter: none; pointer-events: auto; }
   /* full-viewport stage formatting */
   .main > section { min-height: 96vh; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; }
   /* Day Meter companion */
@@ -947,17 +940,8 @@
   var raf=0;
   addEventListener('scroll',onScroll,{passive:true}); addEventListener('resize',onScroll); onScroll();
 })();</script>
-<script>/* presentation-style section reveals */(function(){
-  document.body.classList.add('anim-on');
-  var secs=[].slice.call(document.querySelectorAll('.main > section'));
-  if(!('IntersectionObserver' in window)){ secs.forEach(function(s){s.classList.add('in-view');}); return; }
-  var io=new IntersectionObserver(function(es){
-    es.forEach(function(e){
-      if(e.isIntersecting){ e.target.classList.add('in-view'); }
-      else if(e.boundingClientRect.top>0){ e.target.classList.remove('in-view'); } // re-arm only when it leaves downward (below viewport)
-    });
-  },{ threshold:0.18, rootMargin:'-8% 0px -12% 0px' });
-  secs.forEach(function(s){ io.observe(s); });
+<script>/* section reveals disabled — content stays visible for easy scrolling (video scrub still active) */(function(){
+  [].forEach.call(document.querySelectorAll('.main > section'),function(s){ s.classList.add('in-view'); });
 })();</script>
 <script>/*ologo-loader*/(function(){document.querySelectorAll(".ologo").forEach(function(el){var direct=el.getAttribute("data-src");if(direct){var di=new Image();di.alt="";di.onerror=function(){el.remove();};di.src=direct;el.appendChild(di);return;}var dom=el.getAttribute("data-domain");var mono=el.getAttribute("data-mono")||"\u2022";if(!dom){el.remove();return;}var img=new Image();img.alt="";var stage=0;img.onerror=function(){stage++;if(stage===1){img.src="https://www.google.com/s2/favicons?domain="+dom+"&sz=128";}else{el.remove();}};img.src="https://favicon.im/"+dom+"?larger=true";el.appendChild(img);});})();</script>
 

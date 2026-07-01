@@ -165,14 +165,14 @@ const HOTSPOTS = [
     ['Butter','A Tribe Called Quest',''],
     ['Paradise / a Burn','Frank Ocean','']
   ] },
-  { id:'games',     lon: -66.5, lat:-28.9, label:'Favorite Family Board Games',    body:'', list:[
+  { id:'games',     lon: -66.5, lat:-28.9, label:'Favorite Family Board Games',    body:'The <b>Play online</b> links next to Judgement and Mafia are little apps I built for fun for me and my family to play.', list:[
     ['Sequence','','','assets/photos/game-sequence.jpg'],
     ['Castle Risk','','','assets/photos/game-castlerisk.jpg'],
     ['Catan','','','assets/photos/game-catan.jpg'],
-    ['Judgement','aka Spades','','assets/photos/game-cards.jpg'],
+    ['Judgement','aka Spades','','assets/photos/game-cards.jpg','https://judgement-scorekeeper-326642039547.us-west1.run.app/'],
     ['Texas Hold\u2019Em','','','assets/photos/game-cards.jpg'],
     ['Bukaro','','','assets/photos/game-cards.jpg'],
-    ['Mafia','','','assets/photos/game-mafia.jpg'],
+    ['Mafia','','','assets/photos/game-mafia.jpg','https://omert-the-mafia-game-guide-12346179866.us-west1.run.app'],
   ] },
   { id:'plays',     lon: -42.8, lat:  3.7, label:'Shows I Look Forward To', body:'Roles and productions I haven\u2019t taken on yet \u2014 the stages I\u2019m hoping to step onto next.', playable:true, list:[
     ['The 25th Annual Putnam County Spelling Bee','','','The 25th Annual Putnam County Spelling Bee'],
@@ -536,7 +536,8 @@ function openCard(hs) {
         '<span style="display:flex; align-items:center; gap:12px; min-width:0; color:#fff; text-shadow:0 1px 8px rgba(0,0,0,0.6);">' +
         (r[3] ? '<img src="' + r[3] + '" alt="" style="flex:0 0 auto; width:38px; height:38px; border-radius:6px; object-fit:cover;" />' : '') +
         '<span><b>' + r[0] + '</b>' + (r[1] ? ' \u2014 ' + r[1] : '') + '</span></span>' +
-        (r[2] ? '<span style="flex:0 0 auto; color:rgba(255,255,255,0.78); font-size:0.82rem;">' + r[2] + '</span>' : '') +
+        (r[4] ? '<a href="' + r[4] + '" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="flex:0 0 auto; display:inline-flex; align-items:center; gap:5px; padding:5px 11px; border-radius:999px; border:1px solid rgba(255,255,255,0.32); background:rgba(255,255,255,0.14); color:#fff; text-decoration:none; font-size:0.78rem; white-space:nowrap;">\u25b6 Play online</a>' :
+         (r[2] ? '<span style="flex:0 0 auto; color:rgba(255,255,255,0.78); font-size:0.82rem;">' + r[2] + '</span>' : '')) +
       '</div>'; }).join('') + '</div>';
   } else {
     blurbEl.innerHTML = (hs.body ? '<p style="margin:0 0 12px;">' + hs.body + '</p>' : '') +
