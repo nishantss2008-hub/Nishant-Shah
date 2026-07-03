@@ -111,7 +111,9 @@
       const r = el.getBoundingClientRect();
       const prog = (r.top + r.height / 2 - vh / 2) / vh;
       const sp = parseFloat(el.dataset.parallax) || 0.1;
-      el.style.transform = 'translate3d(0,' + (-prog * sp * 120).toFixed(1) + 'px,0)';
+      // use the independent `translate` property so this composes with any
+      // `transform` the reveal system animates on the same element
+      el.style.translate = '0 ' + (-prog * sp * 120).toFixed(1) + 'px';
     }
   }
   function progress() {
@@ -130,7 +132,14 @@
     initMobileNav();
     initAnchors();
     initGlow();
-    _pels = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? [] : [...document.querySelectorAll('[data-parallax]')];
+    const _reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    _pels = _reduce ? [] : [...document.querySelectorAll('[data-parallax]')];
+    if (!_reduce) {
+      // subtle mid-layer parallax on headings for depth (composes via `translate`)
+      document.querySelectorAll('#home h1, .main > section .sec').forEach((el) => {
+        if (!el.hasAttribute('data-parallax')) { el.dataset.parallax = '0.05'; _pels.push(el); }
+      });
+    }
     _barEl = document.getElementById('scrollProgress');
     parallax(); progress();
     checkReveal(); spy();

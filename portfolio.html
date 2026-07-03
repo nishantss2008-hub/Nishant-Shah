@@ -52,7 +52,7 @@
   body.dawn-mode .cred-card { background: transparent !important; border: 0 !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   body.dawn-mode .cred li { background: transparent !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   body.dawn-mode .shell { position: relative; z-index: 2; }
-  body.dawn-mode .reveal { opacity: 1; transform: none; }
+  /* reveal fade-up handled by the .reveal → .in system in portfolio-team.js (opacity 0→1, 22px rise, 0.6s) */
   /* ===== presentation-style scroll reveals (JS-gated; visible if JS off) ===== */
   body.anim-on .main > section .wrap > *,
   body.anim-on .main > section .hold > *,
@@ -598,7 +598,7 @@
       <div class="wrap">
         <div class="hero-glow"></div>
         <canvas id="heroParticles" aria-hidden="true"></canvas>
-        <div class="hero-photo" data-parallax="0.12" style="background-image:url('https://i.imgur.com/MVhoIC5.jpeg')"></div>
+        <div class="hero-photo" data-parallax="0.2" style="background-image:url('https://i.imgur.com/MVhoIC5.jpeg')"></div>
         <h1 class="reveal" style="transition-delay:.05s; text-shadow: 0 3px 24px rgba(0,0,0,0.75), 0 1px 4px rgba(0,0,0,0.6);"><span style="display:block; color:#fff;">TEAM comes first.</span>Only together can we solve problems to <span class="hl-underline">better the world.</span></h1>
         <div class="meta-line reveal" style="transition-delay:.24s">
           <b>Based in:</b> Tampa, FL
@@ -866,7 +866,7 @@
 
     <!-- ---------- CONTACT ---------- -->
     <section id="contact" class="contact" data-screen-label="Contact">
-      <div class="contact-photo" data-parallax="0.16" style="background-image:url('https://i.imgur.com/MVhoIC5.jpeg')"></div>
+      <div class="contact-photo" data-parallax="0.24" style="background-image:url('https://i.imgur.com/MVhoIC5.jpeg')"></div>
       <div class="wrap">
         <div class="eyebrow reveal" style="justify-content:center;"><span class="n">
 </span><span class="t">
