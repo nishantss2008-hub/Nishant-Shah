@@ -976,6 +976,6 @@ var _t; window.addEventListener('resize',function(){clearTimeout(_t);_t=setTimeo
 })();</script>
 <script>/*wfilter*/(function(){var wf=document.querySelector(".wfilter");if(!wf)return;var btn=document.getElementById("wfBtn"),menu=document.getElementById("wfMenu"),label=document.getElementById("wfLabel"),car=document.getElementById("wcar");var slides=[].slice.call(car.querySelectorAll(".wslide"));btn.addEventListener("click",function(e){e.stopPropagation();wf.classList.toggle("open");});document.addEventListener("click",function(){wf.classList.remove("open");});menu.querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){var f=b.getAttribute("data-f");label.textContent=b.textContent;menu.querySelectorAll("button").forEach(function(x){x.classList.toggle("active",x===b);});slides.forEach(function(sl){var c=(sl.getAttribute("data-cat")||"").split(" ");sl.style.display=(f==="all"||c.indexOf(f)>-1)?"":"none";});window.centerGridOrphans&&window.centerGridOrphans();wf.classList.remove("open");});});})();</script>
 <script src="assets/journey.js"></script>
-<script src="assets/dj-hud.js"></script>
+<script src="assets/dj-hud.js" data-autostart></script>
 </body>
 </html>
