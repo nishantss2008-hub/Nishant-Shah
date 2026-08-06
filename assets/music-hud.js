@@ -1,9 +1,9 @@
 /* ============================================================
    music-hud.js  —  persistent cross-page music player + HUD bar
    ------------------------------------------------------------
-   • Add your 5-min mixes in the MIXES array below (drop the files
-     in assets/mixes/ and set `src`). Until a src is set, that mix
-     is listed but not playable.
+   • MIXES is empty by default. Add a real mix by dropping the file
+     in assets/mixes/ and adding an entry below with a `src` set —
+     the Room's DJ card only shows a set list once there is one.
    • The HUD bar appears on every page that loads this script and
      resumes the current mix + position from localStorage, so music
      carries across Portfolio / Room / case-study pages.
@@ -14,13 +14,8 @@
 (function () {
   if (window.MusicHUD) return;
 
-  var MIXES = [
-    { id: 'mix1', name: 'Sunrise Set',   sub: 'DJ mix · ~5 min', src: '' },
-    { id: 'mix2', name: 'Late Night',    sub: 'DJ mix · ~5 min', src: '' },
-    { id: 'mix3', name: 'Build Mode',    sub: 'DJ mix · ~5 min', src: '' },
-    { id: 'mix4', name: 'Golden Hour',   sub: 'DJ mix · ~5 min', src: '' },
-    { id: 'mix5', name: 'Encore',        sub: 'DJ mix · ~5 min', src: '' }
-  ];
+  // e.g. { id: 'mix1', name: 'Sunrise Set', sub: 'DJ mix · ~5 min', src: 'assets/mixes/sunrise.mp3' }
+  var MIXES = [];
   var LS = 'nishMusicState';
   function readState() { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch (e) { return {}; } }
   function writeState(s) { try { localStorage.setItem(LS, JSON.stringify(s)); } catch (e) {} }
@@ -77,6 +72,7 @@
   function play(mixId) {
     var mix = MIXES.filter(function (m) { return m.id === mixId; })[0]; if (!mix) return;
     if (window.__previewAudio) try { window.__previewAudio.pause(); } catch (e) {}
+    if (window.DJVinyl) try { window.DJVinyl.pause(); } catch (e) {}
     loadMix(mix, cur && cur.id === mixId ? audio.currentTime : 0, true);
   }
   function toggle() { if (!cur) return; if (audio.paused) audio.play().catch(function(){}); else audio.pause(); }

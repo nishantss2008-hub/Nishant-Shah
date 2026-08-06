@@ -197,7 +197,7 @@ const HOTSPOTS = [
   { id:'soccer',    lon:  79.6, lat:-28.3, label:'Soccer',                         body:'The team sport that taught me to lose and win together.', img:'assets/photos/soccer-team.jpg' },
   { id:'reads',     lon:  51.5, lat:  1.6, label:'Favorite Reads',                 body:'', list:[['Spy School','','','assets/photos/book-spyschool.jpg'],['Brotherband','','','assets/photos/book-brotherband.jpg'],['Ranger\u2019s Apprentice','','','assets/photos/book-rangers.jpg'],['One of Us Is Lying','','','assets/photos/book-oneofus.jpg'],['Shoe Dog','','','assets/photos/book-shoedog.jpg'],['1984','','','assets/photos/book-1984.jpg'],['Where the Red Fern Grows','','','assets/photos/book-redfern.jpg'],['The Outsiders','','','assets/photos/book-outsiders.jpg'],['Harry Potter','','','assets/photos/book-harrypotter.jpg'],['Artemis Fowl','','','assets/photos/book-artemis.jpg'],['To Kill a Mockingbird','','','assets/photos/book-mockingbird.jpg']] },
   { id:'awards',    lon: 100.4, lat: -5.9, label:'Awards & Achievements',          body:'Starting with the Duke of Edinburgh.', img:'assets/photos/duke-edinburgh.jpg', href:'portfolio.html#receipts', hrefLabel:'See my awards' },
-  { id:'dj',        lon: 176.9, lat:-58.9, label:'DJ',                             body:'The controller on my bed \u2014 mixing is how I decompress. Pick a set:', mixes:true },
+  { id:'dj',        lon: 176.9, lat:-58.9, label:'DJ',                             body:'The controller on my bed \u2014 mixing is how I decompress. Spin the record up in the corner to see me behind it.', mixes:true },
 ];
 
 const W = () => window.innerWidth, H = () => window.innerHeight;
@@ -384,8 +384,9 @@ function openCard(hs) {
   document.getElementById('sTag').textContent = hs.tag || 'In my room';
   document.getElementById('sTitle').textContent = hs.label;
   var blurbEl = document.getElementById('sBlurb');
-  if (hs.mixes || hs.tracks) {
-    var lib = hs.mixes ? (window.MusicHUD ? window.MusicHUD.mixes : []) : hs.tracks;
+  var lib = hs.mixes ? (window.MusicHUD ? window.MusicHUD.mixes : []) : (hs.tracks || []);
+  // no entries yet → skip the picker and fall through to the plain body/photo card
+  if ((hs.mixes || hs.tracks) && lib.length) {
     var via = hs.mixes ? 'hud' : 'piano';
     blurbEl.innerHTML = (hs.body ? '<p style="margin:0 0 14px;">' + hs.body + '</p>' : '') +
       '<div class="mixlist">' + lib.map(function (m) {
