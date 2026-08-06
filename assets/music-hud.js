@@ -3,7 +3,7 @@
    ------------------------------------------------------------
    • Add your 5-min mixes in the MIXES array below (drop the files
      in assets/mixes/ and set `src`). Until a src is set, that mix
-     shows as "coming soon".
+     is listed but not playable.
    • The HUD bar appears on every page that loads this script and
      resumes the current mix + position from localStorage, so music
      carries across Portfolio / Room / case-study pages.

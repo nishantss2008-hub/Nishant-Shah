@@ -56,16 +56,18 @@
       ], next: 'yis',
     },
     yis: {
-      triad: {build:"Authored in-depth equity analyses and research.",biz:"Investing and valuation under a national analyst certification.",lead:"National board member serving on the outreach committee."},
+      triad: {build:"Authored in-depth equity analyses and research.",biz:"Investing and valuation under two national YIS certifications.",lead:"National board member serving on the outreach committee."},
       title: 'Young Investors Society', motif: 'candles',
       tags: ['Finance', 'Business'],
-      sub: 'National Board Member & Certified Young Investment Analyst.',
-      facts: [['Role','National Board'],['Cert','Young Investment Analyst'],['Work','Equity research'],['Committee','Outreach']],
+      sub: 'National Board Member, Certified Young Investment Analyst, and Certified Young Financial Literacy Scholar.',
+      facts: [['Role','National Board'],['Certs','Analyst \u00b7 Literacy Scholar'],['Work','Equity research'],['Committee','Outreach']],
       sections: [
-        { label:'The problem', h:'Students learn investing in theory.', body:["Markets stay abstract until you have to defend a real thesis on a real company in front of people who know better."] },
-        { label:'The approach', h:'Do the analyst work for real.', body:["On the YIS national board I authored in-depth equity analyses and served on the outreach committee \u2014 the actual work of an analyst, certified."] },
-        { label:'The outcome', h:'A seat at the table.', checklist:["Named to the <b>YIS National Board</b>.","Earned the <b>Certified Young Investment Analyst</b> designation.","Authored equity research and led outreach."] },
-        { label:'What I learned', h:'Conviction needs evidence.', body:["Investing taught me to back a belief with research a stranger would trust."] },
+        { label:'The org', h:'Teaching students to invest like analysts.', body:["Young Investors Society is a global nonprofit that puts high-school students through the same discipline professionals use: read the filings, understand the business, value it, and only then form an opinion. It runs chapters, stock-pitch competitions, and a certification track that has to be earned rather than attended."] },
+        { label:'The problem', h:'Students learn investing in theory.', body:["Markets stay abstract until you have to defend a real thesis on a real company in front of people who know better. Most students never get past the vocabulary \u2014 they can define a P/E ratio but have never had to argue why one is wrong."] },
+        { label:'The approach', h:'Do the analyst work for real.', body:["On the YIS national board I authored in-depth equity analyses and served on the outreach committee \u2014 the actual work of an analyst, certified.","Every write-up follows the same discipline: understand how the company actually makes money, read what management has promised and whether they delivered, build the valuation, and then stress the thesis against the strongest case for the other side. Outreach is the mirror image of that work \u2014 growing the program means explaining to students and schools why any of it is worth their time."] },
+        { label:'The work', h:'What the role actually involves.', checklist:["Serve on the <b>YIS National Board</b>, contributing to how the organization grows and what it asks of its members.","Sit on the <b>outreach committee</b>, expanding the program's reach to new students and chapters.","Author <b>in-depth equity research</b> \u2014 business breakdown, valuation, and a thesis with the counterargument built in.","Completed the coursework and assessments behind both YIS designations."] },
+        { label:'The outcome', h:'A seat at the table.', checklist:["Named to the <b>YIS National Board</b>.","Earned the <b>Certified Young Investment Analyst</b> designation (2025).","Earned the <b>Certified Young Financial Literacy Scholar</b> designation.","Authored equity research and led outreach."] },
+        { label:'What I learned', h:'Conviction needs evidence.', body:["Investing taught me to back a belief with research a stranger would trust. The number at the end of a model is the easy part; the hard part is being honest about the assumptions that got you there, and being willing to change them.","It also reframed how I think about every other venture I work on \u2014 a business is only as good as the cash it can actually produce, and enthusiasm is not a substitute for that."] },
       ], next: 'ecovision',
     },
     ecovision: {
@@ -156,17 +158,17 @@
     },
 
     tedx: {
-      triad: {"build":"Built the event from zero, license, production, and a repeatable system.","biz":"Created a sustainable legacy program, not a one-night cost.","lead":"Assembled and coached the speaker team, then took the stage myself."},
+      triad: {"build":"We built the event from zero — I carried the license, and together we turned it into a repeatable production system.","biz":"We designed it as a sustainable legacy program, not a one-night cost.","lead":"I assembled and coached the speaker team, then stood on the stage we built together."},
       title: 'TEDx Carrollwood Day School', motif: null,
       heroImg: 'https://i.imgur.com/JBmeda9.jpeg',
       tags: ['Platform', 'Events & speaking'],
-      sub: 'I built a TEDx event from the ground up, produced the show, and spoke on the stage I created.',
+      sub: 'We built a TEDx event from the ground up and produced the show together — and I got to speak on the stage we made.',
       facts: [['Role', 'Founder & Licensee'], ['Status', 'Built from scratch'], ['Hats', 'Organizer · Speaker']],
       sections: [
-        { label: 'The problem', h: 'Plenty of ideas but no platform to share them.', body: ["Our school had no working TEDx stage. The hardest part of \u201cideas worth spreading\u201d turns out to be creating the stage to spread them from."] },
-        { label: 'The approach', h: 'Build it from zero.', body: ["I secured the license, assembled the team, curated and coached the speakers, and produced the show end to end, then made it a <strong>legacy program</strong> so it outlasts me. This year, I'm also a speaker on it.", "That infrastructure paid off: I was reselected through a rigorous application process to curate, organize, and host the 2026 TEDx event, this time scaling up the speaker roster, deepening speaker development, building community connections, embedding legacy programming into English course requirements, and driving larger turnouts."] },
-        { label: 'The outcome', h: 'A stage that runs without me.', checklist: ["Licensed and produced a full TEDx event from scratch.", "Created a sustainable, repeatable platform for student ideas.", "Curated student speakers, and took the stage as one myself."] },
-        { label: 'What I learned', h: 'Leadership leaves a system behind.', body: ["I wanted TEDx to run without me, and when it did, that's how I know I created something that will make a change in the lives of those around me."] },
+        { label: 'The problem', h: 'Plenty of ideas but no platform to share them.', body: ["Our school had no working TEDx stage. We were never short on \u201cideas worth spreading\u201d \u2014 what we were missing was somewhere to spread them from."] },
+        { label: 'The approach', h: 'Build it together, from zero.', body: ["I secured the license and recruited the team, and from there it belonged to all of us. We curated and coached the speakers, produced the show end to end, and built it into a <strong>legacy program</strong> so it outlasts any one of us. This year, I'm also a speaker on it.", "That infrastructure paid off: I was reselected through a rigorous application process to curate, organize, and host the 2026 TEDx event, and we're using it to scale up the speaker roster, deepen speaker development, build community connections, embed legacy programming into English course requirements, and drive larger turnouts."] },
+        { label: 'The outcome', h: 'A stage that runs without any one of us.', checklist: ["Licensed and produced a full TEDx event from scratch, as a team.", "Built a sustainable, repeatable platform for student ideas.", "Curated and coached our student speakers, then took the stage as one of them."] },
+        { label: 'What I learned', h: 'Leadership leaves a system behind.', body: ["I wanted TEDx to run without me, and when it did, that's how I knew we had built something that will keep changing the lives of the people around us."] },
         { label: '', h: '', embed: 'https://www.youtube.com/embed/xeA5IF2QSoM?si=S1wAYyZEQE2RuJ5q&start=1' },
       ],
       next: 'capture',
@@ -288,6 +290,20 @@
         { label: 'About EBIT', h: 'Business, built for students.', body: ["EBIT (Entrepreneurship Business Investment Team) is a free high-school program where students explore business, entrepreneurship, finance, and technology. Founded in 2020, it has become a go-to resource for students who want a deeper understanding of these fields and the skills to succeed in their careers."] },
         { label: 'The idea', h: 'Put students in the room.', body: ["I founded EBIT's Youth Advisory Council program, student teams that deliver insight and project-based solutions to companies, giving members hands-on corporate experience."] },
         { label: 'How it works', h: 'Hands-on and personal.', body: ["We offer interactive group lab sessions and individual presentations, giving members the chance to get hands-on experience and ask questions of our speakers in a more intimate setting. That personal connection is an essential part of the learning process, and we work to create a welcoming, supportive environment for every member."] },
+      ], next: 'aiethics',
+    },
+    aiethics: {
+      triad: {"build":"Helped build the Lab into a program students at six schools actually use.","biz":"Owned the finances — a ~$20,000 budget, four partnerships, and a plan for sustainability.","lead":"Head of Finance and a strategy leader on the Core Leadership Team."},
+      title: 'The AI Ethics Lab', motif: 'shield',
+      tags: ['Finance', 'AI & ethics'],
+      sub: 'Head of Finance — funding and scaling a program that closes the gap between Gen Z and the AI they are inheriting.',
+      facts: [['Role', 'Head of Finance'], ['Years', '11–12'], ['Reach', '6 schools · 200+ users'], ['Budget', '~$20,000']],
+      sections: [
+        { label: 'The problem', h: 'Gen Z inherits AI without a say in it.', body: ["My generation will live with the consequences of how artificial intelligence gets built, and almost none of us are in the rooms where those decisions are made. The gap is not curiosity — students use these tools constantly. The gap is having a serious, structured place to think about what they should and should not be used for."] },
+        { label: 'The approach', h: 'Fund the thing so it can actually grow.', body: ["I lead the AI Ethics Lab as Head of Finance and as a strategy leader on the Core Leadership Team, focused on growth and financial sustainability. A student program lives or dies on whether someone is doing the unglamorous work: building the budget, finding the partners, and making sure the second year is funded before the first one ends.","That meant treating the Lab like a venture rather than a club — knowing what each expansion actually costs, what a partner gets in return, and what we have to deliver to keep them."] },
+        { label: 'The work', h: 'What I own.', checklist: ["Helped bridge the gap between Gen Z and the rapidly evolving world of artificial intelligence by leading the AI Ethics Lab.", "Serve as <b>strategy leader on the Core Leadership Team</b> for growth and financial sustainability.", "Led fundraising and partnership efforts, <b>securing four partners</b>.", "Managed a <b>~$20,000 budget</b> across programming and expansion."] },
+        { label: 'The outcome', h: 'Six schools, 200+ students.', checklist: ["Expanded the Lab to <b>6 schools</b> and <b>200+ users</b>.", "Brought on <b>4 partners</b> to underwrite the work.", "Put the program on financial footing that outlasts any one cohort."] },
+        { label: 'What I learned', h: 'Ethics needs a budget.', body: ["It is easy to convene a conversation about AI ethics once. It is much harder to make that conversation reach a student at another school next year. The difference between the two is money, partnerships, and someone willing to own them."] },
       ], next: 'studentcouncil',
     },
     studentcouncil: {
@@ -340,6 +356,23 @@
     },
   };
 
+  /* Which TEAM spike each case belongs to. Drives the breadcrumb trail and the
+     "Back to …" link, so every case study points at the page it was reached from:
+     portfolio.html › spike.html?s=<letter> › this case. */
+  const SPIKE_NAME = {
+    T: 'Theatre &amp; the Arts',
+    E: 'Enterprise &amp; Engineering',
+    A: 'Advocacy &amp; Service',
+    M: 'Mobilizing &amp; Leadership',
+  };
+  const CASE_SPIKE = {
+    stage: 'T', capture: 'T', tedx: 'T', speech: 'T', spiceseat: 'T',
+    ecovision: 'E', escaperoom: 'E', smif: 'E', ei: 'E', decoy: 'E',
+    ebit: 'E', nextgen: 'E', yis: 'E', ventureseek: 'E', aiethics: 'E', rewired: 'E',
+    seeusnow: 'A', internationalism: 'A', ryannece: 'A',
+    deca: 'M', studentcouncil: 'M', beta: 'M', sbs: 'M',
+  };
+
   function esc(s) { return s; }
   function checkIcon() { return `<span class="c"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>`; }
 
@@ -350,6 +383,18 @@
     const c = CASES[id] || CASES.ecovision;
     var nextId = c.next; if (nextId === id) { var ks = Object.keys(CASES).filter(function(k){return k!==id;}); nextId = ks[(ks.indexOf(c.next)+1+ks.length)%ks.length] || ks[0]; }
     document.title = c.title + ', Case Study · Nishant Shah';
+
+    /* trace back up the hierarchy: portfolio → spike page → this case */
+    var spikeKey = CASE_SPIKE[id] || null;
+    var spikeName = spikeKey ? SPIKE_NAME[spikeKey] : 'Work';
+    var spikeHref = spikeKey ? 'spike.html?s=' + spikeKey : 'portfolio.html';
+    var backEl = document.querySelector('.cs-top .back');
+    if (backEl) {
+      backEl.setAttribute('href', spikeHref);
+      var backLabel = document.getElementById('cs-back-label');
+      if (backLabel) backLabel.innerHTML = 'Back to ' + spikeName;
+    }
+
     if (c.carousel) {
       document.querySelector('.cs-hero').style.display = 'none';
       const caps = c.captions || [];
@@ -371,7 +416,7 @@
     const v = c.verified ? ` <span class="verified"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" style="vertical-align:-2px"><path d="M12 2l2.4 1.8 3-.2 1 2.8 2.6 1.5-.8 2.9.8 2.9-2.6 1.5-1 2.8-3-.2L12 22l-2.4-1.9-3 .2-1-2.8L3 16.2l.8-2.9L3 10.4l2.6-1.5 1-2.8 3 .2z"/><path d="M8.5 12.5l2.5 2.5 4.5-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : '';
     document.getElementById('cs-title').innerHTML = c.title + v;
     document.getElementById('cs-sub').textContent = c.sub;
-    (function(){ var bc='<nav class="cs-bread reveal"><a href="portfolio.html">Home</a><span>\u203a</span><a href="portfolio.html">Ventures</a><span>\u203a</span><span class="cur">'+c.title+'</span></nav>'; document.getElementById('cs-tagrow').insertAdjacentHTML('beforebegin',bc); var words=0; (c.sections||[]).forEach(function(s){ if(s.body) s.body.forEach(function(p){ words+=String(p).split(/\s+/).length; }); }); var mins=Math.max(1,Math.round(words/200)); document.getElementById('cs-sub').insertAdjacentHTML('afterend','<div class="cs-readtime reveal">'+mins+' min read</div>'); })();
+    (function(){ var bc='<nav class="cs-bread reveal"><a href="portfolio.html">Home</a><span>\u203a</span><a href="'+spikeHref+'">'+spikeName+'</a><span>\u203a</span><span class="cur">'+c.title+'</span></nav>'; document.getElementById('cs-tagrow').insertAdjacentHTML('beforebegin',bc); var words=0; (c.sections||[]).forEach(function(s){ if(s.body) s.body.forEach(function(p){ words+=String(p).split(/\s+/).length; }); }); var mins=Math.max(1,Math.round(words/200)); document.getElementById('cs-sub').insertAdjacentHTML('afterend','<div class="cs-readtime reveal">'+mins+' min read</div>'); })();
     document.getElementById('cs-factbar').innerHTML = c.facts.map(([k, val]) =>
       `<div><div class="k">${k}</div><div class="v">${val}</div></div>`).join('');
     if (c.link) document.getElementById('cs-sub').insertAdjacentHTML('afterend',
