@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="mask-icon" href="assets/favicon.svg" color="#4f86ff" />
 <title>Nishant Shah, Founder, Leader, Storyteller</title>
 <meta name="description" content="High-school senior at Carrollwood Day School creating at the intersection of business, leadership, and the arts." />
 <meta property="og:title" content="Nishant Shah, Founder, Leader, Storyteller" />
@@ -494,13 +496,6 @@
   .main > section.ch-active { opacity: 1; transform: none; filter: none; pointer-events: auto; }
   /* full-viewport stage formatting */
   .main > section { min-height: 96vh; display: flex; flex-direction: column; justify-content: center; box-sizing: border-box; }
-  /* Day Meter companion */
-  .daymeter { position: fixed; right: 22px; bottom: 22px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 9px 16px; border-radius: 999px; background: rgba(10,12,18,0.55); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.16); color: #fff; }
-  .daymeter .dm-dot { width: 9px; height: 9px; border-radius: 50%; background: #7a8aff; flex: 0 0 auto; transition: background .3s; }
-  .daymeter .dm-time { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.92rem; letter-spacing: 0.04em; }
-  .daymeter .dm-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.25); }
-  .daymeter .dm-ch { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.75); white-space: nowrap; }
-  @media (max-width: 700px) { .daymeter .dm-ch, .daymeter .dm-sep { display: none; } }
   /* journey rail */
   .jrail { position: fixed; left: 18px; top: 50%; transform: translateY(-50%); z-index: 60; display: flex; flex-direction: column; gap: 6px; }
   @media (max-width: 860px) { .jrail { display: none; } }
@@ -663,7 +658,7 @@
     <section id="why" class="team-sec" data-screen-label="Why dawn">
       <div class="wrap" style="max-width:820px;">
         <div class="sc-kick reveal" style="font-family:var(--font-mono);font-size:0.76rem;letter-spacing:0.18em;text-transform:uppercase;color:#f5b21a;margin-bottom:18px;">Why dawn</div>
-        <p class="reveal" style="font-size:clamp(1.5rem,3.2vw,2.3rem);line-height:1.4;letter-spacing:-0.02em;margin:0;text-wrap:pretty;">My parents named me Nishant (निशान्त), which is Sanskrit for ‘Dawn.’ My goal is to embody this spirit of new beginnings in everything I do by becoming a driven innovator, artist, and advocate whilst striving to shed light on the lives of those around me.</p>
+        <p class="reveal" style="font-size:clamp(1.5rem,3.2vw,2.3rem);line-height:1.4;letter-spacing:-0.02em;margin:0;text-wrap:pretty;">My parents named me Nishant (निशान्त), a Sanskrit word meaning “dawn.” To me, it represents possibility—the start of something new and the bringing of positive change. I strive to live up to that meaning by approaching every endeavor as an innovator, artist, and advocate, with the goal of making a meaningful difference in the lives of others.</p>
       </div>
     </section>
 
@@ -675,7 +670,7 @@
           <div class="tf-photo"><img src="https://i.imgur.com/5tIZC8P.jpeg" alt="Theatre and the Arts" loading="lazy" /></div>
           <div class="tf-body">
             <div class="team-head"><span class="lt">T</span><h2>heatre &amp; the Arts</h2></div>
-            <p class="team-dek" style="color:#fff;">I participate in collaborative art forms (theatre and photography) that showcase the best parts of humanity: vulnerability, community, emotion.</p>
+            <p class="team-dek" style="color:#fff;">I participate in collaborative art forms (theatre and photography) that showcase my favorite parts of humanity: vulnerability, community, emotion.</p>
             <div class="tf-metrics"><div class="tf-m"><div class="v">22</div><div class="k">stage productions</div></div><div class="tf-m"><div class="v">6</div><div class="k">Superior awards</div></div><div class="tf-m"><div class="v">1</div><div class="k">Congressional Art Award</div></div><div class="tf-m"><div class="v">1</div><div class="k">magazine cover</div></div></div>
             <span class="tf-cta">Explore Theatre &amp; the Arts <span class="arrow">→</span></span>
           </div>
@@ -690,7 +685,7 @@
           <div class="tf-photo"><img src="https://i.imgur.com/lUlvVeJ.jpeg" alt="Enterprise and Engineering" loading="lazy" /></div>
           <div class="tf-body">
             <div class="team-head"><span class="lt">E</span><h2>nterprise &amp; Engineering</h2></div>
-            <p class="team-dek" style="color:#fff;">The best technology is never built alone. Hardware, AI, and the businesses around them, grounded in physics and math, made real by the teams that build them.</p>
+            <p class="team-dek" style="color:#fff;">Engineering is the process of creating solutions to real world problems. Business is what enables you to scale that solution in the real world.</p>
             <div class="tf-metrics"><div class="tf-m"><div class="v">Top 16</div><div class="k">NFTE Nationals</div></div><div class="tf-m"><div class="v">$36K+</div><div class="k">revenue</div></div><div class="tf-m"><div class="v">Global</div><div class="k">Diamond finalist</div></div></div>
             <span class="tf-cta">Explore Enterprise &amp; Engineering <span class="arrow">→</span></span>
           </div>
@@ -819,7 +814,8 @@
           <div class="it"><span class="ologo" data-domain="collegeboard.org" data-mono="CB"></span><div><div class="nm">SAT 1540 · PSAT 1490</div><div class="ds">4.0 UW GPA · weighted &gt; 4.2 · no grade below an A</div></div><span class="wn">, </span></div>
           <div class="it"><span class="ologo" data-domain="nationalhonorsociety.org" data-mono="H"></span><div><div class="nm">Honor societies</div><div class="ds">NHS · Mu Alpha Theta · English · Science · Spanish</div></div><span class="wn">10–12</span></div>
           <div class="it"><span class="ologo" data-domain="yis.org" data-mono="Y"></span><div><div class="nm">Certified Young Investment Analyst</div><div class="ds">Young Investors Society</div></div><span class="wn">2025</span></div>
-                    <div class="it"><span class="ologo" data-domain="yale.edu" data-mono="Y"></span><div><div class="nm">Rocket Science</div><div class="ds">Yale University</div></div><span class="wn">2026</span></div>
+          <div class="it"><span class="ologo" data-domain="yis.org" data-mono="Y"></span><div><div class="nm">Certified Young Financial Literacy Scholar</div><div class="ds">Young Investors Society</div></div><span class="wn">2026</span></div>
+          <div class="it"><span class="ologo" data-domain="yale.edu" data-mono="Y"></span><div><div class="nm">Rocket Science</div><div class="ds">Yale University</div></div><span class="wn">2026</span></div>
           <div class="it"><span class="ologo" data-domain="nyu.edu" data-mono="N"></span><div><div class="nm">NYU Stern Future Business Leaders</div><div class="ds">Program graduate</div></div><span class="wn">2025</span></div>
           <div class="it"><span class="ologo" data-domain="anthropic.com" data-mono="A"></span><div><div class="nm">AI Fluency for Small Businesses</div><div class="ds">Anthropic</div></div><span class="wn">Jun 2026</span></div>
           <div class="it"><span class="ologo" data-domain="anthropic.com" data-mono="A"></span><div><div class="nm">Claude Code 101</div><div class="ds">Anthropic</div></div><span class="wn">Jun 2026</span></div>
