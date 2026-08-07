@@ -149,6 +149,8 @@
     vid.muted = false;
     cueText.textContent = 'Stop the record';
     box.setAttribute('aria-label', 'Stop the DJ set');
+    // remembered so the next page knows to come back with sound rather than silent
+    try { localStorage.setItem('djHudSound', '1'); } catch (e) {}
     var p = vid.play();
     if (p && p.catch) p.catch(function () {
       if (!wantPlaying) return;
@@ -180,11 +182,10 @@
     box.setAttribute('aria-label', 'See what the DJ is doing');
   }
 
-  /* Start on page load. Browsers only allow autoplay without a gesture when muted,
-     so the clip opens silent and the caption asks for the click that adds sound. */
-  function autostart() {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    try { if (localStorage.getItem('djHudStopped') === '1') return; } catch (e) {}
+  /* Start playing silently. Browsers only allow autoplay without a gesture when
+     muted, so the clip opens silent and the caption asks for the click that
+     adds sound. */
+  function startMuted() {
     wantPlaying = true;
     ensureLoaded();
     vid.muted = true;
@@ -194,26 +195,51 @@
     vid.play().catch(function () { pause(); }); // refused → sit idle and wait for a click
   }
 
+  /* Pick up where the last page left off. A link click is a hard navigation, so
+     this element is destroyed and rebuilt — "keeps playing" really means resume
+     at the saved timestamp on the next page. If sound was already granted we ask
+     for it again; browsers may refuse audio without a fresh gesture, in which
+     case we come back silent and one tap restores it. */
+  function resume() {
+    var withSound = false;
+    try { withSound = localStorage.getItem('djHudSound') === '1'; } catch (e) {}
+    if (!withSound) { startMuted(); return; }
+    wantPlaying = true;
+    ensureLoaded();
+    box.classList.add('playing');
+    giveItSound();
+  }
+
   function toggle() {
     if (!wantPlaying) { play(); return; }
     // running but silent (autostarted, or sound was refused) → this tap gives it sound
     if (vid.muted) { giveItSound(); return; }
     // an explicit stop sticks, so it does not start itself again on the next page
-    try { localStorage.setItem('djHudStopped', '1'); } catch (e) {}
+    try {
+      localStorage.setItem('djHudStopped', '1');
+      localStorage.setItem('djHudPlaying', '0');
+      localStorage.removeItem('djHudSound');
+    } catch (e) {}
     pause();
   }
 
+  function savePosition() {
+    try {
+      localStorage.setItem('djHudTime', vid.currentTime);
+      localStorage.setItem('djHudVol', vid.volume);
+    } catch (e) {}
+  }
+
   vid.addEventListener('play', function () {
+    try { localStorage.setItem('djHudPlaying', '1'); } catch (e) {}
     clearInterval(saver);
-    saver = setInterval(function () { try { localStorage.setItem('djHudTime', vid.currentTime); } catch (e) {} }, 1000);
+    saver = setInterval(savePosition, 1000);
   });
-  vid.addEventListener('pause', function () {
-    clearInterval(saver);
-    try { localStorage.setItem('djHudTime', vid.currentTime); localStorage.setItem('djHudVol', vid.volume); } catch (e) {}
-  });
-  window.addEventListener('beforeunload', function () {
-    try { localStorage.setItem('djHudTime', vid.currentTime); localStorage.setItem('djHudVol', vid.volume); } catch (e) {}
-  });
+  vid.addEventListener('pause', function () { clearInterval(saver); savePosition(); });
+  /* pagehide fires on navigation AND on mobile tab-switching, where beforeunload
+     is unreliable — without it the resume timestamp is up to a second stale. */
+  window.addEventListener('pagehide', savePosition);
+  window.addEventListener('beforeunload', savePosition);
 
   /* ---------- click to toggle, drag to reposition ---------- */
   /* Pointer events only track the drag; the toggle itself runs on `click`.
@@ -255,5 +281,16 @@
 
   window.DJVinyl = { play: play, pause: pause, toggle: toggle, playing: function () { return wantPlaying; } };
 
-  if (AUTOSTART) autostart();
+  (function startup() {
+    var stopped = false, wasPlaying = false;
+    try {
+      stopped = localStorage.getItem('djHudStopped') === '1';
+      wasPlaying = localStorage.getItem('djHudPlaying') === '1';
+    } catch (e) {}
+    if (stopped) return;                 // they turned it off; leave it off
+    if (wasPlaying) { resume(); return; } // it was running when the last page unloaded
+    // first arrival on a page that opts in — the reduced-motion check only guards
+    // this unprompted start, never a resume the visitor actually asked for
+    if (AUTOSTART && !matchMedia('(prefers-reduced-motion: reduce)').matches) startMuted();
+  })();
 })();
