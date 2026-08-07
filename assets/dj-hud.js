@@ -116,10 +116,15 @@
   var wantPlaying = false;
 
   /* ---------- restore volume + position ---------- */
-  vid.volume = 0.8;
+  var DEFAULT_VOL = 0.8, MIN_AUDIBLE = 0.1;
+  /* Restore the volume, but never below an audible floor. The old floating widget
+     had a volume slider that wrote this key and could go to 0; that slider is gone,
+     so a stale near-zero value would silence the clip forever with no control left
+     to turn it back up. */
+  vid.volume = DEFAULT_VOL;
   try {
-    var sv = localStorage.getItem('djHudVol');
-    if (sv !== null) vid.volume = Math.min(1, Math.max(0, parseFloat(sv) || 0));
+    var sv = parseFloat(localStorage.getItem('djHudVol'));
+    if (isFinite(sv) && sv >= MIN_AUDIBLE) vid.volume = Math.min(1, sv);
   } catch (e) {}
 
   function seekToSaved() {
@@ -129,25 +134,44 @@
     } catch (e) {}
   }
 
+  function ensureLoaded() {
+    if (loaded) return;
+    vid.src = SRC; loaded = true;
+    vid.addEventListener('loadedmetadata', seekToSaved, { once: true });
+  }
+
+  /* Unmute AND call play() again in the same gesture. Safari/iOS will not start
+     audio on a muted-autoplay element from the muted flag alone — it needs the
+     play() call inside the user gesture, which is why the old widget re-played
+     on unmute too. Without it the record looks unmuted but stays silent. */
+  function giveItSound() {
+    if (!(vid.volume >= MIN_AUDIBLE)) vid.volume = DEFAULT_VOL;
+    vid.muted = false;
+    cueText.textContent = 'Stop the record';
+    box.setAttribute('aria-label', 'Stop the DJ set');
+    // remembered so the next page knows to come back with sound rather than silent
+    try { localStorage.setItem('djHudSound', '1'); } catch (e) {}
+    var p = vid.play();
+    if (p && p.catch) p.catch(function () {
+      if (!wantPlaying) return;
+      // sound genuinely refused → keep the picture, ask for another tap
+      vid.muted = true;
+      cueText.textContent = 'Tap for sound';
+      box.setAttribute('aria-label', 'Tap the record for sound');
+      vid.play().catch(function () { if (wantPlaying) pause(); });
+    });
+  }
+
   /* ---------- play / pause ---------- */
   function play() {
     wantPlaying = true;
     try { localStorage.removeItem('djHudStopped'); } catch (e) {}
-    if (!loaded) { vid.src = SRC; loaded = true; vid.addEventListener('loadedmetadata', seekToSaved, { once: true }); }
+    ensureLoaded();
     // never talk over the mix player or a music preview
     if (window.MusicHUD) try { window.MusicHUD.pause(); } catch (e) {}
     if (window.__previewAudio) try { window.__previewAudio.pause(); } catch (e) {}
-    vid.muted = false;
     box.classList.add('playing');
-    cueText.textContent = 'Stop the record';
-    box.setAttribute('aria-label', 'Stop the DJ set');
-    vid.play().catch(function () {
-      if (!wantPlaying) return;
-      // sound refused (rare — the click is a gesture) → fall back to a muted preview
-      vid.muted = true;
-      cueText.textContent = 'Tap for sound';
-      vid.play().catch(function () { if (wantPlaying) pause(); });
-    });
+    giveItSound();
   }
 
   function pause() {
@@ -158,13 +182,12 @@
     box.setAttribute('aria-label', 'See what the DJ is doing');
   }
 
-  /* Start on page load. Browsers only allow autoplay without a gesture when muted,
-     so the clip opens silent and the caption asks for the click that adds sound. */
-  function autostart() {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    try { if (localStorage.getItem('djHudStopped') === '1') return; } catch (e) {}
+  /* Start playing silently. Browsers only allow autoplay without a gesture when
+     muted, so the clip opens silent and the caption asks for the click that
+     adds sound. */
+  function startMuted() {
     wantPlaying = true;
-    if (!loaded) { vid.src = SRC; loaded = true; vid.addEventListener('loadedmetadata', seekToSaved, { once: true }); }
+    ensureLoaded();
     vid.muted = true;
     box.classList.add('playing');
     cueText.textContent = 'Tap for sound';
@@ -172,33 +195,56 @@
     vid.play().catch(function () { pause(); }); // refused → sit idle and wait for a click
   }
 
+  /* Pick up where the last page left off. A link click is a hard navigation, so
+     this element is destroyed and rebuilt — "keeps playing" really means resume
+     at the saved timestamp on the next page. If sound was already granted we ask
+     for it again; browsers may refuse audio without a fresh gesture, in which
+     case we come back silent and one tap restores it. */
+  function resume() {
+    var withSound = false;
+    try { withSound = localStorage.getItem('djHudSound') === '1'; } catch (e) {}
+    if (!withSound) { startMuted(); return; }
+    wantPlaying = true;
+    ensureLoaded();
+    box.classList.add('playing');
+    giveItSound();
+  }
+
   function toggle() {
     if (!wantPlaying) { play(); return; }
-    // running but silent (autostarted, or sound was refused) → first click gives it sound
-    if (vid.muted) {
-      vid.muted = false;
-      cueText.textContent = 'Stop the record';
-      box.setAttribute('aria-label', 'Stop the DJ set');
-      return;
-    }
+    // running but silent (autostarted, or sound was refused) → this tap gives it sound
+    if (vid.muted) { giveItSound(); return; }
     // an explicit stop sticks, so it does not start itself again on the next page
-    try { localStorage.setItem('djHudStopped', '1'); } catch (e) {}
+    try {
+      localStorage.setItem('djHudStopped', '1');
+      localStorage.setItem('djHudPlaying', '0');
+      localStorage.removeItem('djHudSound');
+    } catch (e) {}
     pause();
   }
 
+  function savePosition() {
+    try {
+      localStorage.setItem('djHudTime', vid.currentTime);
+      localStorage.setItem('djHudVol', vid.volume);
+    } catch (e) {}
+  }
+
   vid.addEventListener('play', function () {
+    try { localStorage.setItem('djHudPlaying', '1'); } catch (e) {}
     clearInterval(saver);
-    saver = setInterval(function () { try { localStorage.setItem('djHudTime', vid.currentTime); } catch (e) {} }, 1000);
+    saver = setInterval(savePosition, 1000);
   });
-  vid.addEventListener('pause', function () {
-    clearInterval(saver);
-    try { localStorage.setItem('djHudTime', vid.currentTime); localStorage.setItem('djHudVol', vid.volume); } catch (e) {}
-  });
-  window.addEventListener('beforeunload', function () {
-    try { localStorage.setItem('djHudTime', vid.currentTime); localStorage.setItem('djHudVol', vid.volume); } catch (e) {}
-  });
+  vid.addEventListener('pause', function () { clearInterval(saver); savePosition(); });
+  /* pagehide fires on navigation AND on mobile tab-switching, where beforeunload
+     is unreliable — without it the resume timestamp is up to a second stale. */
+  window.addEventListener('pagehide', savePosition);
+  window.addEventListener('beforeunload', savePosition);
 
   /* ---------- click to toggle, drag to reposition ---------- */
+  /* Pointer events only track the drag; the toggle itself runs on `click`.
+     Safari/iOS grants the user gesture that unlocks audio from a click, and does
+     not reliably grant it from pointerup — so unmuting must hang off click. */
   var down = false, moved = 0, sx = 0, sy = 0, ox = 0, oy = 0;
 
   box.addEventListener('pointerdown', function (e) {
@@ -218,14 +264,16 @@
     box.style.top = Math.max(6, Math.min(window.innerHeight - box.offsetHeight - 6, oy + dy)) + 'px';
   });
 
-  box.addEventListener('pointerup', function (e) {
+  function endDrag(e) {
     if (!down) return;
     down = false;
     box.classList.remove('dragging');
-    try { box.releasePointerCapture(e.pointerId); } catch (e2) {}
-    if (moved <= DRAG_SLOP) toggle();
-  });
-  box.addEventListener('pointercancel', function () { down = false; box.classList.remove('dragging'); });
+    if (e && e.pointerId != null) { try { box.releasePointerCapture(e.pointerId); } catch (e2) {} }
+  }
+  box.addEventListener('pointerup', endDrag);
+  box.addEventListener('pointercancel', endDrag);
+
+  box.addEventListener('click', function () { if (moved <= DRAG_SLOP) toggle(); });
 
   box.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); toggle(); }
@@ -233,5 +281,16 @@
 
   window.DJVinyl = { play: play, pause: pause, toggle: toggle, playing: function () { return wantPlaying; } };
 
-  if (AUTOSTART) autostart();
+  (function startup() {
+    var stopped = false, wasPlaying = false;
+    try {
+      stopped = localStorage.getItem('djHudStopped') === '1';
+      wasPlaying = localStorage.getItem('djHudPlaying') === '1';
+    } catch (e) {}
+    if (stopped) return;                 // they turned it off; leave it off
+    if (wasPlaying) { resume(); return; } // it was running when the last page unloaded
+    // first arrival on a page that opts in — the reduced-motion check only guards
+    // this unprompted start, never a resume the visitor actually asked for
+    if (AUTOSTART && !matchMedia('(prefers-reduced-motion: reduce)').matches) startMuted();
+  })();
 })();
