@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<link rel="mask-icon" href="assets/favicon.svg" color="#4f86ff" />
+<script src="assets/analytics.js"></script>
+<title>Tokamaks vs. Stellarators · Nishant Shah</title>
+<meta name="description" content="A story in eight scenes: bottling a star, and the two rival machines racing to do it. My IB Physics Extended Essay, visualized." />
+<meta property="og:title" content="Two cages for a star" />
+<meta property="og:description" content="Limitless energy exists. You can see it every night. The story of the race to bottle it, in eight scenes." />
+<meta property="og:type" content="article" />
+<link rel="stylesheet" href="assets/tokens.css" />
+<style>
+  :root {
+    --fz-bg: #06070d;
+    --fz-tok: #dd6528;           /* tokamak: ember */
+    --fz-stel: #4e93f0;          /* stellarator: cool blue */
+    --fz-plasma: #ff6ad5;        /* machine plasma (it really does glow pink) */
+    --fz-steel: #7d879c;         /* hardware */
+    --fz-mono: "Helvetica Neue", Helvetica, "Inter", Arial, sans-serif;
+  }
+  html { background: var(--fz-bg); }
+  body { background: var(--fz-bg); color: var(--text); font-family: var(--font-sans); overflow-x: hidden; }
+
+  .fz-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 60;
+    background: linear-gradient(90deg, var(--fz-stel), var(--fz-plasma), var(--fz-tok)); }
+
+  .fz-stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .fz-stars svg { width: 100%; height: 100%; display: block; }
+
+  .fz-top { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 26px; background: linear-gradient(180deg, rgba(6,7,13,0.85), rgba(6,7,13,0)); }
+  .fz-back { display: inline-flex; align-items: center; gap: 9px; color: var(--text-2); font-weight: 500; font-size: 0.95rem; transition: color var(--dur-1), gap var(--dur-1); }
+  .fz-back:hover { color: var(--text); gap: 12px; }
+  .fz-back svg { width: 18px; height: 18px; }
+  .fz-crumb { font-family: var(--fz-mono); font-size: 0.64rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); }
+
+  main { position: relative; z-index: 1; }
+  .scene { position: relative; min-height: 96vh; display: grid; place-content: center; justify-items: center; text-align: center;
+    gap: clamp(16px, 3vh, 30px); padding: 12vh 22px; }
+  .scene .viz { width: min(580px, 92vw); }
+  .scene .viz svg { display: block; width: 100%; height: auto; will-change: transform; }
+  .scene .kick { font-family: var(--fz-mono); font-size: 0.68rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--fz-plasma); }
+  .scene .line { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.6rem, 4.8vw, 2.85rem); line-height: 1.2; letter-spacing: -0.01em; max-width: 23ch; }
+  .scene .line em { font-style: italic; background: linear-gradient(100deg, #ffd9f1, var(--fz-plasma) 55%, #b98bff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .scene .line em.warm { background: linear-gradient(100deg, #fff3d6, #ffb64d 55%, #ff7a2e); -webkit-background-clip: text; background-clip: text; }
+  .scene .line b { font-weight: 400; color: var(--text); }
+  .scene .whisper { font-family: var(--fz-mono); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); }
+
+  .scene.opener { min-height: 100vh; }
+  .scene.opener .scrollcue { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); color: var(--text-3); font-family: var(--fz-mono); font-size: 0.64rem; letter-spacing: 0.22em; text-transform: uppercase; }
+  .scene.opener .scrollcue::after { content: ""; display: block; width: 1px; height: 34px; margin: 10px auto 0; background: linear-gradient(var(--text-3), transparent); }
+
+  .duel { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(10px, 3vw, 34px); width: min(1020px, 94vw); align-items: end; }
+  .duel .half h2 { font-family: var(--fz-mono); font-weight: 500; font-size: 0.76rem; letter-spacing: 0.22em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 9px; }
+  .duel .half h2 .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .duel .half.tok h2 { color: var(--fz-tok); }
+  .duel .half.stel h2 { color: var(--fz-stel); }
+  .duel .half .tag { margin-top: 4px; font-family: var(--font-serif); font-style: italic; font-size: clamp(1rem, 2.2vw, 1.32rem); color: var(--text-2); }
+  .duel .half svg { display: block; width: 100%; height: auto; will-change: transform; }
+  @media (max-width: 680px) { .duel { grid-template-columns: 1fr; } }
+
+  .scene.finale { padding-bottom: 16vh; }
+  .scene.finale .viz { width: min(880px, 94vw); }
+  .scene.finale .fz-back { margin-top: 18px; }
+
+  /* ---------- reveal on scroll ---------- */
+  .scene > * { opacity: 0; transform: translateY(30px); transition: opacity 1s var(--ease), transform 1.1s var(--ease); }
+  .scene > *:nth-child(2) { transition-delay: 0.12s; }
+  .scene > *:nth-child(3) { transition-delay: 0.24s; }
+  .scene > *:nth-child(4) { transition-delay: 0.34s; }
+  .scene.in > * { opacity: 1; transform: none; }
+
+  /* ---------- scene-triggered events ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    /* s15: the city wakes: windows blaze on, the smokestacks die */
+    #s15 .win { opacity: 0; transition: opacity 0.45s ease; }
+    #s15.in .win { opacity: 1; }
+    #s15 .smoke { opacity: 0.55; transition: opacity 1.8s ease 2s; }
+    #s15.in .smoke { opacity: 0; }
+    #s15 .mlabel { opacity: 0; transition: opacity 0.9s ease 1.5s; }
+    #s15.in .mlabel { opacity: 1; }
+    /* s9: the unlocks fade in on their orbits */
+    #s9 .spark { opacity: 0; transform: scale(0.85); transition: opacity 0.9s var(--ease), transform 0.9s var(--ease); transform-origin: center; transform-box: fill-box; }
+    #s9.in .spark { opacity: 1; transform: none; }
+    /* s2: the flask draws itself around the star */
+    #s2 .flask { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.9s var(--ease) 0.45s; }
+    #s2.in .flask { stroke-dashoffset: 0; }
+    /* s3: the flask shatters when you arrive */
+    #s3 .frag { transition: transform 1.25s var(--ease), opacity 1.25s var(--ease); }
+    #s3.in .frag { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity: 0.92; }
+    #s3 .heat { opacity: 0; transition: opacity 1.1s ease 0.9s; }
+    #s3.in .heat { opacity: 1; }
+    /* s4: field lines ignite one by one */
+    #s4 .flowline { opacity: 0; transition: opacity 1.4s ease; }
+    #s4.in .flowline { opacity: 0.9; }
+    #s4.in .flowline:nth-of-type(2) { transition-delay: 0.4s; }
+    #s4.in .flowline:nth-of-type(3) { transition-delay: 0.8s; }
+    /* s6: the machines rise into place */
+    .mrise { transform: translateY(20px) scale(0.96); opacity: 0; transition: transform 1.2s var(--ease), opacity 1.1s var(--ease); transform-origin: center; transform-box: fill-box; }
+    #s6.in .mrise { transform: none; opacity: 1; }
+    #s6.in .half.stel .mrise { transition-delay: 0.25s; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scene > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+    #s3 .frag { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity: 0.92; }
+  }
+
+  /* ---------- ambient motion ---------- */
+  @keyframes fz-flow { to { stroke-dashoffset: -240; } }
+  .fz-flow { animation: fz-flow 9s linear infinite; }
+  .fz-flow.slow { animation-duration: 14s; }
+  @keyframes fz-breathe { 0%,100% { transform: scale(1); opacity: 0.92; } 50% { transform: scale(1.055); opacity: 1; } }
+  .fz-breathe { animation: fz-breathe 5.5s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+  .fz-breathe.lag { animation-delay: -2.7s; animation-duration: 7s; }
+  @keyframes fz-spin { to { transform: rotate(360deg); } }
+  .fz-rot { animation: fz-spin 90s linear infinite; transform-origin: center; transform-box: fill-box; }
+  .fz-rot.rev { animation-direction: reverse; animation-duration: 140s; }
+  @keyframes fz-twinkle { 0%,100% { opacity: 0.2; } 50% { opacity: 0.75; } }
+  .tw { animation: fz-twinkle 4s ease-in-out infinite; }
+  @keyframes fz-smoke { 0% { transform: translateY(0); opacity: 0.7; } 100% { transform: translateY(-32px); opacity: 0; } }
+  .puff { animation: fz-smoke 3.6s ease-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .puff { animation: none; opacity: 0.4; } }
+  @media (prefers-reduced-motion: reduce) { .fz-flow, .fz-breathe, .fz-rot, .tw { animation: none; } }
+  a:focus-visible { outline: 2px solid var(--accent-ring); outline-offset: 3px; border-radius: 4px; }
+  main svg text { user-select: none; -webkit-user-select: none; }
+</style>
+</head>
+<body>
+
+<div class="fz-progress" id="progress" aria-hidden="true"></div>
+<div class="fz-stars" aria-hidden="true"><svg id="starfield" preserveAspectRatio="none"></svg></div>
+
+<div class="fz-top">
+  <a class="fz-back" href="portfolio.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Back
+  </a>
+  <span class="fz-crumb">IB Extended Essay · Physics</span>
+</div>
+
+<main>
+  <!-- SCENE 1 · the star -->
+  <section class="scene opener in" id="s1">
+    <div class="viz"><svg id="v-star" viewBox="0 0 560 430" data-plx="-0.16" data-m="16" role="img" aria-label="The sun: granulated golden surface, glowing corona, loops of fire on its edge."></svg></div>
+    <p class="line">Limitless energy exists. <b>You're looking at it.</b></p>
+    <p class="whisper">every star runs on fusion, and has for billions of years</p>
+    <span class="scrollcue">scroll</span>
+  </section>
+
+  <!-- SCENE 1.5 · why we need it, now -->
+  <section class="scene" id="s15">
+    <div class="viz"><svg id="v-need" viewBox="0 0 560 360" data-plx="-0.13" data-m="11" role="img" aria-label="A night city drinking from its electric grid: pulses of power race along transmission lines as thousands of windows blaze on, while the coal plant at the edge of town winds down, its smoke fading."></svg></div>
+    <p class="line">Down here, our appetite for energy is <b>exploding</b>, just as burning things has to stop.</p>
+    <p class="whisper">AI · electric everything · two billion more people · and carbon must fall</p>
+  </section>
+
+  <!-- SCENE 2 · the dream -->
+  <section class="scene" id="s2">
+    <div class="viz"><svg id="v-bottle" viewBox="0 0 560 450" data-plx="-0.15" data-m="12" role="img" aria-label="A miniature sun held inside a glass laboratory flask: the dream of fusion power."></svg></div>
+    <p class="line">Our generation's moonshot: <em class="warm">a star in a bottle.</em></p>
+    <p class="whisper">the fuel is in seawater: enough for everyone, forever</p>
+  </section>
+
+  <!-- SCENE 3 · the bottle fails -->
+  <section class="scene" id="s3">
+    <div class="viz"><svg id="v-burn" viewBox="0 0 560 450" data-plx="-0.15" data-m="12" role="img" aria-label="The same flask blown apart, glass shards flying, fracture edges glowing. Nothing survives touching a star."></svg></div>
+    <p class="line">Except a star <b>vaporizes every bottle we own.</b></p>
+    <p class="whisper">one hundred million degrees, six times hotter than the sun's core</p>
+  </section>
+
+  <!-- SCENE 3.5 · charge obeys magnets -->
+  <section class="scene" id="s35">
+    <div class="viz"><svg id="v-field" viewBox="0 0 560 300" data-plx="-0.13" data-m="11" role="img" aria-label="A charged particle spiraling helically around a magnetic field line. It can slide along the line but never leave it sideways."></svg></div>
+    <p class="line">But a star's fuel is <b>charged particles</b>, and charged particles obey magnetic fields.</p>
+    <p class="whisper">a particle spirals around a field line like a bead on a wire: free to slide along it, unable to leave it</p>
+  </section>
+
+  <!-- SCENE 4 · the magnetic cage -->
+  <section class="scene" id="s4">
+    <div class="viz"><svg id="v-cage" viewBox="0 0 560 400" data-plx="-0.17" data-m="14" role="img" aria-label="Field lines looped into a glowing ring holding the star: a bottle whose walls are pure magnetism."></svg></div>
+    <p class="line">So we loop those field lines into a ring: <em>a bottle with walls of pure magnetism.</em></p>
+    <p class="whisper">the fuel rides the lines around and around. it never touches metal</p>
+  </section>
+
+  <!-- SCENE 5 · the twist -->
+  <section class="scene" id="s5">
+    <div class="viz"><svg id="v-helix" viewBox="0 0 560 320" data-plx="-0.12" data-m="10" role="img" aria-label="Two fates: an untwisted particle drifts upward and is destroyed against the wall in a flash; a particle on a corkscrewed line rides high then low and survives forever."></svg></div>
+    <p class="line">One catch: the cage must <b>twist like a corkscrew</b>, or the star slips out.</p>
+  </section>
+
+  <!-- SCENE 6 · two machines -->
+  <section class="scene" id="s6">
+    <p class="line">So humanity split into <b>two camps.</b></p>
+    <div class="duel">
+      <div class="half tok">
+        <svg id="v-tok" viewBox="0 0 440 290" data-plx="-0.1" data-m="10" role="img" aria-label="The tokamak, modeled on ITER: a fat glowing ring inside D-shaped steel coils, twisting its own cage by driving a river of current through the fuel."></svg>
+        <h2><span class="dot"></span>Tokamak</h2>
+        <p class="tag">the heavyweight: twists its own cage from within</p>
+      </div>
+      <div class="half stel">
+        <svg id="v-stel" viewBox="0 0 440 290" data-plx="-0.18" data-m="14" role="img" aria-label="The stellarator, modeled on Wendelstein 7-X: a vast, slender five-lobed ribbon of plasma held by warped, sculpted coils, born pre-twisted."></svg>
+        <h2><span class="dot"></span>Stellarator</h2>
+        <p class="tag">the sculpture: born pre-twisted, coils do everything</p>
+      </div>
+    </div>
+    <p class="whisper">same dream · opposite machines</p>
+  </section>
+
+  <!-- SCENE 7 · the stopwatch -->
+  <section class="scene" id="s7">
+    <div class="viz" style="width:min(340px,78vw);"><svg id="v-watch" viewBox="0 0 360 400" data-plx="-0.13" data-m="9" role="img" aria-label="A stopwatch, running: the single score both machines chase."></svg></div>
+    <p class="line">The whole race hangs on one stopwatch: <b>how long can you hold a star?</b></p>
+    <p class="whisper">today: fractions of a second. the dream: forever.</p>
+  </section>
+
+  <!-- SCENE 8 · the essay -->
+  <section class="scene finale" id="s8">
+    <p class="kick">my extended essay asks</p>
+    <p class="line">Is there <em>one law of shape</em> powerful enough to judge every star bottle we could ever build?</p>
+    <div class="viz"><svg id="v-question" viewBox="0 0 940 320" data-plx="-0.09" data-m="8" role="img" aria-label="Both machines feed into one shared rule, blind to which is which, pointing at a single running stopwatch."></svg></div>
+    <p class="line" style="font-size:clamp(1.1rem,2.5vw,1.55rem);max-width:36ch;color:var(--text-2);">Find it, and reactor design becomes something you can compute: <b>dial in a shape, read out the hold time</b>, before a single ton of steel is poured. That's the shortcut to plugging into a star: skip the Dyson swarm, <b>bottle one at home.</b></p>
+  </section>
+
+  <!-- SCENE 9 · what it unlocks -->
+  <section class="scene finale" id="s9">
+    <p class="line">Bottle a star, and <b>everything downstream changes.</b></p>
+    <div class="viz"><svg id="v-dawn" viewBox="0 0 940 520" data-plx="-0.09" data-m="8" role="img" aria-label="A bottled star as a miniature sun, orbited like a solar system by everything it unlocks: fresh water from the sea, air without carbon, food grown anywhere, power for ten billion, intelligence without an energy bill."></svg></div>
+    <p class="whisper">this is what one law of shape is really for</p>
+    <a class="fz-back" href="portfolio.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to portfolio
+    </a>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NS = 'http://www.w3.org/2000/svg';
+  var TOK = '#dd6528', STEL = '#4e93f0', PLASMA = '#ff6ad5', STEEL = '#7d879c';
+  function el(tag, attrs, parent) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function txt(parent, x, y, s, attrs) {
+    var t = el('text', Object.assign({ x: x, y: y, fill: 'var(--text-3)', 'font-size': 11, 'font-family': '"Helvetica Neue", Helvetica, Arial, sans-serif' }, attrs || {}), parent);
+    t.textContent = s;
+    return t;
+  }
+  /* pink machine-plasma defs */
+  function defsFor(svg, id) {
+    var defs = svg.querySelector('defs') || el('defs', {}, svg);
+    var f = el('filter', { id: id + '-blur', x: '-70%', y: '-70%', width: '240%', height: '240%' }, defs);
+    el('feGaussianBlur', { stdDeviation: 8 }, f);
+    var blob = el('radialGradient', { id: id + '-blob' }, defs);
+    el('stop', { offset: '0%', 'stop-color': '#ffc9ec', 'stop-opacity': 0.9 }, blob);
+    el('stop', { offset: '55%', 'stop-color': PLASMA, 'stop-opacity': 0.5 }, blob);
+    el('stop', { offset: '100%', 'stop-color': '#b98bff', 'stop-opacity': 0 }, blob);
+    return defs;
+  }
+  /* the sun: limb-darkened disk, granulation, prominences */
+  function sunDefs(svg, id) {
+    var defs = svg.querySelector('defs') || el('defs', {}, svg);
+    var f = el('filter', { id: id + '-blur', x: '-70%', y: '-70%', width: '240%', height: '240%' }, defs);
+    el('feGaussianBlur', { stdDeviation: 8 }, f);
+    var disk = el('radialGradient', { id: id + '-disk' }, defs);
+    el('stop', { offset: '0%', 'stop-color': '#fff8e7' }, disk);
+    el('stop', { offset: '34%', 'stop-color': '#ffe9a8' }, disk);
+    el('stop', { offset: '66%', 'stop-color': '#ffb64d' }, disk);
+    el('stop', { offset: '90%', 'stop-color': '#ff7a2e' }, disk);
+    el('stop', { offset: '100%', 'stop-color': '#f2541d' }, disk);
+    var cor = el('radialGradient', { id: id + '-cor' }, defs);
+    el('stop', { offset: '0%', 'stop-color': '#ffb64d', 'stop-opacity': 0.8 }, cor);
+    el('stop', { offset: '45%', 'stop-color': '#ff8a2e', 'stop-opacity': 0.3 }, cor);
+    el('stop', { offset: '100%', 'stop-color': '#ff5a1f', 'stop-opacity': 0 }, cor);
+    var g = el('filter', { id: id + '-gran' }, defs);
+    el('feTurbulence', { type: 'fractalNoise', baseFrequency: '0.05', numOctaves: 4, seed: 8, result: 'n' }, g);
+    el('feColorMatrix', { 'in': 'n', type: 'luminanceToAlpha', result: 'na' }, g);
+    el('feFlood', { 'flood-color': '#8a2500', result: 'f' }, g);
+    el('feComposite', { 'in': 'f', in2: 'na', operator: 'in', result: 'spots' }, g);
+    el('feComposite', { 'in': 'spots', in2: 'SourceAlpha', operator: 'in' }, g);
+    return defs;
+  }
+  function sun(svg, id, cx, cy, r, small) {
+    el('circle', { cx: cx, cy: cy, r: r * 2.4, fill: 'url(#' + id + '-cor)', opacity: 0.5, 'class': 'fz-breathe lag' }, svg);
+    el('circle', { cx: cx, cy: cy, r: r * 1.5, fill: 'url(#' + id + '-cor)', opacity: 0.8, filter: 'url(#' + id + '-blur)', 'class': 'fz-breathe' }, svg);
+    el('circle', { cx: cx, cy: cy, r: r, fill: 'url(#' + id + '-disk)' }, svg);
+    // churning surface: two counter-rotating granulation layers
+    var churn = el('g', { 'class': 'fz-rot' }, svg);
+    el('circle', { cx: cx, cy: cy, r: r * 0.985, fill: '#000', filter: 'url(#' + id + '-gran)', opacity: 0.5 }, churn);
+    var churn2 = el('g', { 'class': 'fz-rot rev' }, svg);
+    el('circle', { cx: cx, cy: cy, r: r * 0.9, fill: '#000', filter: 'url(#' + id + '-gran)', opacity: 0.28 }, churn2);
+    if (!small) flares(svg, cx, cy, r);
+  }
+  /* live prominences: magnetic loops that swell, sway, erupt,
+     with embers riding each arc and raining back to the surface */
+  function flares(svg, cx, cy, r) {
+    var sites = [
+      { a: -38, s: 1.0, w: 0.9, ph: 0 },
+      { a: 152, s: 0.85, w: 0.7, ph: 2.1 },
+      { a: 78, s: 0.62, w: 1.15, ph: 4.4 },
+      { a: -112, s: 0.5, w: 0.8, ph: 1.3 }
+    ];
+    var S = r / 60;
+    sites.forEach(function (st) {
+      var a = st.a * Math.PI / 180;
+      st.g = el('g', { transform: 'translate(' + (cx + Math.cos(a) * r * 0.99).toFixed(1) + ' ' + (cy + Math.sin(a) * r * 0.99).toFixed(1) + ') rotate(' + (st.a + 90) + ')' }, svg);
+      st.wide = el('path', { fill: 'none', stroke: '#ff7a2e', 'stroke-width': (6 * st.s * S).toFixed(1), 'stroke-linecap': 'round', opacity: 0.25 }, st.g);
+      st.thin = el('path', { fill: 'none', stroke: '#ffb64d', 'stroke-width': (2.6 * st.s * S).toFixed(1), 'stroke-linecap': 'round', opacity: 0.9 }, st.g);
+      st.ember = el('circle', { r: (2.2 * S).toFixed(1), fill: '#ffd075', opacity: 0 }, st.g);
+    });
+    function shape(st, t) {
+      var burst = 1 + 2.4 * Math.pow(Math.max(0, Math.sin(t * 0.11 + st.ph * 2.3)), 8);
+      var h = st.s * S * (16 + 8 * Math.sin(st.w * t + st.ph) + 3.5 * Math.sin(2.3 * st.w * t + st.ph)) * burst;
+      var b = st.s * S * (12 + 2 * Math.sin(0.5 * t + st.ph));
+      var sway = 5 * S * Math.sin(0.45 * t + st.ph * 1.7);
+      return { h: Math.max(4, h), b: b, sway: sway };
+    }
+    function setD(st, q) {
+      var d = 'M ' + (-q.b).toFixed(1) + ' 0 C ' + (-q.b - 3 + q.sway).toFixed(1) + ' ' + (-q.h * 1.6).toFixed(1) + ', ' + (q.b + 3 + q.sway).toFixed(1) + ' ' + (-q.h * 1.6).toFixed(1) + ', ' + q.b.toFixed(1) + ' 0';
+      st.wide.setAttribute('d', d);
+      st.thin.setAttribute('d', d);
+    }
+    if (RM) { sites.forEach(function (st) { setD(st, shape(st, 1.5)); }); return; }
+    var t0 = null;
+    function step(ts) {
+      if (t0 === null) t0 = ts;
+      var t = (ts - t0) / 1000;
+      sites.forEach(function (st) {
+        var q = shape(st, t);
+        setD(st, q);
+        // ember surfing the loop (cubic bezier point)
+        var u = (t * (0.28 + st.w * 0.16) + st.ph * 0.37) % 1;
+        var mt = 1 - u;
+        var p1x = -q.b - 3 + q.sway, p2x = q.b + 3 + q.sway, py1 = -q.h * 1.6;
+        var px = mt * mt * mt * (-q.b) + 3 * mt * mt * u * p1x + 3 * mt * u * u * p2x + u * u * u * q.b;
+        var py = 3 * mt * mt * u * py1 + 3 * mt * u * u * py1;
+        st.ember.setAttribute('cx', px.toFixed(1));
+        st.ember.setAttribute('cy', py.toFixed(1));
+        st.ember.setAttribute('opacity', (0.9 * Math.sin(Math.PI * u)).toFixed(2));
+      });
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* 3D rig: X right, Y depth, Z up; orthographic, tilted */
+  var KA = 0.42;
+  function proj(cx, cy, x, y, z) { return { x: cx + x, y: cy + y * KA - z, d: y }; }
+
+  function plasmaTube(svg, id, cx, cy, shape, blobScale) {
+    var blobs = [];
+    var N = 84;
+    for (var i = 0; i < N; i++) {
+      var phi = (i / N) * Math.PI * 2;
+      var s = shape(phi);
+      var p = proj(cx, cy, s.x, s.y, s.z);
+      blobs.push({ x: p.x, y: p.y, d: p.d, r: s.r * (blobScale || 1) });
+    }
+    blobs.sort(function (a, b) { return a.d - b.d; });
+    var g = el('g', {}, svg);
+    blobs.forEach(function (b) {
+      el('circle', { cx: b.x.toFixed(1), cy: b.y.toFixed(1), r: (b.r * 1.9).toFixed(1), fill: 'url(#' + id + '-blob)', opacity: 0.5 }, g);
+    });
+    return g;
+  }
+
+  function fieldLine(svg, cx, cy, surf, laps, iota, phase, color, cls, solid) {
+    var backD = '', frontD = '', side = null, samples = [];
+    var N = 260 * laps;
+    for (var i = 0; i <= N; i++) {
+      var phi = (i / N) * Math.PI * 2 * laps;
+      var theta = iota * phi + phase;
+      var s = surf(phi, theta);
+      var p = proj(cx, cy, s.x, s.y, s.z);
+      samples.push(p);
+      var pt = p.x.toFixed(1) + ' ' + p.y.toFixed(1);
+      if (p.d > 0) { frontD += (side === 'f' ? 'L' : 'M') + pt; side = 'f'; }
+      else { backD += (side === 'b' ? 'L' : 'M') + pt; side = 'b'; }
+    }
+    if (backD) el('path', { d: backD, fill: 'none', stroke: color, 'stroke-width': solid ? 1.1 : 1.3, opacity: solid ? 0.2 : 0.28, 'stroke-linecap': 'round' }, svg);
+    if (frontD) {
+      var attrs = { d: frontD, fill: 'none', stroke: color, 'stroke-linecap': 'round' };
+      if (solid) { attrs['stroke-width'] = 1.6; attrs.opacity = 0.8; }
+      else { attrs['stroke-width'] = 1.9; attrs.opacity = 0.95; attrs['stroke-dasharray'] = '9 13'; attrs['class'] = cls || 'fz-flow'; }
+      el('path', attrs, svg);
+    }
+    return samples;
+  }
+  /* a glowing charged particle riding a sampled field line -
+     bright in front of the machine, dim as it passes behind */
+  function rideBead(parent, samples, color, dur, offset) {
+    if (RM || !samples.length) return;
+    var glow = el('circle', { r: 8, fill: color, opacity: 0.3 }, parent);
+    var bead = el('circle', { r: 3.6, fill: '#fff' }, parent);
+    var N = samples.length, t0 = null;
+    function step(ts) {
+      if (t0 === null) t0 = ts;
+      var f = (((ts - t0) / dur) + (offset || 0)) % 1;
+      var p = samples[Math.floor(f * (N - 1))];
+      bead.setAttribute('cx', p.x.toFixed(1)); bead.setAttribute('cy', p.y.toFixed(1));
+      glow.setAttribute('cx', p.x.toFixed(1)); glow.setAttribute('cy', p.y.toFixed(1));
+      var front = p.d > 0;
+      bead.setAttribute('opacity', front ? 1 : 0.2);
+      glow.setAttribute('opacity', front ? 0.3 : 0.06);
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  /* ============ SCENE 1.5: a city drinking from its grid ============ */
+  (function s15() {
+    var svg = document.getElementById('v-need');
+    if (!svg) return;
+    var G = 308;
+    // distant skyline
+    var far = el('g', { opacity: 0.35 }, svg);
+    [[26, 64], [64, 92], [112, 56], [158, 108], [214, 72], [268, 98], [330, 62], [386, 84], [444, 58], [492, 76]].forEach(function (b) {
+      el('rect', { x: b[0], y: G - b[1], width: 30, height: b[1], fill: '#10131f' }, far);
+    });
+    // transmission pylons + catenary cables (drawn behind the city blocks)
+    var cables = [];
+    function pylon(x) {
+      var g = el('g', { opacity: 0.8 }, svg);
+      el('path', { d: 'M' + (x - 12) + ' ' + G + ' L' + (x - 3) + ' 116 L' + (x + 3) + ' 116 L' + (x + 12) + ' ' + G, fill: 'none', stroke: STEEL, 'stroke-width': 2 }, g);
+      for (var yy = G - 16; yy > 150; yy -= 30) {
+        el('line', { x1: x - 9, y1: yy, x2: x + 9, y2: yy - 30, stroke: STEEL, 'stroke-width': 1, opacity: 0.55 }, g);
+        el('line', { x1: x + 9, y1: yy, x2: x - 9, y2: yy - 30, stroke: STEEL, 'stroke-width': 1, opacity: 0.55 }, g);
+      }
+      el('line', { x1: x - 26, y1: 136, x2: x + 26, y2: 136, stroke: STEEL, 'stroke-width': 2.4 }, g);
+      el('line', { x1: x - 17, y1: 162, x2: x + 17, y2: 162, stroke: STEEL, 'stroke-width': 2.2 }, g);
+      [[-26, 136], [26, 136], [-17, 162], [17, 162]].forEach(function (a) {
+        el('line', { x1: x + a[0], y1: a[1], x2: x + a[0], y2: a[1] + 7, stroke: STEEL, 'stroke-width': 1.5 }, g);
+      });
+    }
+    function cable(x1, y1, x2, y2, sag) {
+      var p = el('path', { d: 'M ' + x1 + ' ' + y1 + ' Q ' + ((x1 + x2) / 2) + ' ' + (Math.max(y1, y2) + sag) + ' ' + x2 + ' ' + y2, fill: 'none', stroke: '#9aa7ff', 'stroke-width': 1.2, opacity: 0.55 }, svg);
+      cables.push(p);
+    }
+    [92, 252, 412].forEach(pylon);
+    cable(118, 143, 226, 143, 24); cable(278, 143, 386, 143, 24);
+    cable(109, 169, 235, 169, 22); cable(269, 169, 395, 169, 22);
+    cable(438, 143, 524, 176, 30);   // the line dives into the city
+    // the old way: a coal plant, winding down
+    el('rect', { x: 10, y: G - 52, width: 52, height: 52, fill: '#0e1220', stroke: '#232a3c', 'stroke-width': 1 }, svg);
+    [24, 44].forEach(function (sx) {
+      el('rect', { x: sx - 5, y: G - 92, width: 10, height: 40, fill: '#0e1220', stroke: '#232a3c', 'stroke-width': 1 }, svg);
+      var smoke = el('g', { 'class': 'smoke' }, svg);
+      [0, 1, 2].forEach(function (k) {
+        var c = el('circle', { cx: sx + (k % 2 ? 4 : -3), cy: G - 100 - k * 14, r: 5 + k * 2.5, fill: '#8a93a8', 'class': 'puff' }, smoke);
+        c.style.animationDelay = (k * 1.2 + (sx === 44 ? 0.6 : 0)) + 's';
+      });
+    });
+    // the city itself: windows blaze on one by one
+    var blocks = [
+      { x: 76, w: 42, h: 96 }, { x: 126, w: 38, h: 132 }, { x: 172, w: 50, h: 78 },
+      { x: 230, w: 40, h: 148 }, { x: 278, w: 52, h: 102 }, { x: 338, w: 44, h: 138 },
+      { x: 390, w: 54, h: 90 }, { x: 452, w: 40, h: 122 }, { x: 500, w: 46, h: 150 }
+    ];
+    blocks.forEach(function (b) {
+      el('rect', { x: b.x, y: G - b.h, width: b.w, height: b.h, fill: '#0e1220', stroke: '#232a3c', 'stroke-width': 1 }, svg);
+      for (var wx = b.x + 6; wx < b.x + b.w - 8; wx += 10) {
+        for (var wy = G - b.h + 8; wy < G - 10; wy += 13) {
+          if (Math.random() < 0.55) {
+            var w = el('rect', { x: wx, y: wy, width: 4, height: 6, fill: '#ffb64d', 'class': 'win' + (Math.random() < 0.12 ? ' tw' : '') }, svg);
+            w.style.transitionDelay = (Math.random() * 1.9).toFixed(2) + 's';
+          }
+        }
+      }
+    });
+    txt(svg, 440, 104, 'demand: exploding', { fill: '#ffb64d', 'class': 'mlabel', 'text-anchor': 'middle' });
+    txt(svg, 12, 132, 'burning: winding down', { fill: '#e5484d', 'class': 'mlabel' });
+    el('line', { x1: 8, y1: G, x2: 552, y2: G, stroke: STEEL, 'stroke-width': 2, opacity: 0.5 }, svg);
+    // power pulses racing down the lines into the city
+    if (!RM) {
+      var beads = [];
+      cables.forEach(function (p, i) {
+        var L = p.getTotalLength();
+        [0, 0.5].forEach(function (off) {
+          beads.push({
+            p: p, L: L, off: off + i * 0.13, dur: 2200 + i * 260,
+            glow: el('circle', { r: 4.5, fill: '#ffd075', opacity: 0.25 }, svg),
+            dot: el('circle', { r: 2, fill: '#ffe9c4' }, svg)
+          });
+        });
+      });
+      var t0 = null;
+      var step = function (ts) {
+        if (t0 === null) t0 = ts;
+        beads.forEach(function (b) {
+          var f = (((ts - t0) / b.dur) + b.off) % 1;
+          var pt = b.p.getPointAtLength(f * b.L);
+          b.dot.setAttribute('cx', pt.x.toFixed(1)); b.dot.setAttribute('cy', pt.y.toFixed(1));
+          b.glow.setAttribute('cx', pt.x.toFixed(1)); b.glow.setAttribute('cy', pt.y.toFixed(1));
+        });
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+  })();
+
+  /* ============ SCENE 9: the orbit of everything it unlocks ============ */
+  (function s9() {
+    var svg = document.getElementById('v-dawn');
+    if (!svg) return;
+    defsFor(svg, 's9');
+    var cx = 470, cy = 250;
+    [120, 165, 205].forEach(function (r) {
+      el('circle', { cx: cx, cy: cy, r: r, fill: 'none', stroke: 'var(--border)', 'stroke-width': 1, opacity: 0.6 }, svg);
+    });
+    el('circle', { cx: cx, cy: cy, r: 92, fill: 'url(#s9-blob)', opacity: 0.55, 'class': 'fz-breathe' }, svg);
+    plasmaTube(svg, 's9', cx, cy, function (phi) {
+      return { x: 52 * Math.cos(phi), y: 52 * Math.sin(phi), z: 0, r: 12 };
+    }, 1);
+    function drop(g, c) { el('path', { d: 'M0 -14 C9 -2 10 6 0 13 C-10 6 -9 -2 0 -14 Z', fill: 'none', stroke: c, 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, g); }
+    function leaf(g, c) {
+      el('path', { d: 'M-10 12 C-10 -6 6 -14 14 -16 C14 2 -2 12 -10 12 Z', fill: 'none', stroke: c, 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, g);
+      el('path', { d: 'M-8 10 C0 2 8 -8 13 -14', fill: 'none', stroke: c, 'stroke-width': 1.4, opacity: 0.7 }, g);
+    }
+    function chip(g, c) {
+      el('rect', { x: -11, y: -9, width: 22, height: 18, rx: 3, fill: 'none', stroke: c, 'stroke-width': 2.2 }, g);
+      el('rect', { x: -4, y: -3, width: 8, height: 6, rx: 1, fill: 'none', stroke: c, 'stroke-width': 1.3 }, g);
+      [-6, 0, 6].forEach(function (o) {
+        el('line', { x1: o, y1: -9, x2: o, y2: -14, stroke: c, 'stroke-width': 1.6 }, g);
+        el('line', { x1: o, y1: 9, x2: o, y2: 14, stroke: c, 'stroke-width': 1.6 }, g);
+      });
+    }
+    function sky(g, c) { el('path', { d: 'M-16 13 V-2 H-6 V-12 H4 V3 H14 V13 Z', fill: 'none', stroke: c, 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, g); }
+    function cloud(g, c) { el('path', { d: 'M-14 8 A7 7 0 0 1 -10 -5 A9 9 0 0 1 7 -8 A7 7 0 0 1 12 8 Z', fill: 'none', stroke: c, 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, g); }
+    var nodes = [
+      { r: 120, a: -130, dur: 110, dir: 1, color: '#4e93f0', label: 'fresh water from the sea', glyph: drop },
+      { r: 120, a: -50, dur: 110, dir: 1, color: '#cdd6f4', label: 'air without carbon', glyph: cloud },
+      { r: 165, a: 174, dur: 110, dir: 1, color: '#25b36b', label: 'food grown anywhere', glyph: leaf },
+      { r: 165, a: 6, dur: 110, dir: 1, color: '#ffb64d', label: 'power for ten billion', glyph: sky },
+      { r: 205, a: 90, dur: 110, dir: 1, color: '#9aa7ff', label: 'intelligence without an energy bill', glyph: chip }
+    ];
+    nodes.forEach(function (n, i) {
+      var orbit = el('g', {}, svg);
+      if (!RM) el('animateTransform', { attributeName: 'transform', type: 'rotate', from: '0 ' + cx + ' ' + cy, to: (n.dir * 360) + ' ' + cx + ' ' + cy, dur: n.dur + 's', repeatCount: 'indefinite' }, orbit);
+      var rad = n.a * Math.PI / 180;
+      var nx = cx + n.r * Math.cos(rad), ny = cy + n.r * Math.sin(rad);
+      // energy streaming out from the star to the node
+      el('path', {
+        d: 'M ' + (cx + 62 * Math.cos(rad)).toFixed(1) + ' ' + (cy + 62 * Math.sin(rad) * 0.75).toFixed(1) +
+           ' L ' + (nx - 28 * Math.cos(rad)).toFixed(1) + ' ' + (ny - 28 * Math.sin(rad)).toFixed(1),
+        stroke: 'var(--text-3)', 'stroke-width': 1.3, opacity: 0.45, 'stroke-dasharray': '3 8', 'stroke-linecap': 'round', 'class': 'fz-flow slow'
+      }, orbit);
+      var pos = el('g', { transform: 'translate(' + nx.toFixed(1) + ' ' + ny.toFixed(1) + ')' }, orbit);
+      var counter = el('g', {}, pos);
+      if (!RM) el('animateTransform', { attributeName: 'transform', type: 'rotate', from: '0 0 0', to: (-n.dir * 360) + ' 0 0', dur: n.dur + 's', repeatCount: 'indefinite' }, counter);
+      var spark = el('g', { 'class': 'spark' }, counter);
+      spark.style.transitionDelay = (0.4 + i * 0.15) + 's';
+      el('circle', { r: 30, fill: n.color, opacity: 0.1, filter: 'url(#s9-blur)' }, spark);
+      el('circle', { r: 24, fill: 'rgba(12,15,25,0.9)', stroke: n.color, 'stroke-width': 1.6 }, spark);
+      n.glyph(spark, n.color);
+      txt(spark, 0, 44, n.label, { 'text-anchor': 'middle', fill: 'var(--text-2)', 'font-size': 12 });
+    });
+  })();
+
+  /* a real stopwatch: bezel, chapter ring, 60 ticks, crown,
+     angled pushers, tapered hand with counterweight: and the
+     hand pivots on the CENTER (SMIL rotate about cx,cy) */
+  function stopwatch(svg, id, cx, cy, R, small) {
+    el('circle', { cx: cx, cy: cy, r: R * 1.14, fill: 'none', stroke: PLASMA, 'stroke-width': R * 0.14, opacity: 0.15, filter: 'url(#' + id + '-blur)' }, svg);
+    // crown at 12 with knurling, pushers at ±40°
+    function button(aDeg, w, h, cap) {
+      var g = el('g', { transform: 'rotate(' + aDeg + ' ' + cx + ' ' + cy + ')' }, svg);
+      el('rect', { x: cx - w * 0.45, y: cy - R - h * 0.72, width: w * 0.9, height: h * 0.75, fill: 'var(--text-3)' }, g);
+      el('rect', { x: cx - w, y: cy - R - h * 1.5, width: w * 2, height: h * 0.85, rx: h * 0.3, fill: 'var(--text-2)' }, g);
+      if (cap) for (var i = -1; i <= 1; i++) el('line', { x1: cx + i * w * 0.55, y1: cy - R - h * 1.42, x2: cx + i * w * 0.55, y2: cy - R - h * 0.75, stroke: 'var(--bg-2)', 'stroke-width': 1.2 }, g);
+    }
+    button(0, R * 0.085, R * 0.16, true);
+    button(-42, R * 0.06, R * 0.13, false);
+    button(42, R * 0.06, R * 0.13, false);
+    // case, bezel, face
+    el('circle', { cx: cx, cy: cy, r: R, fill: 'var(--bg-2)', stroke: 'var(--text-2)', 'stroke-width': R * 0.045 }, svg);
+    el('circle', { cx: cx, cy: cy, r: R * 0.88, fill: 'none', stroke: 'var(--border)', 'stroke-width': 1 }, svg);
+    // 60 ticks, majors every 5
+    for (var i = 0; i < 60; i++) {
+      var t = (i / 60) * Math.PI * 2 - Math.PI / 2;
+      var big = i % 5 === 0;
+      el('line', {
+        x1: cx + R * 0.84 * Math.cos(t), y1: cy + R * 0.84 * Math.sin(t),
+        x2: cx + R * (big ? 0.72 : 0.78) * Math.cos(t), y2: cy + R * (big ? 0.72 : 0.78) * Math.sin(t),
+        stroke: big ? 'var(--text-2)' : 'var(--text-3)', 'stroke-width': big ? R * 0.022 : R * 0.01, 'stroke-linecap': 'round', opacity: big ? 0.95 : 0.55
+      }, svg);
+    }
+    if (!small) {
+      [[0, '60'], [90, '15'], [180, '30'], [270, '45']].forEach(function (n) {
+        var t = n[0] * Math.PI / 180 - Math.PI / 2;
+        txt(svg, cx + R * 0.58 * Math.cos(t), cy + R * 0.58 * Math.sin(t) + R * 0.05, n[1], { 'text-anchor': 'middle', fill: 'var(--text-2)', 'font-size': (R * 0.14).toFixed(0) });
+      });
+    }
+    // glass sheen
+    el('path', { d: 'M ' + (cx - R * 0.62) + ' ' + (cy - R * 0.28) + ' A ' + R * 0.7 + ' ' + R * 0.7 + ' 0 0 1 ' + (cx - R * 0.1) + ' ' + (cy - R * 0.68), fill: 'none', stroke: '#fff', 'stroke-width': R * 0.09, 'stroke-linecap': 'round', opacity: 0.05 }, svg);
+    // hand: tapered, with counterweight: pivoting on the true center
+    var hand = el('g', {}, svg);
+    var hd = 'M ' + cx + ' ' + (cy - R * 0.72) +
+      ' L ' + (cx + R * 0.022) + ' ' + (cy - R * 0.06) +
+      ' L ' + (cx + R * 0.028) + ' ' + (cy + R * 0.14) +
+      ' L ' + (cx - R * 0.028) + ' ' + (cy + R * 0.14) +
+      ' L ' + (cx - R * 0.022) + ' ' + (cy - R * 0.06) + ' Z';
+    el('path', { d: hd, fill: PLASMA }, hand);
+    el('circle', { cx: cx, cy: cy + R * 0.17, r: R * 0.045, fill: PLASMA }, hand);
+    if (!RM) {
+      el('animateTransform', { attributeName: 'transform', type: 'rotate', from: '0 ' + cx + ' ' + cy, to: '360 ' + cx + ' ' + cy, dur: '10s', repeatCount: 'indefinite' }, hand);
+    } else {
+      hand.setAttribute('transform', 'rotate(112 ' + cx + ' ' + cy + ')');
+    }
+    el('circle', { cx: cx, cy: cy, r: R * 0.06, fill: 'var(--text)' }, svg);
+    el('circle', { cx: cx, cy: cy, r: R * 0.022, fill: 'var(--bg-2)' }, svg);
+  }
+
+  /* a proper round-bottom flask: double-walled glass, flared lip,
+     elliptical mouth, ground-glass neck, soft highlights */
+  function flaskPieces(cx, cy, R) {
+    var jx = R * 0.22, neckH = R * 1.02, lip = R * 0.17;
+    var jy = cy - Math.sqrt(R * R - jx * jx);
+    var topY = jy - neckH;
+    return {
+      jx: jx, jy: jy, topY: topY, lip: lip,
+      body: 'M ' + (cx - jx) + ' ' + jy + ' A ' + R + ' ' + R + ' 0 1 0 ' + (cx + jx) + ' ' + jy,
+      neckL: 'M ' + (cx - jx) + ' ' + (jy + 1) + ' L ' + (cx - jx) + ' ' + (topY + 6) + ' Q ' + (cx - jx) + ' ' + topY + ' ' + (cx - jx - lip) + ' ' + (topY - 2),
+      neckR: 'M ' + (cx + jx) + ' ' + (jy + 1) + ' L ' + (cx + jx) + ' ' + (topY + 6) + ' Q ' + (cx + jx) + ' ' + topY + ' ' + (cx + jx + lip) + ' ' + (topY - 2)
+    };
+  }
+  function flask(svg, cx, cy, R, drawIn) {
+    var P = flaskPieces(cx, cy, R);
+    var attrs = { fill: 'none', stroke: STEEL, 'stroke-width': 3.2, 'stroke-linecap': 'round', opacity: 0.95 };
+    var inner = { fill: 'none', stroke: STEEL, 'stroke-width': 1.1, 'stroke-linecap': 'round', opacity: 0.35 };
+    [P.body, P.neckL, P.neckR].forEach(function (d) {
+      var a = Object.assign({}, attrs, { d: d });
+      if (drawIn) { a.pathLength = 1; a['class'] = 'flask'; }
+      el('path', a, svg);
+    });
+    // inner glass wall
+    el('path', { d: 'M ' + (cx - P.jx + 4) + ' ' + P.jy + ' A ' + (R - 4) + ' ' + (R - 4) + ' 0 1 0 ' + (cx + P.jx - 4) + ' ' + P.jy, fill: 'none', stroke: STEEL, 'stroke-width': 1.1, opacity: 0.35 }, svg);
+    // elliptical mouth
+    el('ellipse', { cx: cx, cy: P.topY - 2, rx: P.jx + P.lip, ry: (P.jx + P.lip) * 0.28, fill: 'none', stroke: STEEL, 'stroke-width': 2.4, opacity: 0.9 }, svg);
+    // highlights
+    el('path', { d: 'M ' + (cx - R * 0.62) + ' ' + (cy + R * 0.42) + ' A ' + R * 0.8 + ' ' + R * 0.8 + ' 0 0 1 ' + (cx - R * 0.72) + ' ' + (cy - R * 0.18), fill: 'none', stroke: '#e6ecff', 'stroke-width': 3, 'stroke-linecap': 'round', opacity: 0.22 }, svg);
+    el('path', { d: 'M ' + (cx + R * 0.55) + ' ' + (cy + R * 0.55) + ' A ' + R * 0.8 + ' ' + R * 0.8 + ' 0 0 0 ' + (cx + R * 0.7) + ' ' + (cy + R * 0.28), fill: 'none', stroke: '#e6ecff', 'stroke-width': 2, 'stroke-linecap': 'round', opacity: 0.12 }, svg);
+    return P;
+  }
+
+  /* ============ starfield: three parallax depths ============ */
+  var starLayers = [];
+  (function starfield() {
+    var svg = document.getElementById('starfield');
+    if (!svg) return;
+    var w = Math.max(window.innerWidth, 320);
+    var docH = 9 * window.innerHeight;
+    svg.setAttribute('viewBox', '0 0 ' + w + ' ' + window.innerHeight);
+    [{ s: 0.06, n: 60, rmax: 0.9, o: 0.35 }, { s: 0.14, n: 45, rmax: 1.3, o: 0.5 }, { s: 0.26, n: 26, rmax: 1.9, o: 0.65 }].forEach(function (L) {
+      var g = el('g', {}, svg);
+      var span = window.innerHeight + docH * L.s;
+      for (var i = 0; i < L.n; i++) {
+        var c = el('circle', {
+          cx: (Math.random() * w).toFixed(0), cy: (Math.random() * span).toFixed(0),
+          r: (Math.random() * L.rmax + 0.3).toFixed(2), fill: '#cdd6f4',
+          opacity: (Math.random() * L.o + 0.1).toFixed(2)
+        }, g);
+        if (i % 3 === 0) { c.setAttribute('class', 'tw'); c.style.animationDelay = (Math.random() * 4).toFixed(1) + 's'; }
+      }
+      starLayers.push({ g: g, s: L.s });
+    });
+  })();
+
+  /* ============ SCENE 1: the star ============ */
+  (function s1() {
+    var svg = document.getElementById('v-star');
+    if (!svg) return;
+    sunDefs(svg, 's1');
+    var cx = 280, cy = 214, r = 88;
+    var rays = el('g', { 'class': 'fz-rot', opacity: 0.55 }, svg);
+    for (var i = 0; i < 10; i++) {
+      var a = (i / 10) * Math.PI * 2;
+      var len = r * (1.9 + (i % 3) * 0.5);
+      el('path', {
+        d: 'M' + (cx + Math.cos(a) * r * 0.6) + ' ' + (cy + Math.sin(a) * r * 0.6) +
+           ' L' + (cx + Math.cos(a + 0.045) * len) + ' ' + (cy + Math.sin(a + 0.045) * len) +
+           ' L' + (cx + Math.cos(a - 0.045) * len) + ' ' + (cy + Math.sin(a - 0.045) * len) + 'Z',
+        fill: '#ffb64d', opacity: 0.07, filter: 'url(#s1-blur)'
+      }, rays);
+    }
+    sun(svg, 's1', cx, cy, r);
+    el('line', { x1: cx - r * 2.6, y1: cy, x2: cx + r * 2.6, y2: cy, stroke: '#ffe9c4', 'stroke-width': 1, opacity: 0.16 }, svg);
+    el('line', { x1: cx, y1: cy - r * 2.2, x2: cx, y2: cy + r * 2.2, stroke: '#ffe9c4', 'stroke-width': 1, opacity: 0.1 }, svg);
+  })();
+
+  /* ============ SCENE 2: star in a bottle ============ */
+  (function s2() {
+    var svg = document.getElementById('v-bottle');
+    if (!svg) return;
+    sunDefs(svg, 's2');
+    sun(svg, 's2', 280, 276, 46, true);
+    flask(svg, 280, 276, 112, true);
+  })();
+
+  /* ============ SCENE 3: the bottle fails ============ */
+  (function s3() {
+    var svg = document.getElementById('v-burn');
+    if (!svg) return;
+    sunDefs(svg, 's3');
+    sun(svg, 's3', 280, 276, 58, true);
+    var cx = 280, cy = 276, R = 112;
+    function arcSeg(a1, a2) {
+      var r1 = a1 * Math.PI / 180, r2 = a2 * Math.PI / 180;
+      var large = (a2 - a1) > 180 ? 1 : 0;
+      return 'M ' + (cx + R * Math.cos(r1)).toFixed(1) + ' ' + (cy + R * Math.sin(r1)).toFixed(1) +
+        ' A ' + R + ' ' + R + ' 0 ' + large + ' 1 ' + (cx + R * Math.cos(r2)).toFixed(1) + ' ' + (cy + R * Math.sin(r2)).toFixed(1);
+    }
+    // the sphere breaks into four arcs; the neck snaps off whole
+    var P = flaskPieces(cx, cy, R);
+    var pieces = [
+      { d: arcSeg(-78, -8), ang: -43, dist: 24, rot: 13, ends: [-78, -8] },
+      { d: arcSeg(0, 92), ang: 46, dist: 27, rot: -11, ends: [0, 92] },
+      { d: arcSeg(100, 176), ang: 138, dist: 24, rot: 14, ends: [100, 176] },
+      { d: arcSeg(184, 260), ang: 222, dist: 27, rot: -13, ends: [184, 260] },
+      { d: P.neckL + ' ' + P.neckR, ang: -95, dist: 34, rot: -9, mouth: true }
+    ];
+    pieces.forEach(function (p, i) {
+      var f = el('g', { 'class': 'frag' }, svg);
+      var a = p.ang * Math.PI / 180;
+      f.style.setProperty('--tx', (Math.cos(a) * p.dist).toFixed(0) + 'px');
+      f.style.setProperty('--ty', (Math.sin(a) * p.dist).toFixed(0) + 'px');
+      f.style.setProperty('--rot', p.rot + 'deg');
+      f.style.transitionDelay = (0.35 + i * 0.07) + 's';
+      el('path', { d: p.d, fill: 'none', stroke: STEEL, 'stroke-width': 3.2, 'stroke-linecap': 'round', opacity: 0.95 }, f);
+      if (p.mouth) el('ellipse', { cx: cx, cy: P.topY - 2, rx: P.jx + P.lip, ry: (P.jx + P.lip) * 0.28, fill: 'none', stroke: STEEL, 'stroke-width': 2.4, opacity: 0.9 }, f);
+      // fracture tips glow ember-hot, and travel with their shard
+      var tips = p.mouth ? [[cx - P.jx, P.jy], [cx + P.jx, P.jy]]
+        : p.ends.map(function (deg) { var r = deg * Math.PI / 180; return [cx + R * Math.cos(r), cy + R * Math.sin(r)]; });
+      var heat = el('g', { 'class': 'heat' }, f);
+      tips.forEach(function (t) {
+        el('circle', { cx: t[0].toFixed(1), cy: t[1].toFixed(1), r: 8, fill: '#ff9d3c', opacity: 0.25 }, heat);
+        el('circle', { cx: t[0].toFixed(1), cy: t[1].toFixed(1), r: 3, fill: '#ffc46b', opacity: 0.95 }, heat);
+      });
+    });
+  })();
+
+  /* ============ SCENE 3.5: charge obeys magnets ============ */
+  (function s35() {
+    var svg = document.getElementById('v-field');
+    if (!svg) return;
+    var defs = el('defs', {}, svg);
+    var m = el('marker', { id: 'ar-b', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto' }, defs);
+    el('path', { d: 'M0 0L10 5L0 10z', fill: '#9aa7ff' }, m);
+    var y0 = 150, x1 = 60, x2 = 486;
+    el('line', { x1: x1, y1: y0, x2: x2, y2: y0, stroke: '#9aa7ff', 'stroke-width': 2.4, 'stroke-linecap': 'round', 'marker-end': 'url(#ar-b)', opacity: 0.9 }, svg);
+    txt(svg, (x1 + x2) / 2, y0 + 70, 'a magnetic field line', { 'text-anchor': 'middle', fill: '#9aa7ff' });
+    // helical trajectory hugging the line: in front, then behind
+    var rA = 30, TURNS = 7, front = '', back = '', side = null, samples = [];
+    for (var i = 0; i <= 420; i++) {
+      var x = x1 + 16 + (i / 420) * (x2 - x1 - 44);
+      var ph = (i / 420) * Math.PI * 2 * TURNS;
+      var y = y0 + rA * Math.sin(ph);
+      var d = Math.cos(ph);
+      samples.push({ x: x, y: y, d: d });
+      var pt = x.toFixed(1) + ' ' + y.toFixed(1);
+      if (d > 0) { front += (side === 'f' ? 'L' : 'M') + pt; side = 'f'; }
+      else { back += (side === 'b' ? 'L' : 'M') + pt; side = 'b'; }
+    }
+    el('path', { d: back, fill: 'none', stroke: PLASMA, 'stroke-width': 1.4, opacity: 0.25, 'stroke-linecap': 'round' }, svg);
+    el('path', { d: front, fill: 'none', stroke: PLASMA, 'stroke-width': 2, opacity: 0.85, 'stroke-linecap': 'round' }, svg);
+    rideBead(svg, samples, PLASMA, 7000, 0);
+    txt(svg, x1 + 16, y0 - 56, '+  a charged fuel particle', { fill: PLASMA });
+  })();
+
+  /* ============ SCENE 4: the magnetic cage ============ */
+  (function s4() {
+    var svg = document.getElementById('v-cage');
+    if (!svg) return;
+    defsFor(svg, 's4');
+    var cx = 280, cy = 196, R = 168, a = 30;
+    plasmaTube(svg, 's4', cx, cy, function (phi) {
+      return { x: R * Math.cos(phi), y: R * Math.sin(phi), z: 0, r: a };
+    }, 1);
+    function surf(phi, theta) {
+      var rr = R + (a + 12) * Math.cos(theta);
+      return { x: rr * Math.cos(phi), y: rr * Math.sin(phi), z: (a + 12) * Math.sin(theta) };
+    }
+    for (var p = 0; p < 3; p++) {
+      fieldLine(svg, cx, cy, surf, 3, 0.34, p * 2.1, '#9aa7ff', 'fz-flow flowline' + (p === 1 ? ' slow' : ''));
+    }
+  })();
+
+  /* ============ SCENE 5: two fates: drift into the wall, or ride the corkscrew ============ */
+  (function s5() {
+    var svg = document.getElementById('v-helix');
+    if (!svg) return;
+    var TOPW = 56, BOTW = 268;
+    el('line', { x1: 40, y1: TOPW, x2: 520, y2: TOPW, stroke: STEEL, 'stroke-width': 3, opacity: 0.55 }, svg);
+    el('line', { x1: 40, y1: BOTW, x2: 520, y2: BOTW, stroke: STEEL, 'stroke-width': 3, opacity: 0.55 }, svg);
+    txt(svg, 40, TOPW - 10, 'the wall', {});
+    txt(svg, 40, BOTW + 18, 'the wall', {});
+    // the doomed particle: no twist: the drift climbs until the wall ends it
+    var rx1 = 52, ry1 = 196, rx2 = 388, ry2 = TOPW;
+    el('line', { x1: rx1, y1: ry1, x2: rx2, y2: ry2, stroke: '#e5484d', 'stroke-width': 1.8, opacity: 0.5, 'stroke-linecap': 'round' }, svg);
+    txt(svg, rx1 + 6, ry1 + 22, 'no twist: the drift keeps climbing', { fill: '#e5484d' });
+    txt(svg, rx2 + 10, TOPW + 20, 'hits the wall: gone', { fill: '#e5484d' });
+    var burst = el('g', { opacity: 0 }, svg);
+    for (var b = 0; b < 6; b++) {
+      var ba = (b / 6) * Math.PI * 2 + 0.3;
+      el('line', { x1: rx2, y1: ry2, x2: rx2 + Math.cos(ba) * 16, y2: ry2 + Math.sin(ba) * 16, stroke: '#ff9d3c', 'stroke-width': 2.5, 'stroke-linecap': 'round' }, burst);
+    }
+    // the saved particle: twist: high cancels low, forever
+    var d = '';
+    for (var i = 0; i <= 160; i++) {
+      var x = 40 + (i / 160) * 480;
+      var y = 162 + 74 * Math.sin((i / 160) * Math.PI * 4 - Math.PI / 2);
+      d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+    }
+    var path = el('path', { d: d, fill: 'none', stroke: STEL, 'stroke-width': 2.2, opacity: 0.85, 'stroke-linecap': 'round' }, svg);
+    txt(svg, 480, 300, 'with twist: high cancels low, it rides forever', { 'text-anchor': 'end', fill: STEL });
+    var bead = el('circle', { r: 7, fill: PLASMA }, svg);
+    var halo = el('circle', { r: 11, fill: 'none', stroke: PLASMA, 'stroke-width': 1.5, opacity: 0.4 }, svg);
+    var rbead = el('circle', { r: 6, fill: '#e5484d' }, svg);
+    var L = path.getTotalLength(), t0 = null;
+    function step(ts) {
+      if (t0 === null) t0 = ts;
+      // blue: loops forever
+      var p = path.getPointAtLength((((ts - t0) / 6000) % 1) * L);
+      bead.setAttribute('cx', p.x); bead.setAttribute('cy', p.y);
+      halo.setAttribute('cx', p.x); halo.setAttribute('cy', p.y);
+      // red: climbs, dies at the wall in a flash, tries again
+      var f = ((ts - t0) / 4200) % 1;
+      var fp = Math.min(f / 0.88, 1);
+      rbead.setAttribute('cx', (rx1 + (rx2 - rx1) * fp).toFixed(1));
+      rbead.setAttribute('cy', (ry1 + (ry2 - ry1) * fp).toFixed(1));
+      rbead.setAttribute('opacity', f < 0.88 ? 1 : 0);
+      burst.setAttribute('opacity', f >= 0.88 ? Math.max(0, 1 - (f - 0.88) / 0.12) : 0);
+      requestAnimationFrame(step);
+    }
+    if (RM) {
+      var p0 = path.getPointAtLength(L * 0.18);
+      bead.setAttribute('cx', p0.x); bead.setAttribute('cy', p0.y);
+      halo.setAttribute('cx', p0.x); halo.setAttribute('cy', p0.y);
+      rbead.setAttribute('cx', rx2 - 40); rbead.setAttribute('cy', ry2 + 16);
+      burst.setAttribute('opacity', 0.8);
+    } else requestAnimationFrame(step);
+  })();
+
+  /* ============ SCENE 6: the two machines ============
+     Tokamak after ITER: fat plasma (R/a≈2.5), D-shaped toroidal
+     field coils, central solenoid. Stellarator after Wendelstein
+     7-X: five-fold ring, slender plasma (R/a≈11), rotating bean
+     cross-section, warped non-planar coils. */
+  (function tokamak() {
+    var svg = document.getElementById('v-tok');
+    if (!svg) return;
+    defsFor(svg, 'tok');
+    var g = el('g', { 'class': 'mrise' }, svg);
+    var cx = 220, cy = 140, R = 96, a = 40, KAPPA = 1.4;
+    var defs = svg.querySelector('defs');
+    var m = el('marker', { id: 'arrow-tok', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+    el('path', { d: 'M0 0L10 5L0 10z', fill: TOK }, m);
+    function coil(phi, front) {
+      var pts = '';
+      var c = a * 1.85;
+      for (var i = 0; i <= 60; i++) {
+        var th = (i / 60) * Math.PI * 2;
+        var xl = c * Math.cos(th + 0.45 * Math.sin(th));
+        var zl = KAPPA * c * Math.sin(th);
+        var rr = R + xl;
+        var p = proj(cx, cy, rr * Math.cos(phi), rr * Math.sin(phi), zl);
+        pts += (i ? 'L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1);
+      }
+      el('path', { d: pts + 'Z', fill: 'none', stroke: STEEL, 'stroke-width': 7, 'stroke-linejoin': 'round', opacity: front ? 0.92 : 0.3 }, g);
+    }
+    var coilAngles = [0.45, 1.35, 1.9, 2.75, 3.6, 4.2, 5.0, 5.85];
+    coilAngles.forEach(function (t) { if (Math.sin(t) < 0) coil(t, false); });
+    (function solenoid() {
+      var w = 17, h = 74;
+      el('rect', { x: cx - w, y: cy - h, width: w * 2, height: h * 2, rx: 6, fill: 'var(--bg-2)', stroke: STEEL, 'stroke-width': 2.5, opacity: 0.9 }, g);
+      for (var i = 1; i < 6; i++) el('line', { x1: cx - w, y1: cy - h + (i / 6) * h * 2, x2: cx + w, y2: cy - h + (i / 6) * h * 2, stroke: STEEL, 'stroke-width': 1, opacity: 0.4 }, g);
+    })();
+    plasmaTube(g, 'tok', cx, cy, function (phi) {
+      return { x: R * Math.cos(phi), y: R * Math.sin(phi), z: 0, r: a };
+    }, 1.06);
+    function surf(phi, theta) {
+      var rr = R + (a + 8) * Math.cos(theta + 0.35 * Math.sin(theta));
+      return { x: rr * Math.cos(phi), y: rr * Math.sin(phi), z: KAPPA * (a + 8) * Math.sin(theta) };
+    }
+    var tokLine = fieldLine(g, cx, cy, surf, 3, 0.33, 0.6, TOK, null, true);
+    fieldLine(g, cx, cy, surf, 3, 0.33, 3.7, TOK, null, true);
+    rideBead(g, tokLine, TOK, 12000, 0);
+    el('path', { d: 'M ' + (cx - R * 0.72) + ' ' + (cy + R * KA * 0.78) + ' A ' + (R * 0.78) + ' ' + (R * KA * 0.78) + ' 0 0 0 ' + (cx + R * 0.76) + ' ' + (cy + R * KA * 0.66), fill: 'none', stroke: TOK, 'stroke-width': 3, 'stroke-linecap': 'round', 'marker-end': 'url(#arrow-tok)' }, g);
+    coilAngles.forEach(function (t) { if (Math.sin(t) >= 0) coil(t, true); });
+  })();
+
+  (function stellarator() {
+    var svg = document.getElementById('v-stel');
+    if (!svg) return;
+    defsFor(svg, 'stel');
+    var g = el('g', { 'class': 'mrise' }, svg);
+    var cx = 220, cy = 142, R0 = 158, a0 = 15;
+    function center(phi) {
+      var R = R0 + 11 * Math.cos(5 * phi);
+      return { x: R * Math.cos(phi), y: R * Math.sin(phi), z: 9 * Math.sin(5 * phi + 0.7) };
+    }
+    function tubeR(phi) { return a0 * (1 + 0.4 * Math.abs(Math.cos(2.5 * phi + 0.6))); }
+    function coil(phi, front) {
+      var pts = '';
+      for (var i = 0; i <= 56; i++) {
+        var th = (i / 56) * Math.PI * 2;
+        var wob = 0.13 * Math.sin(2 * th + 5 * phi);
+        var c = tubeR(phi) * 2.5 + 6;
+        var cRes = center(phi + wob * 0.25);
+        var rad = Math.sqrt(cRes.x * cRes.x + cRes.y * cRes.y);
+        var ux = cRes.x / rad, uy = cRes.y / rad;
+        var x = cRes.x + ux * c * Math.cos(th);
+        var y = cRes.y + uy * c * Math.cos(th);
+        var z = cRes.z + c * 1.25 * Math.sin(th + wob);
+        var p = proj(cx, cy, x, y, z);
+        pts += (i ? 'L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1);
+      }
+      el('path', { d: pts + 'Z', fill: 'none', stroke: STEEL, 'stroke-width': 5, 'stroke-linejoin': 'round', opacity: front ? 0.9 : 0.28 }, g);
+    }
+    var coilPhis = [];
+    for (var k = 0; k < 10; k++) coilPhis.push((k / 10) * Math.PI * 2 + 0.28);
+    coilPhis.forEach(function (t) { if (Math.sin(t) < 0) coil(t, false); });
+    plasmaTube(g, 'stel', cx, cy, function (phi) {
+      var c = center(phi);
+      return { x: c.x, y: c.y, z: c.z, r: tubeR(phi) };
+    }, 1);
+    function surf(phi, theta) {
+      var c = center(phi);
+      var rad = Math.sqrt(c.x * c.x + c.y * c.y);
+      var ux = c.x / rad, uy = c.y / rad;
+      var rr = tubeR(phi) + 7;
+      return { x: c.x + ux * rr * Math.cos(theta), y: c.y + uy * rr * Math.cos(theta), z: c.z + rr * 1.3 * Math.sin(theta) };
+    }
+    var stelLine = fieldLine(g, cx, cy, surf, 2, 1.0, 0.3, STEL, null, true);
+    fieldLine(g, cx, cy, surf, 2, 1.0, 3.4, STEL, null, true);
+    rideBead(g, stelLine, STEL, 10000, 0.4);
+    coilPhis.forEach(function (t) { if (Math.sin(t) >= 0) coil(t, true); });
+  })();
+
+  /* ============ SCENE 7: the stopwatch ============ */
+  (function s7() {
+    var svg = document.getElementById('v-watch');
+    if (!svg) return;
+    defsFor(svg, 's7');
+    stopwatch(svg, 's7', 180, 218, 128, false);
+  })();
+
+  /* ============ SCENE 8: one rule for both ============ */
+  (function s8() {
+    var svg = document.getElementById('v-question');
+    if (!svg) return;
+    defsFor(svg, 's8');
+    var defs = svg.querySelector('defs');
+    var m = el('marker', { id: 'ar-q', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
+    el('path', { d: 'M0 0L10 5L0 10z', fill: 'var(--text-3)' }, m);
+    // mini tokamak: same 3D machine, miniature
+    (function () {
+      var cx = 130, cy = 96, R = 42, a = 17;
+      plasmaTube(svg, 's8', cx, cy, function (phi) {
+        return { x: R * Math.cos(phi), y: R * Math.sin(phi), z: 0, r: a };
+      }, 0.95);
+      function surf(phi, theta) {
+        var rr = R + (a + 4) * Math.cos(theta);
+        return { x: rr * Math.cos(phi), y: rr * Math.sin(phi), z: (a + 4) * 1.2 * Math.sin(theta) };
+      }
+      fieldLine(svg, cx, cy, surf, 2, 0.33, 0.6, TOK, null, true);
+      txt(svg, cx, cy + 52, 'tokamak', { 'text-anchor': 'middle', fill: TOK, 'letter-spacing': 2 });
+    })();
+    // mini stellarator
+    (function () {
+      var cx = 130, cy = 235, R0 = 62, a0 = 6;
+      function center(phi) {
+        var R = R0 + 5 * Math.cos(5 * phi);
+        return { x: R * Math.cos(phi), y: R * Math.sin(phi), z: 4 * Math.sin(5 * phi + 0.7) };
+      }
+      plasmaTube(svg, 's8', cx, cy, function (phi) {
+        var c = center(phi);
+        return { x: c.x, y: c.y, z: c.z, r: a0 * (1 + 0.35 * Math.abs(Math.cos(2.5 * phi))) };
+      }, 1);
+      function surf(phi, theta) {
+        var c = center(phi);
+        var rad = Math.sqrt(c.x * c.x + c.y * c.y);
+        var ux = c.x / rad, uy = c.y / rad;
+        var rr = a0 + 4;
+        return { x: c.x + ux * rr * Math.cos(theta), y: c.y + uy * rr * Math.cos(theta), z: c.z + rr * 1.3 * Math.sin(theta) };
+      }
+      fieldLine(svg, cx, cy, surf, 2, 1.0, 0.4, STEL, null, true);
+      txt(svg, cx, cy + 48, 'stellarator', { 'text-anchor': 'middle', fill: STEL, 'letter-spacing': 2 });
+    })();
+    // arrows into the shared rule
+    el('path', { d: 'M240 100 C 310 115, 335 135, 392 152', fill: 'none', stroke: 'var(--text-3)', 'stroke-width': 2, 'stroke-dasharray': '2 6', 'stroke-linecap': 'round', 'marker-end': 'url(#ar-q)' }, svg);
+    el('path', { d: 'M240 235 C 310 230, 335 200, 392 178', fill: 'none', stroke: 'var(--text-3)', 'stroke-width': 2, 'stroke-dasharray': '2 6', 'stroke-linecap': 'round', 'marker-end': 'url(#ar-q)' }, svg);
+    el('rect', { x: 402, y: 110, width: 236, height: 112, rx: 16, fill: 'var(--surface)', stroke: 'var(--border)', 'stroke-width': 1.5 }, svg);
+    txt(svg, 520, 150, 'ONE RULE', { 'text-anchor': 'middle', fill: 'var(--text)', 'font-size': 15, 'letter-spacing': 3 });
+    txt(svg, 520, 178, 'size · shape · twist', { 'text-anchor': 'middle', fill: 'var(--text-2)', 'font-size': 12 });
+    txt(svg, 520, 198, 'blind to which machine is which', { 'text-anchor': 'middle', 'font-size': 10 });
+    el('path', { d: 'M648 166 H 708', fill: 'none', stroke: 'var(--text-3)', 'stroke-width': 2, 'stroke-dasharray': '2 6', 'stroke-linecap': 'round', 'marker-end': 'url(#ar-q)' }, svg);
+    stopwatch(svg, 's8', 800, 166, 54, true);
+  })();
+
+  /* ============ scroll reveals ============ */
+  var scenes = document.querySelectorAll('.scene');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.22 });
+    scenes.forEach(function (s) { io.observe(s); });
+  } else {
+    scenes.forEach(function (s) { s.classList.add('in'); });
+  }
+
+  /* ============ parallax: scroll depth + pointer drift + scrub zoom ============ */
+  var progress = document.getElementById('progress');
+  var plxEls = [];
+  document.querySelectorAll('[data-plx]').forEach(function (n) {
+    plxEls.push({ el: n, s: parseFloat(n.getAttribute('data-plx')) || 0, m: parseFloat(n.getAttribute('data-m')) || 0 });
+  });
+  var mx = 0, my = 0;
+  if (!RM) {
+    var ticking = false;
+    var frame = function () {
+      ticking = false;
+      var vh = window.innerHeight;
+      var sc = window.scrollY;
+      var max = document.documentElement.scrollHeight - vh;
+      if (progress) progress.style.width = (max > 0 ? (sc / max) * 100 : 0) + '%';
+      starLayers.forEach(function (L) { L.g.setAttribute('transform', 'translate(0 ' + (-sc * L.s).toFixed(1) + ')'); });
+      plxEls.forEach(function (o) {
+        var r = o.el.getBoundingClientRect();
+        var c = r.top + r.height / 2 - vh / 2;
+        var ty = c * o.s + my * o.m * 0.6;
+        var tx = mx * o.m;
+        var scale = 1 - Math.min(Math.abs(c) / vh, 1) * 0.12;   // scenes swell as they center
+        o.el.style.transform = 'translate3d(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px,0) scale(' + scale.toFixed(3) + ')';
+      });
+    };
+    var onMove = function () { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+    window.addEventListener('pointermove', function (e) {
+      mx = (e.clientX / window.innerWidth - 0.5) * 2;
+      my = (e.clientY / window.innerHeight - 0.5) * 2;
+      onMove();
+    }, { passive: true });
+    window.addEventListener('scroll', onMove, { passive: true });
+    window.addEventListener('resize', onMove, { passive: true });
+    onMove();
+  } else if (progress) {
+    window.addEventListener('scroll', function () {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
+    }, { passive: true });
+  }
+})();
+</script>
+<script src="assets/transition.js"></script>
+<script src="assets/dj-hud.js"></script>
+</body>
+</html>
