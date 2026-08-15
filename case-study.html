@@ -140,6 +140,15 @@
   .tri-h{font-family:var(--font-mono);font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;}
   .tri-b .tri-h{color:var(--accent);}.tri-m .tri-h{color:var(--amber);}.tri-g .tri-h{color:var(--green);}
   .tri-card p{margin:0;color:var(--text-2);font-size:0.95rem;line-height:1.5;}
+
+  /* ---------- live wire diagrams ---------- */
+  .cs-viz { margin-top: 20px; }
+  .cs-viz canvas { width: 100%; height: min(430px, 64vw); display: block; border-radius: 14px;
+    border: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 72%, transparent);
+    cursor: grab; touch-action: pan-y; }
+  .cs-viz canvas:active { cursor: grabbing; }
+  .cs-viz .viz-cap { margin-top: 9px; font-family: var(--font-mono); font-size: 0.68rem;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); text-align: center; }
 </style>
 </head>
 <body>
@@ -175,6 +184,7 @@
   </footer>
 </main>
 
+<script src="assets/case-viz.js"></script>
 <script src="assets/cases.js"></script>
 <script src="assets/portfolio.js"></script>
 <script src="assets/enhance.js"></script>

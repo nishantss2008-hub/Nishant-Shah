@@ -1,16 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nishant Shah">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="nDawn" x1="16" y1="50" x2="48" y2="18" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#6f8cff"/>
-      <stop offset=".38" stop-color="#a78bfa"/>
-      <stop offset=".72" stop-color="#ff9a6a"/>
-      <stop offset="1" stop-color="#f5b21a"/>
+    <linearGradient id="nsheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#e8e8ee"/>
+      <stop offset="1" stop-color="#b9bac4"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="15" fill="#0b1020"/>
-  <circle cx="47" cy="16.5" r="4.6" fill="#f5b21a"/>
-  <g fill="none" stroke="url(#nDawn)" stroke-width="7.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 47V28"/>
-    <path d="M21 34c0-6.4 21-6.4 21 .6V47"/>
+  <rect width="64" height="64" rx="12" fill="#050608"/>
+  <g transform="translate(7.5,0) skewX(-12)">
+    <polygon points="12,6 21,6 21,58 12,58" fill="url(#nsheen)"/>
+    <polygon points="12,6 21,6 52,58 43,58" fill="url(#nsheen)"/>
+    <polygon points="43,6 52,6 52,58 43,58" fill="url(#nsheen)"/>
+    <line x1="16.5" y1="8" x2="16.5" y2="56" stroke="#050608" stroke-width="1.7"/>
+    <line x1="47.5" y1="8" x2="47.5" y2="56" stroke="#050608" stroke-width="1.7"/>
+    <line x1="17" y1="8.5" x2="47" y2="55.5" stroke="#050608" stroke-width="1.7"/>
   </g>
 </svg>
