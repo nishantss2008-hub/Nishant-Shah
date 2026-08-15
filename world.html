@@ -9,6 +9,7 @@
 <title>Nishant Shah — My Room</title>
 <link rel="stylesheet" href="assets/tokens.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="assets/vendor/GLTFLoader.js"></script>
 <style>
   html, body { height: 100%; margin: 0; overflow: hidden; background: #000; }
   #scene { position: fixed; inset: 0; cursor: grab; }
@@ -75,11 +76,37 @@
 
   .loading { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: #0a0a0a; color: var(--text-3); font-family: var(--font-mono); font-size: 0.8rem; letter-spacing: 0.1em; transition: opacity var(--dur-3); }
   .loading.hide { opacity: 0; pointer-events: none; }
+
+  /* ---- 3D model panel (space card) ---- */
+  .m3d { position: relative; width: 100%; aspect-ratio: 1 / 1.05; border-radius: 12px; overflow: hidden;
+    cursor: grab; touch-action: pan-y; border: 1px solid rgba(255,255,255,0.22); background: radial-gradient(120% 90% at 50% 45%, rgba(140,150,170,0.10), rgba(0,0,0,0.25) 70%); }
+  .m3d.m3d-grab { cursor: grabbing; }
+  .m3d canvas { display: block; width: 100%; height: 100%; }
+  .m3d .m3d-hint { position: absolute; left: 50%; bottom: 9px; transform: translateX(-50%); white-space: nowrap;
+    font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.6); pointer-events: none;
+    opacity: 0; transition: opacity 0.8s ease 0.3s; text-shadow: 0 1px 8px rgba(0,0,0,0.7); }
+  .m3d.m3d-on .m3d-hint { opacity: 1; }
+  .m3d.m3d-moved .m3d-hint, .m3d.m3d-fail .m3d-hint { opacity: 0; transition-delay: 0s; }
+  .m3d::after { content: "rolling to the pad\2026"; position: absolute; inset: 0; display: grid; place-content: center;
+    font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.55); pointer-events: none; transition: opacity 0.5s ease; }
+  .m3d.m3d-on::after { opacity: 0; }
+  .m3d.m3d-fail::after { content: "3d unavailable on this device"; }
+
+  /* ---- the playable piano ---- */
+  .pian { position: relative; display: flex; width: 100%; height: 132px; border-radius: 10px; overflow: hidden;
+    background: #0b0d14; border: 1px solid rgba(255,255,255,0.28); touch-action: none; user-select: none; -webkit-user-select: none; }
+  .pian .pw { flex: 1 1 0; position: relative; background: linear-gradient(#ffffff, #e9e6de 88%, #d9d5cb); border-right: 1px solid #b8b4aa; cursor: pointer; }
+  .pian .pw:last-child { border-right: none; }
+  .pian .pw.on { background: linear-gradient(#ffe9b8, #f5b21a); }
+  .pian .pb { position: absolute; top: 0; right: 0; width: 58%; height: 62%; transform: translateX(50%); z-index: 2;
+    background: linear-gradient(#343845, #0c0e15 80%); border-radius: 0 0 4px 4px; box-shadow: 0 3px 7px rgba(0,0,0,0.55); cursor: pointer; }
+  .pian .pb.on { background: linear-gradient(#f5b21a, #b97e06); }
 </style>
 </head>
 <body>
 <nav class="topnav"><a href="intro.html">Intro</a><a href="portfolio.html">Portfolio</a><a href="world.html" class="active">Room</a></nav>
 <div class="pt" id="pt"><div class="pt-mark">NS</div></div>
+<script src="assets/fusion-3d.js"></script>
 <script src="assets/transition.js"></script>
 <script src="assets/music-hud.js"></script>
   <div id="scene"></div>
@@ -188,10 +215,7 @@ const HOTSPOTS = [
     ['The Great Gatsby','','','The Great Gatsby Original Broadway Cast'],
   ] },
   { id:'running',   lon: -25.2, lat:-36.2, label:'Running Shoes',                  body:'Cross country and track \u2014 where I clear my head.', img:'assets/photos/xc-team.jpg' },
-  { id:'piano',     lon:   6.3, lat:-19.1, label:'I Play Piano',                   body:'', tracks:[
-    { id:'piano1', name:'Piece I', src:'' },
-    { id:'piano2', name:'Piece II', src:'' }
-  ] },
+  { id:'piano',     lon:   6.3, lat:-19.1, label:'I Play Piano',                   body:'', piano:true },
   { id:'space',     lon:  10.4, lat: -1.4, label:'Space & Space Travel',           body:'Endlessly intrigued by what\u2019s past the horizon.', img:'assets/photos/space-starship.jpg' },
   { id:'projects',  lon:  37.2, lat:-10.6, label:'Patriot Portfolio & Projects',   body:'Where my ventures and builds live.', href:'portfolio.html#tech', hrefLabel:'See my projects' },
   { id:'agent',     lon:  56.7, lat:-11.0, label:'Ask Me About Nishant',           body:'A little terminal. Boot it up and ask away.', agent:true },
@@ -379,6 +403,60 @@ function playPianoTrack(tracks, id) {
   if (a.src && a.src.indexOf(t.src) > -1 && !a.paused) { a.pause(); return; }
   a.src = t.src; a.play().catch(function(){});
 }
+
+/* ---- the playable piano (WebAudio, no samples) ---- */
+var PCTX = null;
+function pnote(midi) {
+  try { PCTX = PCTX || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+  if (PCTX.state === 'suspended') PCTX.resume();
+  var f = 440 * Math.pow(2, (midi - 69) / 12), t = PCTX.currentTime;
+  var g = PCTX.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.3, t + 0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 1.55);
+  var flt = PCTX.createBiquadFilter();
+  flt.type = 'lowpass'; flt.frequency.value = Math.min(f * 6, 5200); flt.Q.value = 0.35;
+  [[1, 'triangle', 1], [2, 'sine', 0.35], [3, 'sine', 0.1]].forEach(function (h) {
+    var o = PCTX.createOscillator(); o.type = h[1]; o.frequency.value = f * h[0];
+    var og = PCTX.createGain(); og.gain.value = h[2];
+    o.connect(og); og.connect(flt); o.start(t); o.stop(t + 1.6);
+  });
+  flt.connect(g); g.connect(PCTX.destination);
+}
+function pflash(el) { if (!el) return; el.classList.add('on'); setTimeout(function () { el.classList.remove('on'); }, 170); }
+function buildPiano() {
+  var wrap = document.getElementById('pianoKeys');
+  if (!wrap) return;
+  var whites = [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81, 83];
+  var hasSharp = { 60: 1, 62: 1, 65: 1, 67: 1, 69: 1, 72: 1, 74: 1, 77: 1, 79: 1, 81: 1 };
+  wrap.innerHTML = '';
+  whites.forEach(function (m) {
+    var w = document.createElement('div');
+    w.className = 'pw'; w.dataset.midi = m;
+    if (hasSharp[m]) { var b = document.createElement('div'); b.className = 'pb'; b.dataset.midi = m + 1; w.appendChild(b); }
+    wrap.appendChild(w);
+  });
+  function keyAt(e) {
+    var el = document.elementFromPoint(e.clientX, e.clientY);
+    return el && el.dataset && el.dataset.midi ? el : null;
+  }
+  var lastKey = null;
+  function strike(el) { if (!el || el === lastKey) return; lastKey = el; pnote(+el.dataset.midi); pflash(el); }
+  wrap.addEventListener('pointerdown', function (e) { e.stopPropagation(); lastKey = null; strike(keyAt(e)); });
+  wrap.addEventListener('pointermove', function (e) { if (e.buttons & 1) strike(keyAt(e)); });
+  wrap.addEventListener('pointerup', function () { lastKey = null; });
+  wrap.addEventListener('pointercancel', function () { lastKey = null; });
+}
+var PKEYS = 'awsedftgyhujkolp;';
+window.addEventListener('keydown', function (e) {
+  if (!cardOpen || !activeHS || !activeHS.piano || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+  var i = PKEYS.indexOf(e.key.toLowerCase());
+  if (i < 0) return;
+  pnote(60 + i);
+  var el = document.querySelector('#pianoKeys [data-midi="' + (60 + i) + '"]');
+  pflash(el);
+});
+
 function openCard(hs) {
   cardOpen = true; activeHS = hs;
   if (window.MusicHUD && (hs.mixes || hs.tracks || hs.art === 'song')) { /* picker shown; don't auto-pause */ }
@@ -543,9 +621,18 @@ function openCard(hs) {
         (r[4] ? '<a href="' + r[4] + '" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="flex:0 0 auto; display:inline-flex; align-items:center; gap:5px; padding:5px 11px; border-radius:999px; border:1px solid rgba(255,255,255,0.32); background:rgba(255,255,255,0.14); color:#fff; text-decoration:none; font-size:0.78rem; white-space:nowrap;">\u25b6 Play online</a>' :
          (r[2] ? '<span style="flex:0 0 auto; color:rgba(255,255,255,0.78); font-size:0.82rem;">' + r[2] + '</span>' : '')) +
       '</div>'; }).join('') + '</div>';
-  } else {
+  } else if (hs.piano) {
     blurbEl.innerHTML = (hs.body ? '<p style="margin:0 0 12px;">' + hs.body + '</p>' : '') +
-      (hs.img ? '<img src="' + hs.img + '" alt="" style="width:100%;border-radius:12px;display:block;" />' : '');
+      '<div class="pian" id="pianoKeys"></div>' +
+      '<div style="margin-top:8px;font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.55);text-align:center;">a real (tiny) piano · c4 – b5</div>';
+    setTimeout(buildPiano, 0);
+  } else {
+    var use3d = hs.model && window.M3D;
+    blurbEl.innerHTML = (hs.body ? '<p style="margin:0 0 12px;">' + hs.body + '</p>' : '') +
+      (use3d ? '<div class="m3d" data-src="' + hs.model + '" data-dist="' + (hs.modelDist || 2.3) + '" data-spin="1" role="img" aria-label="Interactive 3D model — drag to rotate."><span class="m3d-hint">' + (hs.modelHint || 'drag to spin') + '</span></div>' :
+        (hs.img ? '<img src="' + hs.img + '" alt="" style="width:100%;border-radius:12px;display:block;" />' : '')) +
+      '';
+    if (use3d) setTimeout(function () { var el = blurbEl.querySelector('.m3d'); if (el) window.M3D.boot(el); }, 0);
   }
   document.getElementById('sSkills').innerHTML = (hs.skills || []).map(s => '<span class="pill">' + s + '</span>').join('');
   document.getElementById('sActions').innerHTML =

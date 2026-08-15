@@ -62,6 +62,25 @@
   .duel .half svg { display: block; width: 100%; height: auto; will-change: transform; }
   @media (max-width: 680px) { .duel { grid-template-columns: 1fr; } }
 
+  /* ---------- the real machines: interactive 3D ---------- */
+  .m3d { position: relative; width: 100%; aspect-ratio: 44 / 32; border-radius: 16px; overflow: hidden;
+    cursor: grab; touch-action: pan-y; border: 1px solid var(--border);
+    background: radial-gradient(120% 90% at 50% 42%, rgba(125,135,156,0.09), rgba(6,7,13,0) 62%); }
+  .m3d.m3d-grab { cursor: grabbing; }
+  .m3d canvas { display: block; width: 100%; height: 100%; }
+  .m3d .m3d-hint { position: absolute; left: 50%; bottom: 11px; transform: translateX(-50%); white-space: nowrap;
+    font-family: var(--fz-mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-3); pointer-events: none; opacity: 0; transition: opacity 0.8s ease 0.3s; }
+  .m3d.m3d-on .m3d-hint { opacity: 1; }
+  .m3d.m3d-moved .m3d-hint, .m3d.m3d-fail .m3d-hint { opacity: 0; transition-delay: 0s; }
+  .m3d::after { content: "assembling the magnets…"; position: absolute; inset: 0; display: grid; place-content: center;
+    font-family: var(--fz-mono); font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-3);
+    opacity: 1; transition: opacity 0.6s ease; pointer-events: none; }
+  .m3d.m3d-on::after { opacity: 0; }
+  .m3d.m3d-fail::after { content: "3d unavailable on this device"; }
+  .m3d-credit a { color: var(--text-2); text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; }
+  .m3d-credit a:hover { color: var(--text); }
+
   .scene.finale { padding-bottom: 16vh; }
   .scene.finale .viz { width: min(880px, 94vw); }
   .scene.finale .fz-back { margin-top: 18px; }
@@ -196,17 +215,24 @@
     <p class="line">So humanity split into <b>two camps.</b></p>
     <div class="duel">
       <div class="half tok">
-        <svg id="v-tok" viewBox="0 0 440 290" data-plx="-0.1" data-m="10" role="img" aria-label="The tokamak, modeled on ITER: a fat glowing ring inside D-shaped steel coils, twisting its own cage by driving a river of current through the fuel."></svg>
+        <div class="m3d" id="m3d-tok" data-src="assets/models/iter_tokamak.glb" data-glow="#ff8a45" data-emit="#ff610a" data-spin="1" data-dist="2.6"
+             role="img" aria-label="Interactive 3D model of the ITER tokamak magnet system, built from the ITER Organization's own CAD files: eighteen D-shaped toroidal field coils, six poloidal field rings and the central solenoid caging a glowing D-shaped plasma ring. Drag to rotate.">
+          <span class="m3d-hint">drag to spin · iter, real geometry</span>
+        </div>
         <h2><span class="dot"></span>Tokamak</h2>
         <p class="tag">the heavyweight: twists its own cage from within</p>
       </div>
       <div class="half stel">
-        <svg id="v-stel" viewBox="0 0 440 290" data-plx="-0.18" data-m="14" role="img" aria-label="The stellarator, modeled on Wendelstein 7-X: a vast, slender five-lobed ribbon of plasma held by warped, sculpted coils, born pre-twisted."></svg>
+        <div class="m3d" id="m3d-stel" data-src="assets/models/w7x_stellarator.glb" data-glow="#6aa8ff" data-emit="#2f7dff" data-spin="-1" data-dist="2.05" data-elev="0.5"
+             role="img" aria-label="Interactive 3D model of the Wendelstein 7-X stellarator from Proxima Fusion's open CAD release: fifty warped, sculpted coils wrapped around a twisted five-lobed plasma ribbon. Drag to rotate.">
+          <span class="m3d-hint">drag to spin · w7-x, real geometry</span>
+        </div>
         <h2><span class="dot"></span>Stellarator</h2>
         <p class="tag">the sculpture: born pre-twisted, coils do everything</p>
       </div>
     </div>
     <p class="whisper">same dream · opposite machines</p>
+    <p class="whisper m3d-credit">3d geometry · <a href="https://www.iter.org/machine-3d-printing" target="_blank" rel="noopener">ITER Organization</a> print files · <a href="https://github.com/proximafusion/open_stellarator_models" target="_blank" rel="noopener">Proxima Fusion</a> open W7-X models (MIT)</p>
   </section>
 
   <!-- SCENE 7 · the stopwatch -->
@@ -847,102 +873,6 @@
     } else requestAnimationFrame(step);
   })();
 
-  /* ============ SCENE 6: the two machines ============
-     Tokamak after ITER: fat plasma (R/a≈2.5), D-shaped toroidal
-     field coils, central solenoid. Stellarator after Wendelstein
-     7-X: five-fold ring, slender plasma (R/a≈11), rotating bean
-     cross-section, warped non-planar coils. */
-  (function tokamak() {
-    var svg = document.getElementById('v-tok');
-    if (!svg) return;
-    defsFor(svg, 'tok');
-    var g = el('g', { 'class': 'mrise' }, svg);
-    var cx = 220, cy = 140, R = 96, a = 40, KAPPA = 1.4;
-    var defs = svg.querySelector('defs');
-    var m = el('marker', { id: 'arrow-tok', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, defs);
-    el('path', { d: 'M0 0L10 5L0 10z', fill: TOK }, m);
-    function coil(phi, front) {
-      var pts = '';
-      var c = a * 1.85;
-      for (var i = 0; i <= 60; i++) {
-        var th = (i / 60) * Math.PI * 2;
-        var xl = c * Math.cos(th + 0.45 * Math.sin(th));
-        var zl = KAPPA * c * Math.sin(th);
-        var rr = R + xl;
-        var p = proj(cx, cy, rr * Math.cos(phi), rr * Math.sin(phi), zl);
-        pts += (i ? 'L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1);
-      }
-      el('path', { d: pts + 'Z', fill: 'none', stroke: STEEL, 'stroke-width': 7, 'stroke-linejoin': 'round', opacity: front ? 0.92 : 0.3 }, g);
-    }
-    var coilAngles = [0.45, 1.35, 1.9, 2.75, 3.6, 4.2, 5.0, 5.85];
-    coilAngles.forEach(function (t) { if (Math.sin(t) < 0) coil(t, false); });
-    (function solenoid() {
-      var w = 17, h = 74;
-      el('rect', { x: cx - w, y: cy - h, width: w * 2, height: h * 2, rx: 6, fill: 'var(--bg-2)', stroke: STEEL, 'stroke-width': 2.5, opacity: 0.9 }, g);
-      for (var i = 1; i < 6; i++) el('line', { x1: cx - w, y1: cy - h + (i / 6) * h * 2, x2: cx + w, y2: cy - h + (i / 6) * h * 2, stroke: STEEL, 'stroke-width': 1, opacity: 0.4 }, g);
-    })();
-    plasmaTube(g, 'tok', cx, cy, function (phi) {
-      return { x: R * Math.cos(phi), y: R * Math.sin(phi), z: 0, r: a };
-    }, 1.06);
-    function surf(phi, theta) {
-      var rr = R + (a + 8) * Math.cos(theta + 0.35 * Math.sin(theta));
-      return { x: rr * Math.cos(phi), y: rr * Math.sin(phi), z: KAPPA * (a + 8) * Math.sin(theta) };
-    }
-    var tokLine = fieldLine(g, cx, cy, surf, 3, 0.33, 0.6, TOK, null, true);
-    fieldLine(g, cx, cy, surf, 3, 0.33, 3.7, TOK, null, true);
-    rideBead(g, tokLine, TOK, 12000, 0);
-    el('path', { d: 'M ' + (cx - R * 0.72) + ' ' + (cy + R * KA * 0.78) + ' A ' + (R * 0.78) + ' ' + (R * KA * 0.78) + ' 0 0 0 ' + (cx + R * 0.76) + ' ' + (cy + R * KA * 0.66), fill: 'none', stroke: TOK, 'stroke-width': 3, 'stroke-linecap': 'round', 'marker-end': 'url(#arrow-tok)' }, g);
-    coilAngles.forEach(function (t) { if (Math.sin(t) >= 0) coil(t, true); });
-  })();
-
-  (function stellarator() {
-    var svg = document.getElementById('v-stel');
-    if (!svg) return;
-    defsFor(svg, 'stel');
-    var g = el('g', { 'class': 'mrise' }, svg);
-    var cx = 220, cy = 142, R0 = 158, a0 = 15;
-    function center(phi) {
-      var R = R0 + 11 * Math.cos(5 * phi);
-      return { x: R * Math.cos(phi), y: R * Math.sin(phi), z: 9 * Math.sin(5 * phi + 0.7) };
-    }
-    function tubeR(phi) { return a0 * (1 + 0.4 * Math.abs(Math.cos(2.5 * phi + 0.6))); }
-    function coil(phi, front) {
-      var pts = '';
-      for (var i = 0; i <= 56; i++) {
-        var th = (i / 56) * Math.PI * 2;
-        var wob = 0.13 * Math.sin(2 * th + 5 * phi);
-        var c = tubeR(phi) * 2.5 + 6;
-        var cRes = center(phi + wob * 0.25);
-        var rad = Math.sqrt(cRes.x * cRes.x + cRes.y * cRes.y);
-        var ux = cRes.x / rad, uy = cRes.y / rad;
-        var x = cRes.x + ux * c * Math.cos(th);
-        var y = cRes.y + uy * c * Math.cos(th);
-        var z = cRes.z + c * 1.25 * Math.sin(th + wob);
-        var p = proj(cx, cy, x, y, z);
-        pts += (i ? 'L' : 'M') + p.x.toFixed(1) + ' ' + p.y.toFixed(1);
-      }
-      el('path', { d: pts + 'Z', fill: 'none', stroke: STEEL, 'stroke-width': 5, 'stroke-linejoin': 'round', opacity: front ? 0.9 : 0.28 }, g);
-    }
-    var coilPhis = [];
-    for (var k = 0; k < 10; k++) coilPhis.push((k / 10) * Math.PI * 2 + 0.28);
-    coilPhis.forEach(function (t) { if (Math.sin(t) < 0) coil(t, false); });
-    plasmaTube(g, 'stel', cx, cy, function (phi) {
-      var c = center(phi);
-      return { x: c.x, y: c.y, z: c.z, r: tubeR(phi) };
-    }, 1);
-    function surf(phi, theta) {
-      var c = center(phi);
-      var rad = Math.sqrt(c.x * c.x + c.y * c.y);
-      var ux = c.x / rad, uy = c.y / rad;
-      var rr = tubeR(phi) + 7;
-      return { x: c.x + ux * rr * Math.cos(theta), y: c.y + uy * rr * Math.cos(theta), z: c.z + rr * 1.3 * Math.sin(theta) };
-    }
-    var stelLine = fieldLine(g, cx, cy, surf, 2, 1.0, 0.3, STEL, null, true);
-    fieldLine(g, cx, cy, surf, 2, 1.0, 3.4, STEL, null, true);
-    rideBead(g, stelLine, STEL, 10000, 0.4);
-    coilPhis.forEach(function (t) { if (Math.sin(t) >= 0) coil(t, true); });
-  })();
-
   /* ============ SCENE 7: the stopwatch ============ */
   (function s7() {
     var svg = document.getElementById('v-watch');
@@ -1057,6 +987,9 @@
   }
 })();
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous" defer></script>
+<script src="assets/vendor/GLTFLoader.js" defer></script>
+<script src="assets/fusion-3d.js" defer></script>
 <script src="assets/transition.js"></script>
 <script src="assets/dj-hud.js"></script>
 </body>
