@@ -85,16 +85,7 @@
   .chg.rq.hot { border-color: color-mix(in srgb, var(--sx-flame) 45%, transparent); background: color-mix(in srgb, var(--sx-flame) 6%, transparent); }
   .chg.rq.cold { border-color: color-mix(in srgb, var(--sx-orbit) 45%, transparent); background: color-mix(in srgb, var(--sx-orbit) 6%, transparent); }
   .chg.rq h3 { font-size: clamp(1.3rem, 2.8vw, 1.8rem); }
-
-  .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: min(940px, 94vw); }
-  @media (max-width: 780px) { .tools { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 520px) { .tools { grid-template-columns: 1fr; } }
-  .tool { text-align: left; border: 1px solid var(--border); border-radius: 14px; padding: 18px; background: color-mix(in srgb, var(--surface) 45%, transparent); }
-  .tool .chip { display: inline-block; font-family: var(--sx-mono); font-size: 0.56rem; letter-spacing: 0.16em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-3); margin-bottom: 10px; }
-  .tool.q1 .chip { color: var(--sx-flame); border-color: color-mix(in srgb, var(--sx-flame) 40%, transparent); }
-  .tool.q2 .chip { color: var(--sx-orbit); border-color: color-mix(in srgb, var(--sx-orbit) 40%, transparent); }
-  .tool h4 { margin: 0 0 6px; font-size: 1rem; letter-spacing: -0.01em; }
-  .tool p { margin: 0; color: var(--text-2); font-size: 0.85rem; line-height: 1.55; }
+  .chg .m3d { width: 100%; aspect-ratio: 4 / 3.6; margin-top: 16px; border-radius: 12px; }
 
   .scene.finale { padding-bottom: 16vh; }
   .scene.finale .sx-back { margin-top: 18px; }
@@ -167,26 +158,27 @@
         <span class="tag">Change 1 · the rocket</span>
         <h3>Retire Falcon 9. Bet everything on Starship.</h3>
         <p>Falcon 9 passed <b>650 flights at &gt;99% success</b> — the most reliable rocket ever flown — then SpaceX closed its order book beyond 2028. Starship carries <b>25–30× the Starlink capacity per flight</b>, and the new V3 satellites are too big for anything else. But its Block&nbsp;3 booster has never been caught.</p>
+        <div class="m3d" data-src="assets/models/falcon9.glb" data-dist="3.5" data-spin="1"
+             role="img" aria-label="Interactive 3D model of the Falcon 9 rocket, full stack with fairing. Community model via Wikimedia Commons. Drag to rotate.">
+          <span class="m3d-hint">drag to spin · falcon 9</span>
+        </div>
       </div>
       <div class="chg cold">
         <span class="tag">Change 2 · the orbit bet</span>
         <h3>Put the data centres in space.</h3>
         <p>SpaceX has asked regulators for up to <b>one million AI-compute satellites</b> and unveiled the first, AI1, in June 2026. Deployment "as early as 2028." Alphabet and Anthropic are already paying <b>$2.2B a month</b> for the ground-based compute that precedes it.</p>
+        <div class="m3d" data-src="assets/models/tdrs.glb" data-dist="2.2" data-spin="-1"
+             role="img" aria-label="Interactive 3D model of a NASA Tracking and Data Relay Satellite — solar wings and twin dish antennas, the archetype of orbital data infrastructure. Drag to rotate.">
+          <span class="m3d-hint">drag to spin · nasa tdrs</span>
+        </div>
       </div>
     </div>
     <p class="whisper">both programmes have already started · the open question is not whether — it's pace</p>
-  </section>
-
-  <!-- SCENE 4 · why it matters -->
-  <section class="scene" id="x4">
-    <p class="kick">why these questions matter</p>
-    <p class="line">Pace is the hardest thing to manage in <em>change.</em></p>
-    <p class="say">Move too fast, and you retire a working machine before its replacement is proven — with <b>$36B already committed</b> and customers who can walk away on 90 days' notice. Move too slow, and you pay for two rockets at once while rivals close in, and a trillion-dollar revenue promise slips.</p>
-    <p class="say">And the two changes are <b>stacked</b>: the data centres can only reach orbit on the rocket that hasn't finished proving itself. Get the sequence wrong, and both bets fail together. That tension — announced timelines versus demonstrated capability — is exactly what the business-management concept of <b>change</b> is for.</p>
+    <p class="whisper" style="font-size:0.6rem;">3d models · falcon 9: fac-tory-o via wikimedia commons (cc by-sa 4.0) · satellite: nasa tdrs (public domain)</p>
   </section>
 
   <!-- SCENE 5 · the research questions -->
-  <section class="scene" id="x5">
+  <section class="scene finale" id="x5">
     <p class="kick">the two questions the paper answers</p>
     <p class="line">Not <b>whether.</b> <em>How fast.</em></p>
     <div class="duel">
@@ -199,34 +191,13 @@
         <h3>Should SpaceX extend that change into AI compute by deploying orbital data centres from 2028?</h3>
       </div>
     </div>
-    <p class="whisper">key concept: change · organization: Space Exploration Technologies Corp.</p>
-  </section>
-
-  <!-- SCENE 6 · how they're answered -->
-  <section class="scene" id="x6">
-    <p class="kick">how the paper answers them</p>
-    <p class="line">Answered in the form of an <b>IB Business Management IA</b> — six tools, no favourites.</p>
-    <div class="tools">
-      <div class="tool q1"><span class="chip">RQ1 · qualitative</span><h4>Force field analysis</h4><p>Weigh every documented pressure to accelerate against every pressure to wait — with the scoring rubric written <i>before</i> any force was scored.</p></div>
-      <div class="tool q1"><span class="chip">RQ1 · quantitative</span><h4>Decision tree</h4><p>Price both paths under uncertainty: what does dropping Falcon 9 cost if Starship stumbles?</p></div>
-      <div class="tool q1"><span class="chip">RQ1 · qualitative</span><h4>Porter's strategies</h4><p>Ask what the transition does to the thing SpaceX actually competes on: cost.</p></div>
-      <div class="tool q2"><span class="chip">RQ2 · qualitative</span><h4>Ansoff matrix</h4><p>Locate how risky orbital data centres really are: new product, new customers.</p></div>
-      <div class="tool q2"><span class="chip">RQ2 · quantitative</span><h4>Investment appraisal</h4><p>Test management's public payback claim against the company's own books.</p></div>
-      <div class="tool q2"><span class="chip">RQ2 · quantitative</span><h4>Critical path analysis</h4><p>Find the one activity that actually controls whether 2028 is possible.</p></div>
-    </div>
-    <p class="whisper">five supporting documents · seven further sources · every assumption declared up front</p>
-  </section>
-
-  <!-- SCENE 7 · the invitation -->
-  <section class="scene finale" id="x7">
-    <p class="kick">the paper</p>
-    <p class="line">Two questions. One lens: <em>change.</em> <b>Answers inside.</b></p>
-    <p class="say">The full IA works through both questions with the six tools above — quantified, sourced, and honest about its own assumptions — and ends with a recommendation for each. The 35-page analysis is available on request.</p>
+    <p class="whisper">key concept: change · organization: Space Exploration Technologies Corp. · answered as an IB Business Management IA — available on request</p>
     <a class="sx-back" href="portfolio.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
       Back to portfolio
     </a>
   </section>
+
 </main>
 
 <script>

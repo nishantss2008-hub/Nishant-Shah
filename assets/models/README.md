@@ -34,6 +34,17 @@ not artistic approximations.
   (9 m dia, Ship 52 m + Super Heavy 71 m, ogive nose, fore/aft flaps, grid fins, tile side).
   No third-party assets — no license constraints.
 
+## falcon9.glb — Falcon 9 full stack
+- **Source:** "Falcon 9.stl" by Fac-tory-o, Wikimedia Commons
+  <https://commons.wikimedia.org/wiki/File:Falcon_9.stl> — **CC BY-SA 4.0**.
+  The assembled-stack half of the file was extracted, decimated and exported via
+  `build/build_falcon9.py`; the derived GLB remains CC BY-SA 4.0 with attribution.
+
+## tdrs.glb — NASA Tracking & Data Relay Satellite (C)
+- **Source:** NASA 3D Resources <https://github.com/nasa/NASA-3D-Resources>
+  (public domain), used unmodified. Stands in for orbital data infrastructure
+  on the SpaceX analysis page.
+
 ## Rebuild
 The pipeline lives in `build/`:
 1. `step2stl.py` — tessellates the Proxima STEP into per-solid STLs (needs a Python 3.13 venv
