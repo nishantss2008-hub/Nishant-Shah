@@ -71,7 +71,7 @@
     scene.add(p);
     return { pts: p, n: n, born: -1, q: null, r: 1, theta0: 0 };
   }
-  function updateBatch(b, t) {
+  function updateBatch(b, t, fade) {
     if (b.born < 0) { b.pts.material.opacity = 0; return; }
     var age = t - b.born;
     var pos = b.pts.geometry.attributes.position.array;
@@ -82,7 +82,7 @@
       pos[i * 3] = V1.x; pos[i * 3 + 1] = V1.y; pos[i * 3 + 2] = V1.z;
     }
     b.pts.geometry.attributes.position.needsUpdate = true;
-    b.pts.material.opacity = Math.min(0.95, age * 1.5);
+    b.pts.material.opacity = Math.min(0.95, age * 1.5) * fade;
   }
 
   var batchF = makeBatch(24, 0xffc79a, 0.016);   /* falcon train — ember-white */
@@ -184,7 +184,7 @@
     var pp = plumeGeo.attributes.position.array;
     pp[0] = tail.x; pp[1] = tail.y; pp[2] = tail.z;
     plumeGeo.attributes.position.needsUpdate = true;
-    plumeMat.opacity = 0.55 + 0.35 * Math.random();
+    plumeMat.opacity = 0.55 + 0.28 * Math.sin(performance.now() * 0.02);
     return th;
   }
 
@@ -228,7 +228,7 @@
         rotY += 0.0011;
       }
     }
-    var cr = 3.15 - 0.35 * Math.min(1, Math.max(0, (t - 17) / 6));   /* pull back slightly in act 3… actually push in? keep gentle */
+    var cr = 3.75;
     camera.position.set(
       cr * Math.cos(rotX) * Math.sin(rotY),
       cr * Math.sin(rotX) + 0.15,
@@ -263,12 +263,13 @@
     }
     if (RM) { swarmO = 0.85; }
 
+    var endFade = t > 28 ? Math.max(0, 1 - (t - 28) / 1.8) : 1;
     if (!((falcon && falcon.visible) || (ship && ship.visible))) plumeMat.opacity = 0;
-    updateBatch(batchF, t);
-    updateBatch(batchS, t);
+    updateBatch(batchF, t, endFade);
+    updateBatch(batchS, t, endFade);
 
     SHELLS.forEach(function (s, i) {
-      s.pts.material.opacity = swarmO;
+      s.pts.material.opacity = swarmO * endFade;
       if (!RM) s.pts.rotation.y += s.speed * 0.016;
     });
     renderer.render(scene, camera);
@@ -280,7 +281,7 @@
   var vis = new IntersectionObserver(function (es) {
     es.forEach(function (e) {
       active = e.isIntersecting && !document.hidden;
-      if (active) { if (!started) { started = true; t0 = performance.now(); camera.position.set(3.15 * Math.cos(rotX) * Math.sin(rotY), 3.15 * Math.sin(rotX) + 0.15, 3.15 * Math.cos(rotX) * Math.cos(rotY)); aimLaunchAtCamera(); } wake(); }
+      if (active) { if (!started) { started = true; t0 = performance.now(); camera.position.set(3.75 * Math.cos(rotX) * Math.sin(rotY), 3.75 * Math.sin(rotX) + 0.15, 3.75 * Math.cos(rotX) * Math.cos(rotY)); aimLaunchAtCamera(); } wake(); }
       else if (raf) { cancelAnimationFrame(raf); raf = 0; }
     });
   }, { threshold: 0.05 });
