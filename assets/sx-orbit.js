@@ -117,40 +117,6 @@
     });
   })();
 
-  /* tracked sats for links (world-space math) */
-  var TRACK = [];
-  for (var ti = 0; ti < 64; ti++) {
-    TRACK.push({
-      q: planeQuat([53, 53, 70, 70, 43, 86][ti % 6], [0, 60, 30, 100, 150, 75][ti % 6]),
-      r: [1.14, 1.14, 1.19, 1.19, 1.24, 1.28][ti % 6],
-      th: Math.random() * Math.PI * 2,
-      w: 0.18 + Math.random() * 0.1
-    });
-  }
-  var MAXL = 46;
-  var linkGeo = new THREE.BufferGeometry();
-  linkGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(MAXL * 6), 3));
-  var linkMat = new THREE.LineBasicMaterial({ color: 0x5aa2ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
-  var links = new THREE.LineSegments(linkGeo, linkMat);
-  links.frustumCulled = false;
-  scene.add(links);
-  var pairs = [];
-  function repick() {
-    var ps = TRACK.map(function (s) { return orbitPos(s.q, s.r, s.th, new THREE.Vector3()).clone(); });
-    pairs = [];
-    for (var i = 0; i < TRACK.length && pairs.length < MAXL - 6; i++) {
-      var best = -1, bd = 1e9;
-      for (var j = 0; j < TRACK.length; j++) {
-        if (j === i) continue;
-        var d = ps[i].distanceToSquared(ps[j]);
-        if (d < bd && d > 0.004) { bd = d; best = j; }
-      }
-      if (best >= 0 && bd < 0.16) pairs.push([i, best]);
-    }
-  }
-  repick();
-  setInterval(repick, 1400);
-
   /* ---------- rockets ---------- */
   var loader = new THREE.GLTFLoader();
   var falcon = null, ship = null;
@@ -272,7 +238,7 @@
     earth.rotation.y += RM ? 0 : 0.0006;
 
     /* ---- acts ---- */
-    var swarmO = 0, linkO = 0;
+    var swarmO = 0;
     if (t < 10) {                                        /* ACT 1: falcon */
       if (ship) ship.visible = false;
       if (t < 4.2) {
@@ -294,9 +260,8 @@
       if (falcon) falcon.visible = false;
       if (ship) ship.visible = false;
       swarmO = Math.min(0.85, (t - 19) / 3);
-      linkO = Math.min(0.7, Math.max(0, (t - 20.5) / 3));
     }
-    if (RM) { swarmO = 0.85; linkO = 0.5; }
+    if (RM) { swarmO = 0.85; }
 
     if (!((falcon && falcon.visible) || (ship && ship.visible))) plumeMat.opacity = 0;
     updateBatch(batchF, t);
@@ -306,21 +271,6 @@
       s.pts.material.opacity = swarmO;
       if (!RM) s.pts.rotation.y += s.speed * 0.016;
     });
-    TRACK.forEach(function (s) { s.th += s.w * 0.016 * (RM ? 0 : 1); });
-    linkMat.opacity = linkO * (RM ? 1 : (0.75 + 0.25 * Math.sin(t * 4)));
-    if (linkO > 0) {
-      var lp = linkGeo.attributes.position.array;
-      var li = 0;
-      pairs.forEach(function (pr) {
-        var a = orbitPos(TRACK[pr[0]].q, TRACK[pr[0]].r, TRACK[pr[0]].th, V1);
-        lp[li++] = a.x; lp[li++] = a.y; lp[li++] = a.z;
-        var b = orbitPos(TRACK[pr[1]].q, TRACK[pr[1]].r, TRACK[pr[1]].th, V2);
-        lp[li++] = b.x; lp[li++] = b.y; lp[li++] = b.z;
-      });
-      for (; li < MAXL * 6;) { lp[li++] = 0; }
-      linkGeo.attributes.position.needsUpdate = true;
-    }
-
     renderer.render(scene, camera);
     if (RM && raf) { cancelAnimationFrame(raf); raf = 0; }   /* one static frame */
   }
