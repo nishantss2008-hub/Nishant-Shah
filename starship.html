@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<script src="assets/analytics.js"></script>
+<title>Falcon, Starship &amp; the Orbit Bet · Nishant Shah</title>
+<meta name="description" content="Two questions about the two great changes underway at SpaceX — and why they matter. Answered in the form of an IB Business Management IA." />
+<meta property="og:title" content="How do you replace a rocket that never fails?" />
+<meta property="og:description" content="Two changes are underway at SpaceX. Two questions decide them. The story behind my IB Business Management IA." />
+<meta property="og:type" content="article" />
+<link rel="stylesheet" href="assets/tokens.css" />
+<style>
+  :root {
+    --sx-bg: #06070d;
+    --sx-steel: #9aa3b5;         /* stainless */
+    --sx-flame: #ff7a3d;         /* raptor exhaust */
+    --sx-orbit: #5aa2ff;         /* the compute bet */
+    --sx-mono: "Helvetica Neue", Helvetica, "Inter", Arial, sans-serif;
+  }
+  html { background: var(--sx-bg); }
+  body { background: var(--sx-bg); color: var(--text); font-family: var(--font-sans); overflow-x: hidden; }
+
+  .sx-progress { position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 60;
+    background: linear-gradient(90deg, var(--sx-steel), var(--sx-flame), var(--sx-orbit)); }
+
+  .sx-stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .sx-stars svg { width: 100%; height: 100%; display: block; }
+
+  .sx-top { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 26px; background: linear-gradient(180deg, rgba(6,7,13,0.85), rgba(6,7,13,0)); }
+  .sx-back { display: inline-flex; align-items: center; gap: 9px; color: var(--text-2); font-weight: 500; font-size: 0.95rem; transition: color var(--dur-1), gap var(--dur-1); }
+  .sx-back:hover { color: var(--text); gap: 12px; }
+  .sx-back svg { width: 18px; height: 18px; }
+  .sx-crumb { font-family: var(--sx-mono); font-size: 0.64rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); }
+
+  main { position: relative; z-index: 1; }
+  .scene { position: relative; min-height: 96vh; display: grid; place-content: center; justify-items: center; text-align: center;
+    gap: clamp(16px, 3vh, 30px); padding: 12vh 22px; }
+  .scene .kick { font-family: var(--sx-mono); font-size: 0.68rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--sx-flame); }
+  .scene .line { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.6rem, 4.8vw, 2.85rem); line-height: 1.2; letter-spacing: -0.01em; max-width: 24ch; }
+  .scene .line em { font-style: italic; background: linear-gradient(100deg, #ffe6d2, var(--sx-flame) 55%, #ff4d6d); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .scene .line em.cool { background: linear-gradient(100deg, #d9e9ff, var(--sx-orbit) 55%, #8b6cff); -webkit-background-clip: text; background-clip: text; }
+  .scene .line b { font-weight: 400; color: var(--text); }
+  .scene .whisper { font-family: var(--sx-mono); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); max-width: 60ch; line-height: 1.8; }
+  .scene .say { color: var(--text-2); font-size: clamp(1rem, 2vw, 1.16rem); line-height: 1.65; max-width: 56ch; text-wrap: pretty; }
+  .scene .say b { color: var(--text); font-weight: 600; }
+
+  .scene.opener { min-height: 100vh; }
+  .scene.opener .scrollcue { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); color: var(--text-3); font-family: var(--sx-mono); font-size: 0.64rem; letter-spacing: 0.22em; text-transform: uppercase; }
+  .scene.opener .scrollcue::after { content: ""; display: block; width: 1px; height: 34px; margin: 10px auto 0; background: linear-gradient(var(--text-3), transparent); }
+
+  /* charts & cards */
+  .viz { width: min(720px, 94vw); }
+  .viz svg { display: block; width: 100%; height: auto; }
+  .viz svg text { font-family: var(--sx-mono); }
+  .duel { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 3vw, 30px); width: min(940px, 94vw); align-items: stretch; }
+  @media (max-width: 680px) { .duel { grid-template-columns: 1fr; } }
+  .chg { text-align: left; border: 1px solid var(--border); border-radius: 18px; padding: 26px 24px; background: color-mix(in srgb, var(--surface) 55%, transparent); }
+  .chg .tag { font-family: var(--sx-mono); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .chg.hot .tag { color: var(--sx-flame); }
+  .chg.cold .tag { color: var(--sx-orbit); }
+  .chg h3 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.25rem, 2.6vw, 1.7rem); line-height: 1.25; margin: 0 0 10px; }
+  .chg p { color: var(--text-2); font-size: 0.97rem; line-height: 1.6; margin: 0; }
+  .chg p b { color: var(--text); }
+  .chg.rq { border-width: 1.5px; }
+  .chg.rq.hot { border-color: color-mix(in srgb, var(--sx-flame) 45%, transparent); background: color-mix(in srgb, var(--sx-flame) 6%, transparent); }
+  .chg.rq.cold { border-color: color-mix(in srgb, var(--sx-orbit) 45%, transparent); background: color-mix(in srgb, var(--sx-orbit) 6%, transparent); }
+  .chg.rq h3 { font-size: clamp(1.3rem, 2.8vw, 1.8rem); }
+  .orbit3d { position: relative; width: min(940px, 94vw); aspect-ratio: 16 / 10; border-radius: 18px; overflow: hidden;
+    cursor: grab; touch-action: pan-y; border: 1px solid var(--border);
+    background: radial-gradient(130% 100% at 50% 42%, rgba(90,162,255,0.05), rgba(6,7,13,0) 60%); }
+  .orbit3d.m3d-grab { cursor: grabbing; }
+  .orbit3d canvas { display: block; width: 100%; height: 100%; }
+  .orbit3d .m3d-hint { position: absolute; left: 50%; bottom: 11px; transform: translateX(-50%); white-space: nowrap;
+    font-family: var(--sx-mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-3); pointer-events: none; opacity: 0; transition: opacity 0.8s ease 0.6s; }
+  .orbit3d.m3d-on .m3d-hint { opacity: 1; }
+  @media (max-width: 640px) { .orbit3d { aspect-ratio: 4 / 3.4; } }
+
+  .scene.finale { padding-bottom: 16vh; }
+  .scene.finale .sx-back { margin-top: 18px; }
+
+  /* reveal on scroll */
+  .scene > * { opacity: 0; transform: translateY(30px); transition: opacity 1s var(--ease), transform 1.1s var(--ease); }
+  .scene > *:nth-child(2) { transition-delay: 0.12s; }
+  .scene > *:nth-child(3) { transition-delay: 0.24s; }
+  .scene > *:nth-child(4) { transition-delay: 0.34s; }
+  .scene > *:nth-child(5) { transition-delay: 0.44s; }
+  .scene.in > * { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .scene > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+  }
+  a:focus-visible { outline: 2px solid var(--accent-ring); outline-offset: 3px; border-radius: 4px; }
+  main svg text { user-select: none; -webkit-user-select: none; }
+</style>
+</head>
+<body>
+
+<div class="sx-progress" id="progress" aria-hidden="true"></div>
+<div class="sx-stars" aria-hidden="true"><svg id="starfield" preserveAspectRatio="none"></svg></div>
+
+<div class="sx-top">
+  <a class="sx-back" href="portfolio.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Back
+  </a>
+  <span class="sx-crumb">IB Business Management IA · Key Concept: Change</span>
+</div>
+
+<main>
+  <!-- SCENE 2 · the company mid-metamorphosis -->
+  <section class="scene opener" id="x2">
+    <p class="kick">my IB business management IA · an analysis of SpaceX</p>
+    <p class="line">SpaceX is <b>mid-metamorphosis.</b></p>
+    <p class="say">Since its June 2026 IPO the group runs three businesses at once: <b>Connectivity</b> (Starlink), <b>Space</b> (launch), and <b>AI</b> (compute, after absorbing xAI). $18.7B of revenue — and a $2.6B net loss, because everything is being rebuilt at the same time.</p>
+    <div class="viz" role="img" aria-label="Bar chart of 2025 revenue by division: Connectivity 11.4 billion dollars, Space 4.1 billion, AI 3.2 billion; group net loss 2.6 billion.">
+      <svg viewBox="0 0 720 250">
+        <text x="20" y="30" fill="var(--text-3)" font-size="11" letter-spacing="2">2025 REVENUE BY DIVISION · $BN</text>
+        <rect x="20" y="52" width="614" height="34" rx="7" fill="var(--sx-orbit)" opacity="0.85"/>
+        <text x="32" y="74" fill="#06070d" font-size="14" font-weight="700">CONNECTIVITY · $11.4B</text>
+        <rect x="20" y="98" width="220" height="34" rx="7" fill="var(--sx-steel)" opacity="0.8"/>
+        <text x="32" y="120" fill="#06070d" font-size="14" font-weight="700">SPACE · $4.1B</text>
+        <rect x="20" y="144" width="173" height="34" rx="7" fill="var(--sx-flame)" opacity="0.85"/>
+        <text x="32" y="166" fill="#06070d" font-size="14" font-weight="700">AI · $3.2B</text>
+        <line x1="20" y1="196" x2="700" y2="196" stroke="var(--border)" stroke-width="1"/>
+        <text x="20" y="226" fill="var(--text-2)" font-size="13">GROUP NET RESULT 2025</text>
+        <text x="700" y="226" fill="#ff6b6b" font-size="15" font-weight="700" text-anchor="end">− $2.6B</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- SCENE 3 · the two changes -->
+  <section class="scene" id="x3">
+    <p class="line">Two enormous changes are underway <b>at the same time.</b></p>
+    <div class="duel">
+      <div class="chg hot">
+        <span class="tag">Change 1 · the rocket</span>
+        <h3>Retire Falcon 9. Bet everything on Starship.</h3>
+        <p>Falcon 9 passed <b>650 flights at &gt;99% success</b> — the most reliable rocket ever flown — then SpaceX closed its order book beyond 2028. Starship carries <b>25–30× the Starlink capacity per flight</b>, and the new V3 satellites are too big for anything else. But its Block&nbsp;3 booster has never been caught.</p>
+      </div>
+      <div class="chg cold">
+        <span class="tag">Change 2 · the orbit bet</span>
+        <h3>Put the data centres in space.</h3>
+        <p>SpaceX has asked regulators for up to <b>one million AI-compute satellites</b> and unveiled the first, AI1, in June 2026. Deployment "as early as 2028." Alphabet and Anthropic are already paying <b>$2.2B a month</b> for the ground-based compute that precedes it.</p>
+      </div>
+    </div>
+    <div class="orbit3d" id="orbitAnim" role="img" aria-label="Animated 3D diagram on a loop: Falcon 9 climbs from Earth and strings out a small train of satellites; then Starship climbs and releases a far larger batch; finally thousands of satellites fill orbital shells around the planet. Drag to orbit the scene.">
+      <span class="m3d-hint">the whole story, on loop · drag to orbit</span>
+    </div>
+    <p class="whisper">both programmes have already started · the open question is not whether — it's pace</p>
+    <p class="whisper" style="font-size:0.6rem;">3d · earth: nasa blue marble · falcon 9: fac-tory-o via wikimedia commons (cc by-sa 4.0) · starship: built to public dimensions</p>
+  </section>
+
+  <!-- SCENE 5 · the research questions -->
+  <section class="scene finale" id="x5">
+    <p class="kick">the two questions the paper answers</p>
+    <div class="duel">
+      <div class="chg rq hot">
+        <span class="tag">Research question 1</span>
+        <h3>Should SpaceX accelerate its change from Falcon 9 to Starship as its primary launch vehicle by 2028?</h3>
+      </div>
+      <div class="chg rq cold">
+        <span class="tag">Research question 2</span>
+        <h3>Should SpaceX extend that change into AI compute by deploying orbital data centres from 2028?</h3>
+      </div>
+    </div>
+    <p class="whisper">key concept: change · organization: Space Exploration Technologies Corp. · answered as an IB Business Management IA — available on request</p>
+    <a class="sx-back" href="portfolio.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to portfolio
+    </a>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  /* starfield */
+  var sf = document.getElementById('starfield');
+  if (sf) {
+    var w = window.innerWidth, h = window.innerHeight;
+    sf.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    var frag = '';
+    for (var i = 0; i < 130; i++) {
+      var r = Math.random() < 0.85 ? 0.8 : 1.5;
+      frag += '<circle cx="' + (Math.random() * w).toFixed(0) + '" cy="' + (Math.random() * h).toFixed(0) +
+        '" r="' + r + '" fill="#fff" opacity="' + (0.12 + Math.random() * 0.5).toFixed(2) + '"/>';
+    }
+    sf.innerHTML = frag;
+  }
+
+  /* reveals */
+  var scenes = document.querySelectorAll('.scene');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.22 });
+    scenes.forEach(function (s) { io.observe(s); });
+  } else {
+    scenes.forEach(function (s) { s.classList.add('in'); });
+  }
+
+  /* progress bar */
+  var progress = document.getElementById('progress');
+  window.addEventListener('scroll', function () {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    if (progress) progress.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + '%';
+  }, { passive: true });
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous" defer></script>
+<script src="assets/vendor/GLTFLoader.js" defer></script>
+<script src="assets/sx-orbit.js" defer></script>
+<script src="assets/transition.js"></script>
+<script src="assets/dj-hud.js"></script>
+</body>
+</html>
