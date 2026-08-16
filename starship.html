@@ -85,7 +85,19 @@
   .chg.rq.hot { border-color: color-mix(in srgb, var(--sx-flame) 45%, transparent); background: color-mix(in srgb, var(--sx-flame) 6%, transparent); }
   .chg.rq.cold { border-color: color-mix(in srgb, var(--sx-orbit) 45%, transparent); background: color-mix(in srgb, var(--sx-orbit) 6%, transparent); }
   .chg.rq h3 { font-size: clamp(1.3rem, 2.8vw, 1.8rem); }
-  .chg .m3d { width: 100%; aspect-ratio: 4 / 3.6; margin-top: 16px; border-radius: 12px; }
+  .orbit3d { position: relative; width: min(940px, 94vw); aspect-ratio: 16 / 10; border-radius: 18px; overflow: hidden;
+    cursor: grab; touch-action: pan-y; border: 1px solid var(--border);
+    background: radial-gradient(130% 100% at 50% 42%, rgba(90,162,255,0.05), rgba(6,7,13,0) 60%); }
+  .orbit3d.m3d-grab { cursor: grabbing; }
+  .orbit3d canvas { display: block; width: 100%; height: 100%; }
+  .orbit3d .ocap { position: absolute; top: 13px; left: 0; right: 0; text-align: center; pointer-events: none;
+    font-family: var(--sx-mono); font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-2); opacity: 0; transition: opacity 0.5s ease; }
+  .orbit3d .m3d-hint { position: absolute; left: 50%; bottom: 11px; transform: translateX(-50%); white-space: nowrap;
+    font-family: var(--sx-mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-3); pointer-events: none; opacity: 0; transition: opacity 0.8s ease 0.6s; }
+  .orbit3d.m3d-on .m3d-hint { opacity: 1; }
+  @media (max-width: 640px) { .orbit3d { aspect-ratio: 4 / 3.4; } }
 
   .scene.finale { padding-bottom: 16vh; }
   .scene.finale .sx-back { margin-top: 18px; }
@@ -158,23 +170,19 @@
         <span class="tag">Change 1 · the rocket</span>
         <h3>Retire Falcon 9. Bet everything on Starship.</h3>
         <p>Falcon 9 passed <b>650 flights at &gt;99% success</b> — the most reliable rocket ever flown — then SpaceX closed its order book beyond 2028. Starship carries <b>25–30× the Starlink capacity per flight</b>, and the new V3 satellites are too big for anything else. But its Block&nbsp;3 booster has never been caught.</p>
-        <div class="m3d" data-src="assets/models/falcon9.glb" data-dist="3.5" data-spin="1"
-             role="img" aria-label="Interactive 3D model of the Falcon 9 rocket, full stack with fairing. Community model via Wikimedia Commons. Drag to rotate.">
-          <span class="m3d-hint">drag to spin · falcon 9</span>
-        </div>
       </div>
       <div class="chg cold">
         <span class="tag">Change 2 · the orbit bet</span>
         <h3>Put the data centres in space.</h3>
         <p>SpaceX has asked regulators for up to <b>one million AI-compute satellites</b> and unveiled the first, AI1, in June 2026. Deployment "as early as 2028." Alphabet and Anthropic are already paying <b>$2.2B a month</b> for the ground-based compute that precedes it.</p>
-        <div class="m3d" data-src="assets/models/tdrs.glb" data-dist="2.2" data-spin="-1"
-             role="img" aria-label="Interactive 3D model of a NASA Tracking and Data Relay Satellite — solar wings and twin dish antennas, the archetype of orbital data infrastructure. Drag to rotate.">
-          <span class="m3d-hint">drag to spin · nasa tdrs</span>
-        </div>
       </div>
     </div>
+    <div class="orbit3d" id="orbitAnim" role="img" aria-label="Animated 3D diagram on a loop: Falcon 9 climbs from Earth and strings out a small train of satellites; then Starship climbs and releases a far larger batch; finally thousands of satellites fill orbital shells, linking to each other by laser and beaming data back to Earth. Drag to orbit the scene.">
+      <div class="ocap" id="orbitCap"></div>
+      <span class="m3d-hint">the whole story, on loop · drag to orbit</span>
+    </div>
     <p class="whisper">both programmes have already started · the open question is not whether — it's pace</p>
-    <p class="whisper" style="font-size:0.6rem;">3d models · falcon 9: fac-tory-o via wikimedia commons (cc by-sa 4.0) · satellite: nasa tdrs (public domain)</p>
+    <p class="whisper" style="font-size:0.6rem;">3d · earth: nasa blue marble · falcon 9: fac-tory-o via wikimedia commons (cc by-sa 4.0) · starship: built to public dimensions</p>
   </section>
 
   <!-- SCENE 5 · the research questions -->
@@ -238,6 +246,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous" defer></script>
 <script src="assets/vendor/GLTFLoader.js" defer></script>
 <script src="assets/fusion-3d.js" defer></script>
+<script src="assets/sx-orbit.js" defer></script>
 <script src="assets/transition.js"></script>
 <script src="assets/dj-hud.js"></script>
 </body>
