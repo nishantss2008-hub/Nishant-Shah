@@ -14,7 +14,6 @@
   var host = document.getElementById('orbitAnim');
   if (!host) return;
   var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var capEl = document.getElementById('orbitCap');
 
   var renderer;
   try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' }); }
@@ -223,20 +222,6 @@
     return th;
   }
 
-  /* ---------- captions ---------- */
-  var CAPS = [
-    'act i · how it was — falcon 9, ~24 satellites at a time',
-    'act ii · the handover — starship, whole shells per flight',
-    'act iii · how it will be — thousands, lasing to each other'
-  ];
-  var capIdx = -1;
-  function setCap(i) {
-    if (i === capIdx || !capEl) return;
-    capIdx = i;
-    capEl.style.opacity = 0;
-    setTimeout(function () { capEl.textContent = CAPS[i] || ''; capEl.style.opacity = 1; }, 350);
-  }
-
   /* ---------- interaction + loop ---------- */
   var rotY = 0.55, rotX = 0.12, drag = false, px = 0, py = 0, lastDrag = -1e9;
   host.addEventListener('pointerdown', function (e) { drag = true; lastDrag = performance.now(); px = e.clientX; py = e.clientY; host.classList.add('m3d-grab'); if (host.setPointerCapture) host.setPointerCapture(e.pointerId); });
@@ -289,7 +274,6 @@
     /* ---- acts ---- */
     var swarmO = 0, linkO = 0;
     if (t < 10) {                                        /* ACT 1: falcon */
-      setCap(0);
       if (ship) ship.visible = false;
       if (t < 4.2) {
         flyRocket(falcon, t / 4.2);
@@ -299,7 +283,6 @@
         if (batchF.born < 0) { batchF.born = t; batchF.q = LAUNCH_Q; batchF.r = 1.135; batchF.theta0 = thB; }
       }
     } else if (t < 19) {                                 /* ACT 2: starship */
-      setCap(1);
       if (falcon) falcon.visible = false;
       if (t < 14.2) {
         flyRocket(ship, (t - 10) / 4.2);
@@ -308,7 +291,6 @@
         if (batchS.born < 0) { batchS.born = t; batchS.q = LAUNCH_Q; batchS.r = 1.135; batchS.theta0 = thB; }
       }
     } else {                                             /* ACT 3: the constellation */
-      setCap(2);
       if (falcon) falcon.visible = false;
       if (ship) ship.visible = false;
       swarmO = Math.min(0.85, (t - 19) / 3);
