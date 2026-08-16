@@ -6,9 +6,9 @@
 <link rel="icon" type="image/png" href="assets/favicon.png" />
 <script src="assets/analytics.js"></script>
 <title>Falcon, Starship &amp; the Orbit Bet · Nishant Shah</title>
-<meta name="description" content="The why behind my IB Business Management analysis of SpaceX: should it retire the most reliable rocket ever flown, and should it put data centres in orbit? Six tools, two questions, one variable." />
+<meta name="description" content="Two questions about the two great changes underway at SpaceX — and why they matter. Answered in the form of an IB Business Management IA." />
 <meta property="og:title" content="How do you replace a rocket that never fails?" />
-<meta property="og:description" content="Two changes are underway at SpaceX. My analysis asks not whether — but how fast. The story behind the paper." />
+<meta property="og:description" content="Two changes are underway at SpaceX. Two questions decide them. The story behind my IB Business Management IA." />
 <meta property="og:type" content="article" />
 <link rel="stylesheet" href="assets/tokens.css" />
 <style>
@@ -17,7 +17,6 @@
     --sx-steel: #9aa3b5;         /* stainless */
     --sx-flame: #ff7a3d;         /* raptor exhaust */
     --sx-orbit: #5aa2ff;         /* the compute bet */
-    --sx-go: #2fb36b;            /* verdicts */
     --sx-mono: "Helvetica Neue", Helvetica, "Inter", Arial, sans-serif;
   }
   html { background: var(--sx-bg); }
@@ -82,6 +81,10 @@
   .chg h3 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(1.25rem, 2.6vw, 1.7rem); line-height: 1.25; margin: 0 0 10px; }
   .chg p { color: var(--text-2); font-size: 0.97rem; line-height: 1.6; margin: 0; }
   .chg p b { color: var(--text); }
+  .chg.rq { border-width: 1.5px; }
+  .chg.rq.hot { border-color: color-mix(in srgb, var(--sx-flame) 45%, transparent); background: color-mix(in srgb, var(--sx-flame) 6%, transparent); }
+  .chg.rq.cold { border-color: color-mix(in srgb, var(--sx-orbit) 45%, transparent); background: color-mix(in srgb, var(--sx-orbit) 6%, transparent); }
+  .chg.rq h3 { font-size: clamp(1.3rem, 2.8vw, 1.8rem); }
 
   .tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: min(940px, 94vw); }
   @media (max-width: 780px) { .tools { grid-template-columns: repeat(2, 1fr); } }
@@ -92,11 +95,6 @@
   .tool.q2 .chip { color: var(--sx-orbit); border-color: color-mix(in srgb, var(--sx-orbit) 40%, transparent); }
   .tool h4 { margin: 0 0 6px; font-size: 1rem; letter-spacing: -0.01em; }
   .tool p { margin: 0; color: var(--text-2); font-size: 0.85rem; line-height: 1.55; }
-
-  .verdict { width: min(720px, 94vw); text-align: left; border: 1px solid color-mix(in srgb, var(--sx-go) 45%, transparent); border-radius: 18px; padding: 26px 26px 24px; background: color-mix(in srgb, var(--sx-go) 7%, transparent); }
-  .verdict .vk { font-family: var(--sx-mono); font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--sx-go); display: block; margin-bottom: 10px; }
-  .verdict p { margin: 0; font-family: var(--font-serif); font-size: clamp(1.05rem, 2.2vw, 1.35rem); line-height: 1.5; color: var(--text); }
-  .verdict p b { font-weight: 600; }
 
   .scene.finale { padding-bottom: 16vh; }
   .scene.finale .sx-back { margin-top: 18px; }
@@ -125,13 +123,13 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
     Back
   </a>
-  <span class="sx-crumb">IB Business Management · Key Concept: Change</span>
+  <span class="sx-crumb">IB Business Management IA · Key Concept: Change</span>
 </div>
 
 <main>
   <!-- SCENE 1 · the paradox -->
   <section class="scene opener" id="x1">
-    <p class="kick">an analysis of SpaceX · authored by Nishant Shah</p>
+    <p class="kick">my IB business management IA · an analysis of SpaceX</p>
     <p class="line">How do you replace a rocket that <em>never fails?</em></p>
     <div class="m3d" id="m3d-ship" data-src="assets/models/starship.glb" data-dist="3.4" data-spin="1"
          role="img" aria-label="Interactive 3D model of the SpaceX Starship full stack — Super Heavy booster with grid fins below, the tiled Ship with fore and aft flaps above. Built to scale from public dimensions. Drag to rotate.">
@@ -161,14 +159,14 @@
     </div>
   </section>
 
-  <!-- SCENE 3 · two changes -->
+  <!-- SCENE 3 · the two changes -->
   <section class="scene" id="x3">
-    <p class="line">Two changes are underway. Neither asks <em>whether.</em> Both ask <b>how fast.</b></p>
+    <p class="line">Two enormous changes are underway <b>at the same time.</b></p>
     <div class="duel">
       <div class="chg hot">
         <span class="tag">Change 1 · the rocket</span>
         <h3>Retire Falcon 9. Bet everything on Starship.</h3>
-        <p>Falcon 9 passed <b>650 flights at &gt;99% success</b> — then SpaceX closed its order book beyond 2028. Starship carries <b>25–30× the Starlink capacity per flight</b>, and the new V3 satellites are too big for anything else. But its Block&nbsp;3 booster has never been caught.</p>
+        <p>Falcon 9 passed <b>650 flights at &gt;99% success</b> — the most reliable rocket ever flown — then SpaceX closed its order book beyond 2028. Starship carries <b>25–30× the Starlink capacity per flight</b>, and the new V3 satellites are too big for anything else. But its Block&nbsp;3 booster has never been caught.</p>
       </div>
       <div class="chg cold">
         <span class="tag">Change 2 · the orbit bet</span>
@@ -176,119 +174,54 @@
         <p>SpaceX has asked regulators for up to <b>one million AI-compute satellites</b> and unveiled the first, AI1, in June 2026. Deployment "as early as 2028." Alphabet and Anthropic are already paying <b>$2.2B a month</b> for the ground-based compute that precedes it.</p>
       </div>
     </div>
-    <p class="whisper">the conceptual lens of the paper: change — specifically, its pace</p>
+    <p class="whisper">both programmes have already started · the open question is not whether — it's pace</p>
   </section>
 
-  <!-- SCENE 4 · the toolkit -->
+  <!-- SCENE 4 · why it matters -->
   <section class="scene" id="x4">
-    <p class="kick">the method</p>
-    <p class="line">Six lenses. Two questions. <b>No favourites.</b></p>
+    <p class="kick">why these questions matter</p>
+    <p class="line">Pace is the hardest thing to manage in <em>change.</em></p>
+    <p class="say">Move too fast, and you retire a working machine before its replacement is proven — with <b>$36B already committed</b> and customers who can walk away on 90 days' notice. Move too slow, and you pay for two rockets at once while rivals close in, and a trillion-dollar revenue promise slips.</p>
+    <p class="say">And the two changes are <b>stacked</b>: the data centres can only reach orbit on the rocket that hasn't finished proving itself. Get the sequence wrong, and both bets fail together. That tension — announced timelines versus demonstrated capability — is exactly what the business-management concept of <b>change</b> is for.</p>
+  </section>
+
+  <!-- SCENE 5 · the research questions -->
+  <section class="scene" id="x5">
+    <p class="kick">the two questions the paper answers</p>
+    <p class="line">Not <b>whether.</b> <em>How fast.</em></p>
+    <div class="duel">
+      <div class="chg rq hot">
+        <span class="tag">Research question 1</span>
+        <h3>Should SpaceX accelerate its change from Falcon 9 to Starship as its primary launch vehicle by 2028?</h3>
+      </div>
+      <div class="chg rq cold">
+        <span class="tag">Research question 2</span>
+        <h3>Should SpaceX extend that change into AI compute by deploying orbital data centres from 2028?</h3>
+      </div>
+    </div>
+    <p class="whisper">key concept: change · organization: Space Exploration Technologies Corp.</p>
+  </section>
+
+  <!-- SCENE 6 · how they're answered -->
+  <section class="scene" id="x6">
+    <p class="kick">how the paper answers them</p>
+    <p class="line">Answered in the form of an <b>IB Business Management IA</b> — six tools, no favourites.</p>
     <div class="tools">
       <div class="tool q1"><span class="chip">RQ1 · qualitative</span><h4>Force field analysis</h4><p>Weigh every documented pressure to accelerate against every pressure to wait — with the scoring rubric written <i>before</i> any force was scored.</p></div>
       <div class="tool q1"><span class="chip">RQ1 · quantitative</span><h4>Decision tree</h4><p>Price both paths under uncertainty: what does dropping Falcon 9 cost if Starship stumbles?</p></div>
       <div class="tool q1"><span class="chip">RQ1 · qualitative</span><h4>Porter's strategies</h4><p>Ask what the transition does to the thing SpaceX actually competes on: cost.</p></div>
-      <div class="tool q2"><span class="chip">RQ2 · qualitative</span><h4>Ansoff matrix</h4><p>Locate how risky orbital data centres really are: new product, new customers — diversification.</p></div>
-      <div class="tool q2"><span class="chip">RQ2 · quantitative</span><h4>Investment appraisal</h4><p>Test management's "&lt;1-year payback" claim against the company's own books.</p></div>
+      <div class="tool q2"><span class="chip">RQ2 · qualitative</span><h4>Ansoff matrix</h4><p>Locate how risky orbital data centres really are: new product, new customers.</p></div>
+      <div class="tool q2"><span class="chip">RQ2 · quantitative</span><h4>Investment appraisal</h4><p>Test management's public payback claim against the company's own books.</p></div>
       <div class="tool q2"><span class="chip">RQ2 · quantitative</span><h4>Critical path analysis</h4><p>Find the one activity that actually controls whether 2028 is possible.</p></div>
     </div>
-    <p class="whisper">every assumption declared up front · every convenient number given to the <i>other</i> side</p>
+    <p class="whisper">five supporting documents · seven further sources · every assumption declared up front</p>
   </section>
 
-  <!-- SCENE 5 · RQ1 findings -->
-  <section class="scene" id="x5">
-    <p class="kick">research question 1 · accelerate the switch?</p>
-    <p class="line">The evidence splits <em>exactly</em> down the middle.</p>
-    <div class="viz" role="img" aria-label="Force field analysis result: forces pushing forward score 21, forces holding back score 21. Decision tree: accelerating is cheaper by only 114 million dollars, about two percent, and the advantage flips if Starship's success probability drops from 60 to below 56 percent.">
-      <svg viewBox="0 0 720 300">
-        <text x="360" y="28" fill="var(--text-3)" font-size="11" letter-spacing="2" text-anchor="middle">FORCE FIELD · PUSH VS HOLD</text>
-        <rect x="30" y="46" width="330" height="30" rx="6" fill="var(--sx-flame)" opacity="0.85"/>
-        <rect x="360" y="46" width="330" height="30" rx="6" fill="var(--sx-steel)" opacity="0.6"/>
-        <line x1="360" y1="38" x2="360" y2="84" stroke="#fff" stroke-width="2"/>
-        <text x="42" y="66" fill="#06070d" font-size="13" font-weight="700">ACCELERATE · 21</text>
-        <text x="678" y="66" fill="#06070d" font-size="13" font-weight="700" text-anchor="end">WAIT · 21</text>
-        <text x="360" y="106" fill="var(--text-2)" font-size="12" text-anchor="middle">a perfect tie — in Lewin's terms, the organisation is not yet unfrozen</text>
-
-        <text x="360" y="150" fill="var(--text-3)" font-size="11" letter-spacing="2" text-anchor="middle">DECISION TREE · EXPECTED COST OF EACH PATH</text>
-        <rect x="80" y="168" width="551" height="26" rx="6" fill="var(--sx-flame)" opacity="0.8"/>
-        <text x="92" y="186" fill="#06070d" font-size="12" font-weight="700">DROP FALCON 9 · $6.60B</text>
-        <rect x="80" y="202" width="560" height="26" rx="6" fill="var(--sx-steel)" opacity="0.55"/>
-        <text x="92" y="220" fill="#06070d" font-size="12" font-weight="700">KEEP BOTH · $6.71B</text>
-        <text x="360" y="256" fill="var(--text-2)" font-size="12" text-anchor="middle">margin: $114M — barely 2% — and it flips if confidence in Starship falls from 60% to 56%</text>
-        <text x="360" y="282" fill="var(--text-3)" font-size="11" text-anchor="middle">…or if restarting Falcon 9 production costs more than ~27% above normal</text>
-      </svg>
-    </div>
-    <p class="say">Porter adds the part the arithmetic misses: while both rockets fly, SpaceX is <b>stuck in the middle</b> — paying for two competitive positions and holding neither. The Space division lost more than its entire revenue in Q1 2026. The longer the transition, the longer the exposure.</p>
-    <div class="verdict">
-      <span class="vk">Verdict · RQ1</span>
-      <p><b>Hold the July 2026 position</b> — no new Falcon 9 bookings beyond 2028 — but don't retire it early, and keep the cost of turning back under ~25%. Commit publicly; keep the road home cheap.</p>
-    </div>
-  </section>
-
-  <!-- SCENE 6 · RQ2 findings -->
-  <section class="scene" id="x6">
-    <p class="kick">research question 2 · data centres in orbit by 2028?</p>
-    <p class="line">The riskiest square on Ansoff's board — <em class="cool">and a payback claim that doesn't survive arithmetic.</em></p>
-    <div class="viz" role="img" aria-label="Payback period comparison: management claims under one year; on contracted revenue the estimate is 3.1 years; on current cash earnings 7.9 years. Critical path analysis puts first deployment at May 2029, five months past the 2028 target, with Starship's launch rate as the binding constraint.">
-      <svg viewBox="0 0 720 320">
-        <text x="20" y="28" fill="var(--text-3)" font-size="11" letter-spacing="2">PAYBACK ON $36.3B OF AI CAPITAL</text>
-        <rect x="20" y="46" width="80" height="26" rx="6" fill="var(--sx-go)" opacity="0.9"/>
-        <text x="110" y="64" fill="var(--text-2)" font-size="12">management's claim · "&lt;1 year"</text>
-        <rect x="20" y="82" width="248" height="26" rx="6" fill="var(--sx-orbit)" opacity="0.85"/>
-        <text x="278" y="100" fill="var(--text-2)" font-size="12">on signed contracts · 3.1 years</text>
-        <rect x="20" y="118" width="632" height="26" rx="6" fill="var(--sx-steel)" opacity="0.55"/>
-        <text x="360" y="136" fill="#06070d" font-size="12" font-weight="700" text-anchor="middle">at today's cash earnings · 7.9 years</text>
-        <text x="20" y="172" fill="var(--text-3)" font-size="11">…and both anchor contracts can be cancelled on 90 days' notice from December 2026</text>
-
-        <text x="20" y="212" fill="var(--text-3)" font-size="11" letter-spacing="2">CRITICAL PATH · MONTHS FROM AUGUST 2026</text>
-        <rect x="20" y="228" width="132" height="18" rx="4" fill="var(--sx-flame)" opacity="0.9"/>
-        <rect x="152" y="228" width="118" height="18" rx="4" fill="var(--sx-flame)" opacity="0.75"/>
-        <rect x="270" y="228" width="177" height="18" rx="4" fill="var(--sx-flame)" opacity="0.9"/>
-        <rect x="447" y="228" width="59" height="18" rx="4" fill="var(--sx-flame)" opacity="0.75"/>
-        <text x="24" y="241" fill="#06070d" font-size="10" font-weight="700">DESIGN</text>
-        <text x="156" y="241" fill="#06070d" font-size="10" font-weight="700">QUALIFY</text>
-        <text x="274" y="241" fill="#06070d" font-size="10" font-weight="700">LAUNCH RATE ×365</text>
-        <text x="451" y="241" fill="#06070d" font-size="10" font-weight="700">FLY</text>
-        <line x1="506" y1="218" x2="506" y2="258" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 4"/>
-        <text x="512" y="262" fill="var(--text-2)" font-size="12">first batch: <tspan fill="#fff" font-weight="700">May 2029</tspan></text>
-        <line x1="380" y1="218" x2="380" y2="252" stroke="var(--sx-go)" stroke-width="1.5" stroke-dasharray="3 4"/>
-        <text x="380" y="266" fill="var(--sx-go)" font-size="11" text-anchor="middle">the "2028" promise</text>
-        <text x="20" y="300" fill="var(--text-3)" font-size="11">regulation has 11 months of slack · the factory has 6 · the constraint is the rocket</text>
-      </svg>
-    </div>
-    <p class="say">The project is <b>related diversification</b> — it borrows Starlink's satellite body, lasers and cooling, and SpaceX launches it itself. That makes it cheaper to attempt, and more dependent on Starship. It doesn't spread risk. <b>It concentrates it.</b></p>
-    <div class="verdict">
-      <span class="vk">Verdict · RQ2</span>
-      <p><b>Keep building — don't commit to 2028.</b> Release capital in stages, gated on Starship milestones, not calendar dates. The revenue can be cancelled in 90 days; the satellites can't be un-launched.</p>
-    </div>
-  </section>
-
-  <!-- SCENE 7 · one variable -->
-  <section class="scene" id="x7">
-    <p class="line">Six tools, chosen separately, kept finding <b>the same number.</b></p>
-    <div class="viz" role="img" aria-label="Both research questions point at a single shared variable: Starship's launch rate. The decision tree, the Ansoff matrix and the critical path all depend on it.">
-      <svg viewBox="0 0 720 240">
-        <rect x="30" y="40" width="240" height="60" rx="14" fill="none" stroke="var(--sx-flame)" stroke-width="1.5"/>
-        <text x="150" y="66" fill="var(--sx-flame)" font-size="12" text-anchor="middle" letter-spacing="2">RQ1 · THE ROCKET SWAP</text>
-        <text x="150" y="86" fill="var(--text-3)" font-size="10" text-anchor="middle">decision tree · p = 0.60 vs 0.56</text>
-        <rect x="30" y="140" width="240" height="60" rx="14" fill="none" stroke="var(--sx-orbit)" stroke-width="1.5"/>
-        <text x="150" y="166" fill="var(--sx-orbit)" font-size="12" text-anchor="middle" letter-spacing="2">RQ2 · THE ORBIT BET</text>
-        <text x="150" y="186" fill="var(--text-3)" font-size="10" text-anchor="middle">critical path · launch rate ×365</text>
-        <path d="M270 70 C 360 70, 380 105, 448 116" fill="none" stroke="var(--text-3)" stroke-width="1.5" stroke-dasharray="2 6"/>
-        <path d="M270 170 C 360 170, 380 135, 448 124" fill="none" stroke="var(--text-3)" stroke-width="1.5" stroke-dasharray="2 6"/>
-        <rect x="452" y="86" width="238" height="70" rx="16" fill="color-mix(in srgb, var(--sx-flame) 10%, transparent)" stroke="#fff" stroke-width="1.5"/>
-        <text x="571" y="115" fill="#fff" font-size="14" text-anchor="middle" letter-spacing="3" font-weight="700">LAUNCH RATE</text>
-        <text x="571" y="138" fill="var(--text-2)" font-size="10" text-anchor="middle">how often can Starship actually fly?</text>
-      </svg>
-    </div>
-    <p class="say">That convergence is the paper's real finding. When methods chosen for different purposes keep isolating the same variable, that variable <b>is</b> the decision. The orbit bet cannot move faster than the rocket beneath it — <b>the lower change sets the timetable for the one above.</b></p>
-  </section>
-
-  <!-- SCENE 8 · the principle -->
-  <section class="scene finale" id="x8">
-    <p class="kick">the why</p>
-    <p class="line">Let what's <em>proven</em> set the pace — not what's <b>announced.</b></p>
-    <p class="say">Commit publicly, so the organisation unfreezes. Keep reversal cheap, because a 2% margin is not conviction. Fund each stage only when the stage below it has worked. That's how you steer two changes stacked on one rocket — and it's a rule that outlives this company and this decade.</p>
-    <p class="whisper">force field · decision tree · porter · ansoff · payback · critical path — full 35-page analysis on request</p>
+  <!-- SCENE 7 · the invitation -->
+  <section class="scene finale" id="x7">
+    <p class="kick">the paper</p>
+    <p class="line">Two questions. One lens: <em>change.</em> <b>Answers inside.</b></p>
+    <p class="say">The full IA works through both questions with the six tools above — quantified, sourced, and honest about its own assumptions — and ends with a recommendation for each. The 35-page analysis is available on request.</p>
     <a class="sx-back" href="portfolio.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
       Back to portfolio
@@ -298,8 +231,6 @@
 
 <script>
 (function () {
-  var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   /* starfield */
   var sf = document.getElementById('starfield');
   if (sf) {
