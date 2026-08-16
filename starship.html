@@ -51,23 +51,6 @@
   .scene.opener .scrollcue { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); color: var(--text-3); font-family: var(--sx-mono); font-size: 0.64rem; letter-spacing: 0.22em; text-transform: uppercase; }
   .scene.opener .scrollcue::after { content: ""; display: block; width: 1px; height: 34px; margin: 10px auto 0; background: linear-gradient(var(--text-3), transparent); }
 
-  /* hero 3D */
-  .m3d { position: relative; width: min(440px, 88vw); aspect-ratio: 4 / 4.6; border-radius: 18px; overflow: hidden;
-    cursor: grab; touch-action: pan-y; border: 1px solid var(--border);
-    background: radial-gradient(120% 80% at 50% 40%, rgba(154,163,181,0.08), rgba(6,7,13,0) 65%); }
-  .m3d.m3d-grab { cursor: grabbing; }
-  .m3d canvas { display: block; width: 100%; height: 100%; }
-  .m3d .m3d-hint { position: absolute; left: 50%; bottom: 11px; transform: translateX(-50%); white-space: nowrap;
-    font-family: var(--sx-mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--text-3); pointer-events: none; opacity: 0; transition: opacity 0.8s ease 0.3s; }
-  .m3d.m3d-on .m3d-hint { opacity: 1; }
-  .m3d.m3d-moved .m3d-hint, .m3d.m3d-fail .m3d-hint { opacity: 0; transition-delay: 0s; }
-  .m3d::after { content: "rolling to the pad…"; position: absolute; inset: 0; display: grid; place-content: center;
-    font-family: var(--sx-mono); font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-3);
-    transition: opacity 0.6s ease; pointer-events: none; }
-  .m3d.m3d-on::after { opacity: 0; }
-  .m3d.m3d-fail::after { content: "3d unavailable — the story still flies"; }
-
   /* charts & cards */
   .viz { width: min(720px, 94vw); }
   .viz svg { display: block; width: 100%; height: auto; }
@@ -130,20 +113,9 @@
 </div>
 
 <main>
-  <!-- SCENE 1 · the paradox -->
-  <section class="scene opener" id="x1">
-    <p class="kick">my IB business management IA · an analysis of SpaceX</p>
-    <p class="line">How do you replace a rocket that <em>never fails?</em></p>
-    <div class="m3d" id="m3d-ship" data-src="assets/models/starship.glb" data-dist="3.4" data-spin="1"
-         role="img" aria-label="Interactive 3D model of the SpaceX Starship full stack — Super Heavy booster with grid fins below, the tiled Ship with fore and aft flaps above. Built to scale from public dimensions. Drag to rotate.">
-      <span class="m3d-hint">drag to spin · starship, to scale</span>
-    </div>
-    <p class="whisper">falcon 9: 650+ flights · &gt;99% success · and spacex is retiring it anyway</p>
-    <span class="scrollcue">scroll</span>
-  </section>
-
   <!-- SCENE 2 · the company mid-metamorphosis -->
-  <section class="scene" id="x2">
+  <section class="scene opener" id="x2">
+    <p class="kick">my IB business management IA · an analysis of SpaceX</p>
     <p class="line">SpaceX is <b>mid-metamorphosis.</b></p>
     <p class="say">Since its June 2026 IPO the group runs three businesses at once: <b>Connectivity</b> (Starlink), <b>Space</b> (launch), and <b>AI</b> (compute, after absorbing xAI). $18.7B of revenue — and a $2.6B net loss, because everything is being rebuilt at the same time.</p>
     <div class="viz" role="img" aria-label="Bar chart of 2025 revenue by division: Connectivity 11.4 billion dollars, Space 4.1 billion, AI 3.2 billion; group net loss 2.6 billion.">
@@ -177,7 +149,7 @@
         <p>SpaceX has asked regulators for up to <b>one million AI-compute satellites</b> and unveiled the first, AI1, in June 2026. Deployment "as early as 2028." Alphabet and Anthropic are already paying <b>$2.2B a month</b> for the ground-based compute that precedes it.</p>
       </div>
     </div>
-    <div class="orbit3d" id="orbitAnim" role="img" aria-label="Animated 3D diagram on a loop: Falcon 9 climbs from Earth and strings out a small train of satellites; then Starship climbs and releases a far larger batch; finally thousands of satellites fill orbital shells, linking to each other by laser and beaming data back to Earth. Drag to orbit the scene.">
+    <div class="orbit3d" id="orbitAnim" role="img" aria-label="Animated 3D diagram on a loop: Falcon 9 climbs from Earth and strings out a small train of satellites; then Starship climbs and releases a far larger batch; finally thousands of satellites fill orbital shells, linking to each other by laser. Drag to orbit the scene.">
       <div class="ocap" id="orbitCap"></div>
       <span class="m3d-hint">the whole story, on loop · drag to orbit</span>
     </div>
@@ -188,7 +160,6 @@
   <!-- SCENE 5 · the research questions -->
   <section class="scene finale" id="x5">
     <p class="kick">the two questions the paper answers</p>
-    <p class="line">Not <b>whether.</b> <em>How fast.</em></p>
     <div class="duel">
       <div class="chg rq hot">
         <span class="tag">Research question 1</span>
@@ -245,7 +216,6 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous" defer></script>
 <script src="assets/vendor/GLTFLoader.js" defer></script>
-<script src="assets/fusion-3d.js" defer></script>
 <script src="assets/sx-orbit.js" defer></script>
 <script src="assets/transition.js"></script>
 <script src="assets/dj-hud.js"></script>

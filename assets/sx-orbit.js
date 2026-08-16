@@ -146,9 +146,8 @@
         var d = ps[i].distanceToSquared(ps[j]);
         if (d < bd && d > 0.004) { bd = d; best = j; }
       }
-      if (best >= 0 && bd < 0.16) pairs.push([i, best, false]);
+      if (best >= 0 && bd < 0.16) pairs.push([i, best]);
     }
-    for (var k = 0; k < 6; k++) pairs.push([Math.floor(Math.random() * TRACK.length), -1, true]); /* downlinks */
   }
   repick();
   setInterval(repick, 1400);
@@ -228,7 +227,7 @@
   var CAPS = [
     'act i · how it was — falcon 9, ~24 satellites at a time',
     'act ii · the handover — starship, whole shells per flight',
-    'act iii · how it will be — thousands, lasing to each other · beaming home'
+    'act iii · how it will be — thousands, lasing to each other'
   ];
   var capIdx = -1;
   function setCap(i) {
@@ -239,10 +238,11 @@
   }
 
   /* ---------- interaction + loop ---------- */
-  var rotY = 0.55, rotX = 0.12, drag = false, px = 0, py = 0;
-  host.addEventListener('pointerdown', function (e) { drag = true; px = e.clientX; py = e.clientY; host.classList.add('m3d-grab'); if (host.setPointerCapture) host.setPointerCapture(e.pointerId); });
+  var rotY = 0.55, rotX = 0.12, drag = false, px = 0, py = 0, lastDrag = -1e9;
+  host.addEventListener('pointerdown', function (e) { drag = true; lastDrag = performance.now(); px = e.clientX; py = e.clientY; host.classList.add('m3d-grab'); if (host.setPointerCapture) host.setPointerCapture(e.pointerId); });
   host.addEventListener('pointermove', function (e) {
     if (!drag) return;
+    lastDrag = performance.now();
     rotY += (e.clientX - px) * 0.005;
     rotX = Math.max(-0.9, Math.min(0.9, rotX + (e.clientY - py) * 0.004));
     px = e.clientX; py = e.clientY;
@@ -265,7 +265,18 @@
     raf = active && host.isConnected ? requestAnimationFrame(frame) : 0;
     var t = RM ? 22 : ((now - t0) / 1000) % DUR;
 
-    if (!drag && !RM) rotY += 0.0007;
+    /* auto-steer: keep the action in view unless the user recently took over */
+    var autoOK = !drag && !RM && (now - lastDrag > 3500);
+    var tracked = (falcon && falcon.visible) ? falcon : ((ship && ship.visible) ? ship : null);
+    if (autoOK) {
+      if (tracked) {
+        var az = Math.atan2(tracked.position.x, tracked.position.z);
+        var dAz = ((az - rotY + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
+        rotY += dAz * 0.022;
+      } else {
+        rotY += 0.0011;
+      }
+    }
     var cr = 3.15 - 0.35 * Math.min(1, Math.max(0, (t - 17) / 6));   /* pull back slightly in act 3… actually push in? keep gentle */
     camera.position.set(
       cr * Math.cos(rotX) * Math.sin(rotY),
@@ -321,13 +332,8 @@
       pairs.forEach(function (pr) {
         var a = orbitPos(TRACK[pr[0]].q, TRACK[pr[0]].r, TRACK[pr[0]].th, V1);
         lp[li++] = a.x; lp[li++] = a.y; lp[li++] = a.z;
-        if (pr[2]) {                                     /* downlink: to the ground below */
-          V2.copy(a).normalize().multiplyScalar(1.0);
-          lp[li++] = V2.x; lp[li++] = V2.y; lp[li++] = V2.z;
-        } else {
-          var b = orbitPos(TRACK[pr[1]].q, TRACK[pr[1]].r, TRACK[pr[1]].th, V2);
-          lp[li++] = b.x; lp[li++] = b.y; lp[li++] = b.z;
-        }
+        var b = orbitPos(TRACK[pr[1]].q, TRACK[pr[1]].r, TRACK[pr[1]].th, V2);
+        lp[li++] = b.x; lp[li++] = b.y; lp[li++] = b.z;
       });
       for (; li < MAXL * 6;) { lp[li++] = 0; }
       linkGeo.attributes.position.needsUpdate = true;
