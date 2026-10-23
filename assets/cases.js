@@ -77,7 +77,7 @@
       faq: [{q:'Why scent, and not just visuals?', a:'Smell is the sense most tied to memory and presence. For a bedridden patient, a forest you can smell feels real in a way a 2D video never will.'}, {q:'How does the hardware actually work?', a:'A small cartridge array releases micro-doses of scent in sync with the VR scene, timed to what you are looking at.'}, {q:'What would you change?', a:'I would solve the sealing and weight problems first \u2014 the whole experience lives or dies on comfort.'}],
       reflection: 'I am still not sure we solved the hardest part \u2014 making it cheap enough to actually reach the patients who need it. That is the problem I want to keep working on.',
       title: 'Eco-Vision', verified: true, motif: null,
-      heroImg: 'https://i.imgur.com/lUlvVeJ.jpeg',
+      heroImg: 'assets/photos/ecovision.jpg',
       tags: ['Venture', 'MedTech', 'VR'],
       sub: 'The first olfactory-integrated VR system, letting bedridden hospital patients step outside without leaving the room.',
       facts: [['Role', 'Co-Founder'], ['Funding', '$7,500 grants'], ['Recognition', 'Top 16 · NFTE'], ['Partners', 'Moffitt · Mayo']],
@@ -141,7 +141,7 @@
     seeusnow: {
       triad: {"build":"Built the campaigns and the advocacy structure that scaled chapters nationwide.","biz":"Helped secure millions in scholarship funding for foster youth.","lead":"Carried youth voices to Congress, the UN & WHO, and helped pass a federal law."},
       title: 'See Us Now', motif: 'network',
-      heroImg: 'https://i.imgur.com/Z2eUg3r.jpeg',
+      heroImg: 'assets/photos/seeusnow-hero.jpg',
       link: 'https://seeusnowusa.org/',
       linkLabel: 'Visit our website',
       gallery: ['assets/photos/sun-capitol.jpg','assets/photos/sun-team.jpg','assets/photos/sun-tampatheatre.jpg','assets/photos/sun-nasdaq.jpg'],
@@ -161,7 +161,7 @@
     tedx: {
       triad: {"build":"We built the event from zero — I carried the license, and together we turned it into a repeatable production system.","biz":"We designed it as a sustainable legacy program, not a one-night cost.","lead":"I assembled and coached the speaker team, then stood on the stage we built together."},
       title: 'TEDx Carrollwood Day School', motif: null,
-      heroImg: 'https://i.imgur.com/JBmeda9.jpeg',
+      heroImg: 'assets/photos/tedx.jpg',
       tags: ['Platform', 'Events & speaking'],
       sub: 'We built a TEDx event from the ground up and produced the show together — and I got to speak on the stage we made.',
       facts: [['Role', 'Founder & Licensee'], ['Status', 'Built from scratch'], ['Hats', 'Organizer · Speaker']],
@@ -226,7 +226,7 @@
     stage: {
       triad: {"build":"Worked tech and backstage craft, not just center stage.","biz":"A production runs like an operation, deadlines, roles, and a show that has to ship on opening night.","lead":"VP then President of the troupe, supporting the ensemble, not just a part."},
       title: 'On Stage', motif: 'star',
-      heroImg: 'https://i.imgur.com/5tIZC8P.jpeg',
+      heroImg: 'assets/photos/theatre.jpg',
       gallery: ['assets/photos/stage-2.jpg'],
       tags: ['Art', 'Theater'],
       sub: '22 productions, a string of roles, and a Thespian troupe I help lead.',
