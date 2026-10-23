@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /insights.html
+Disallow: /api/
+
+Sitemap: https://www.nishantshah.us/sitemap.xml

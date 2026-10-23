@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow, noarchive" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<title>Insights</title>
+<!-- deliberately does NOT load assets/analytics.js: looking at your own
+     dashboard should not show up as traffic in your own dashboard -->
+<link rel="stylesheet" href="assets/tokens.css" />
+<style>
+  body { margin:0; background:var(--bg); color:var(--text); font-family:var(--font-sans); }
+  .wrap { max-width:1060px; margin:0 auto; padding:clamp(28px,5vw,56px) clamp(18px,4vw,40px) 90px; }
+  h1 { font-size:clamp(1.8rem,4vw,2.6rem); letter-spacing:-0.03em; margin:0; }
+  .sub { color:var(--text-3); font-family:var(--font-mono); font-size:.76rem; letter-spacing:.1em; text-transform:uppercase; margin-top:8px; }
+
+  /* gate */
+  #gate { max-width:380px; margin:14vh auto; text-align:center; }
+  #gate input { width:100%; box-sizing:border-box; margin-top:18px; padding:13px 16px; border-radius:12px;
+    border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:1rem; outline:none; }
+  #gate input:focus { border-color:var(--accent); }
+  #gate button { width:100%; margin-top:10px; padding:13px; border:0; border-radius:12px; background:var(--accent);
+    color:#fff; font-weight:600; font-size:.95rem; cursor:pointer; }
+  #gateMsg { color:var(--red,#e5484d); font-size:.85rem; margin-top:12px; min-height:1.2em; }
+
+  .bar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:26px 0 30px; }
+  .bar button { background:var(--surface); border:1px solid var(--border); color:var(--text-2);
+    border-radius:999px; padding:7px 15px; font-size:.84rem; cursor:pointer; }
+  .bar button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .bar .sp { flex:1; }
+  .bar a { color:var(--text-3); font-size:.82rem; }
+
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .stat { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md,14px); padding:18px 20px; }
+  .stat .v { font-size:clamp(1.6rem,3vw,2.2rem); font-weight:700; letter-spacing:-0.03em; line-height:1; }
+  .stat .k { margin-top:8px; font-size:.78rem; color:var(--text-3); }
+
+  section { margin-top:38px; }
+  h2 { font-size:1.05rem; letter-spacing:-0.01em; margin:0 0 4px; display:flex; align-items:center; gap:9px; }
+  h2 .note { font-weight:400; font-size:.78rem; color:var(--text-3); letter-spacing:0; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md,14px); margin-top:12px; overflow:hidden; }
+  .row { display:flex; align-items:center; gap:14px; padding:11px 18px; border-top:1px solid var(--border); }
+  .row:first-child { border-top:0; }
+  .row .nm { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.94rem; }
+  .row .ct { font-variant-numeric:tabular-nums; color:var(--text-2); font-size:.9rem; flex:0 0 auto; }
+  .row .meter { flex:0 0 90px; height:5px; border-radius:3px; background:rgba(255,255,255,.1); overflow:hidden; }
+  .row .meter i { display:block; height:100%; background:var(--accent); }
+  .edu .row .meter i { background:#f5b21a; }
+  .edu .nm { font-weight:600; }
+  .empty { padding:18px; color:var(--text-3); font-size:.9rem; }
+  .cols { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media(max-width:760px){ .cols { grid-template-columns:1fr; } }
+  .feed .row { font-size:.86rem; }
+  .feed .when { color:var(--text-3); flex:0 0 auto; font-variant-numeric:tabular-nums; }
+  .tag { font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:3px 7px; border-radius:5px;
+    background:rgba(255,255,255,.09); color:var(--text-3); flex:0 0 auto; }
+  .tag.education { background:rgba(245,178,26,.17); color:#f5b21a; }
+  .tag.government { background:rgba(47,179,107,.17); color:#2fb36b; }
+  #setup { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px 24px; margin-top:24px; line-height:1.6; }
+  #setup code { background:rgba(255,255,255,.08); padding:2px 6px; border-radius:5px; font-size:.86rem; }
+  #setup ol { padding-left:20px; } #setup li { margin:9px 0; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>Insights</h1>
+  <div class="sub">private</div>
+  <input id="key" type="password" placeholder="Access key" autocomplete="current-password" />
+  <button id="go">Open</button>
+  <div id="gateMsg"></div>
+</div>
+
+<div class="wrap" id="app" style="display:none">
+  <h1>Insights</h1>
+  <div class="sub" id="range-label">last 30 days</div>
+
+  <div class="bar">
+    <button data-days="7">7 days</button>
+    <button data-days="30" class="on">30 days</button>
+    <button data-days="90">90 days</button>
+    <button data-days="365">1 year</button>
+    <span class="sp"></span>
+    <a href="#" id="signout">Sign out</a>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div id="body"></div>
+</div>
+
+<script>
+(function () {
+  var KEYSTORE = 'insightsKey';
+  var gate = document.getElementById('gate'), app = document.getElementById('app');
+  var days = 30;
+
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+
+  function list(rows, cls) {
+    if (!rows || !rows.length) return '<div class="card"><div class="empty">Nothing yet.</div></div>';
+    var max = rows[0].count || 1;
+    return '<div class="card ' + (cls || '') + '">' + rows.slice(0, 12).map(function (r) {
+      return '<div class="row"><span class="nm">' + esc(r.name) + '</span>' +
+             '<span class="meter"><i style="width:' + Math.round(r.count / max * 100) + '%"></i></span>' +
+             '<span class="ct">' + r.count + '</span></div>';
+    }).join('') + '</div>';
+  }
+
+  function ago(t) {
+    var s = Math.round((Date.now() - t) / 1000);
+    if (s < 3600) return Math.max(1, Math.round(s / 60)) + 'm ago';
+    if (s < 86400) return Math.round(s / 3600) + 'h ago';
+    return Math.round(s / 86400) + 'd ago';
+  }
+
+  function render(d) {
+    document.getElementById('range-label').textContent = 'last ' + d.days + ' days';
+    document.getElementById('stats').innerHTML = [
+      ['visits', d.visits], ['unique visitors', d.visitors],
+      ['schools seen', d.education.length], ['identified', d.identifiedRate + '%'],
+    ].map(function (s) {
+      return '<div class="stat"><div class="v">' + esc(s[1]) + '</div><div class="k">' + s[0] + '</div></div>';
+    }).join('');
+
+    document.getElementById('body').innerHTML =
+      '<section><h2>Schools &amp; universities <span class="note">what you are watching for</span></h2>' +
+        list(d.education, 'edu') + '</section>' +
+      '<section><h2>Companies &amp; organisations</h2>' + list(d.organisations) + '</section>' +
+      (d.government.length ? '<section><h2>Government</h2>' + list(d.government) + '</section>' : '') +
+      '<section class="cols"><div><h2>Cities</h2>' + list(d.cities) + '</div>' +
+        '<div><h2>Countries</h2>' + list(d.countries) + '</div></section>' +
+      '<section class="cols"><div><h2>Pages</h2>' + list(d.pages) + '</div>' +
+        '<div><h2>Referrers</h2>' + list(d.referrers) + '</div></section>' +
+      '<section><h2>Named visits <span class="note">most recent first</span></h2>' +
+        (d.recentNamed.length
+          ? '<div class="card feed">' + d.recentNamed.map(function (r) {
+              return '<div class="row"><span class="tag ' + esc(r.kind) + '">' + esc(r.kind) + '</span>' +
+                     '<span class="nm">' + esc(r.org) + ' &middot; ' + esc(r.path || '/') +
+                     (r.city ? ' &middot; ' + esc(r.city) : '') + '</span>' +
+                     '<span class="when">' + ago(r.t) + '</span></div>';
+            }).join('') + '</div>'
+          : '<div class="card"><div class="empty">No identifiable organisations yet.</div></div>') +
+      '</section>';
+  }
+
+  function setup(msg) {
+    app.querySelector('#stats').innerHTML = '';
+    document.getElementById('body').innerHTML =
+      '<div id="setup"><b>Almost there.</b><p>' + esc(msg) + '</p><ol>' +
+      '<li>In Vercel: <b>Storage → Create Database → Upstash Redis</b> (free tier) and connect it to this project. That sets <code>KV_REST_API_URL</code> and <code>KV_REST_API_TOKEN</code> automatically.</li>' +
+      '<li>In <b>Settings → Environment Variables</b>, add <code>INSIGHTS_TOKEN</code> — this page\'s access key. Make it long and random: it doubles as the secret that keeps visitor hashes from being reversible.</li>' +
+      '<li>Redeploy. Visits start recording from that moment on.</li>' +
+      '</ol></div>';
+  }
+
+  function load() {
+    var key = sessionStorage.getItem(KEYSTORE) || '';
+    fetch('/api/insights?days=' + days, { headers: { 'x-insights-key': key } })
+      .then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); })
+      .then(function (o) {
+        if (o.s === 401) { signOut('That key was not accepted.'); return; }
+        gate.style.display = 'none'; app.style.display = '';
+        if (o.j && o.j.error === 'setup') return setup(o.j.message || '');
+        if (!o.j || !o.j.ok) return setup((o.j && o.j.message) || 'The data store could not be reached.');
+        render(o.j);
+      })
+      .catch(function () { signOut('Could not reach the server.'); });
+  }
+
+  function signOut(msg) {
+    sessionStorage.removeItem(KEYSTORE);
+    app.style.display = 'none'; gate.style.display = '';
+    document.getElementById('gateMsg').textContent = msg || '';
+    document.getElementById('key').value = '';
+  }
+
+  document.getElementById('go').addEventListener('click', function () {
+    var v = document.getElementById('key').value.trim();
+    if (!v) return;
+    sessionStorage.setItem(KEYSTORE, v);
+    document.getElementById('gateMsg').textContent = '';
+    load();
+  });
+  document.getElementById('key').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') document.getElementById('go').click();
+  });
+  document.getElementById('signout').addEventListener('click', function (e) { e.preventDefault(); signOut(''); });
+  [].forEach.call(document.querySelectorAll('.bar button'), function (b) {
+    b.addEventListener('click', function () {
+      [].forEach.call(document.querySelectorAll('.bar button'), function (x) { x.classList.remove('on'); });
+      b.classList.add('on'); days = +b.getAttribute('data-days'); load();
+    });
+  });
+
+  // a key can also arrive as #key=... so the dashboard can be bookmarked
+  var h = (location.hash || '').match(/key=([^&]+)/);
+  if (h) { sessionStorage.setItem(KEYSTORE, decodeURIComponent(h[1])); history.replaceState(null, '', location.pathname); }
+  if (sessionStorage.getItem(KEYSTORE)) load();
+})();
+</script>
+</body>
+</html>
