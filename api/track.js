@@ -31,16 +31,32 @@ const crypto = require('crypto');
 
 const LIST_KEY = 'visits';
 const RATE_PREFIX = 'rate:';
+const SALT_KEY = 'visitor-salt';
 const MAX_VISITS = 5000;        // rolling window kept in KV
 const RETENTION_DAYS = 120;     // anything older is pruned off the tail
 const RATE_PER_MIN = 60;        // per source, before writes are dropped
 const RDNS_TIMEOUT_MS = 1200;   // never let a slow PTR lookup stall the function
 const PRUNE_PER_REQUEST = 20;
 
-// Secret used for hashing. Must be STABLE across instances: a per-process
-// random would give every concurrent lambda its own rate-limit namespace.
-function secret() {
-  return process.env.INSIGHTS_SALT || process.env.INSIGHTS_TOKEN || '';
+// Secret used for hashing. Two hard requirements:
+//   STABLE across instances — a per-process random gives every concurrent
+//   lambda its own rate-limit namespace, which is no limit at all.
+//   NOT PUBLIC — IPv4 is ~4 billion values, so a hash salted with a constant
+//   that ships in this file can be brute-forced straight back to the address.
+// Prefer the configured secret; otherwise mint one random value, store it in
+// KV so every instance agrees on it, and cache it for the process lifetime.
+let CACHED_SALT = null;
+async function hashSalt(kv) {
+  const env = process.env.INSIGHTS_SALT || process.env.INSIGHTS_TOKEN;
+  if (env) return env;
+  if (CACHED_SALT) return CACHED_SALT;
+  try {
+    const made = crypto.randomBytes(32).toString('hex');
+    const r = await kvPipeline(kv, [['SET', SALT_KEY, made, 'NX'], ['GET', SALT_KEY]]);
+    const got = Array.isArray(r) && r[1] ? r[1].result : null;
+    if (typeof got === 'string' && got) CACHED_SALT = got;
+  } catch (e) { /* fall through */ }
+  return CACHED_SALT;
 }
 
 function kvConfig() {
@@ -145,21 +161,27 @@ module.exports = async (req, res) => {
 
     const ip = clientIp(req);
 
-    // Rate limit before doing any work. The key is derived from a stable
-    // secret so every instance computes the same one — otherwise the ceiling
-    // is 60/min PER LAMBDA, and a flood that makes Vercel scale out quietly
-    // raises the attacker's own allowance. The entry is a hash carrying a 60s
-    // TTL, so nothing identifying outlives the window.
-    // SET ... NX establishes the window once; a bare EXPIRE on every hit would
-    // keep pushing the deadline out and never let a busy source recover.
+    const salt = await hashSalt(kv);
+    if (!salt) return done();   // cannot hash safely, so do not record at all
+
+    // Rate limit before doing any work. One stable key per source across all
+    // instances, carrying a 60s TTL so nothing identifying outlives the window.
+    // EXPIRE ... NX attaches a deadline only when the key has none: a bare
+    // EXPIRE on every hit keeps pushing it out, so a source that crossed the
+    // threshold could never recover, while no EXPIRE at all would leave a
+    // counter with no TTL that climbs forever and blocks that source for good.
     const rateKey = RATE_PREFIX + crypto.createHash('sha256')
-      .update(ip + '|rate|' + (secret() || 'nishantshah.us')).digest('hex').slice(0, 16);
+      .update(ip + '|rate|' + salt).digest('hex').slice(0, 16);
     const limited = await kvPipeline(kv, [
-      ['SET', rateKey, '0', 'EX', '60', 'NX'],
       ['INCR', rateKey],
+      ['EXPIRE', rateKey, '60', 'NX'],
     ]);
-    const count = Array.isArray(limited) && limited[1] ? Number(limited[1].result) : 0;
-    if (count > RATE_PER_MIN) return done();
+    // Fail CLOSED. If the store answers in a shape we cannot read, the limit is
+    // unknown — treating that as "zero so far" would quietly disable rate
+    // limiting for exactly as long as the store is unhealthy.
+    const count = (Array.isArray(limited) && limited[0] && limited[0].result != null)
+      ? Number(limited[0].result) : NaN;
+    if (!Number.isFinite(count) || count > RATE_PER_MIN) return done();
 
     const body = readBody(req);
     const h = req.headers;
@@ -167,9 +189,8 @@ module.exports = async (req, res) => {
     const hostname = await reverseDns(ip);
     const domain = hostname ? domainFromHost(hostname) : null;
 
-    const sec = secret();
-    const visitorHash = (ip && sec)
-      ? crypto.createHash('sha256').update(ip + '|' + sec).digest('hex').slice(0, 16)
+    const visitorHash = ip
+      ? crypto.createHash('sha256').update(ip + '|' + salt).digest('hex').slice(0, 16)
       : null;
 
     const visit = {
