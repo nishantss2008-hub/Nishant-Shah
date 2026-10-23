@@ -150,7 +150,7 @@
     document.getElementById('body').innerHTML =
       '<div id="setup"><b>Almost there.</b><p>' + esc(msg) + '</p><ol>' +
       '<li>In Vercel: <b>Storage → Create Database → Upstash Redis</b> (free tier) and connect it to this project. That sets <code>KV_REST_API_URL</code> and <code>KV_REST_API_TOKEN</code> automatically.</li>' +
-      '<li>In <b>Settings → Environment Variables</b>, add <code>INSIGHTS_TOKEN</code> — this page\'s access key. Make it long.</li>' +
+      '<li>In <b>Settings → Environment Variables</b>, add <code>INSIGHTS_TOKEN</code> — this page\'s access key. Make it long and random: it doubles as the secret that keeps visitor hashes from being reversible.</li>' +
       '<li>Redeploy. Visits start recording from that moment on.</li>' +
       '</ol></div>';
   }

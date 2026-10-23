@@ -7,6 +7,9 @@
 //
 // Env: INSIGHTS_TOKEN  — required; the dashboard password. No token set means
 //                        the endpoint stays closed rather than open.
+//
+// The token is only ever accepted in the x-insights-key header, never in the
+// query string, so it cannot leak into request logs or browser history.
 //      KV_REST_API_URL + KV_REST_API_TOKEN (or UPSTASH_REDIS_REST_URL/_TOKEN)
 
 const crypto = require('crypto');
@@ -47,8 +50,12 @@ module.exports = async (req, res) => {
     return res.end(JSON.stringify({ error: 'setup', message: 'INSIGHTS_TOKEN is not set in Vercel.' }));
   }
 
-  const given = (req.headers['x-insights-key'] ||
-    (req.url.split('?')[1] || '').split('&').map(p => p.split('=')).filter(p => p[0] === 'key').map(p => decodeURIComponent(p[1] || ''))[0] || '');
+  // Header only, never a query parameter. A ?key= in the URL would be copied
+  // into Vercel's request logs, the browser's history, and any Referer header
+  // the page later sends — all places a password must not end up. The dashboard
+  // accepts #key=... in the fragment, which browsers never transmit, and then
+  // sends it from script as this header.
+  const given = String(req.headers['x-insights-key'] || '');
 
   if (!given || !sameToken(given, expected)) {
     res.statusCode = 401;

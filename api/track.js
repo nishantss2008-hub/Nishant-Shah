@@ -1,26 +1,45 @@
 // Vercel serverless function — records one visit for the private insights dashboard.
 //
 // Collects only what answers "who is looking at my site":
-//   · coarse location, straight from Vercel's own geo headers (no third party)
+//   · coarse location, from Vercel's own x-vercel-ip-* headers (no third party)
 //   · the visiting network's organisation, via reverse DNS on the IP
 //   · the page, the referrer, and the time
 //
-// The raw IP is never stored. It is salted and hashed so repeat visits can be
-// counted as one person without keeping an identifier that points back at them.
+// What is deliberately NOT kept:
+//   · the IP address
+//   · the full reverse-DNS hostname. A PTR record can read like
+//     "dhcp-j-smith.chem.example.edu", which identifies a person, not just an
+//     institution. Only the registrable domain is stored, which is all the
+//     dashboard ever shows.
 //
-// Storage is Upstash/Vercel KV over its REST API. If the KV environment
-// variables are absent this function quietly does nothing and returns 204 —
-// the site must never break because analytics are unconfigured.
+// Visitor id: a salted hash of the IP, used purely to collapse repeat visits
+// into one visitor. The salt MUST be secret. IPv4 is only ~4 billion values,
+// so a hash made with a guessable salt can be reversed by brute force in
+// seconds — a public default salt would make this pseudonymisation worthless.
+// With no secret available the visitor id is simply omitted.
+//
+// Storage is Upstash/Vercel KV over its REST API. Without those environment
+// variables this function does nothing and returns 204: the site must never
+// break because analytics are unconfigured.
 //
 // Env: KV_REST_API_URL + KV_REST_API_TOKEN  (or UPSTASH_REDIS_REST_URL/_TOKEN)
-//      INSIGHTS_SALT (optional) — changes the hashing salt.
+//      INSIGHTS_SALT   — secret for visitor hashing. Falls back to
+//                        INSIGHTS_TOKEN. Absent both, no visitor id is stored.
 
 const dns = require('dns').promises;
 const crypto = require('crypto');
 
 const LIST_KEY = 'visits';
-const MAX_VISITS = 5000;      // rolling window kept in KV
-const RDNS_TIMEOUT_MS = 1200; // never let a slow PTR lookup stall the function
+const RATE_PREFIX = 'rate:';
+const MAX_VISITS = 5000;        // rolling window kept in KV
+const RETENTION_DAYS = 120;     // anything older is pruned off the tail
+const RATE_PER_MIN = 60;        // per source, before writes are dropped
+const RDNS_TIMEOUT_MS = 1200;   // never let a slow PTR lookup stall the function
+const PRUNE_PER_REQUEST = 20;
+
+// random per cold start: good enough to rate-limit a 60s window without
+// creating an identifier that outlives the process
+const RUNTIME_SALT = crypto.randomBytes(16).toString('hex');
 
 function kvConfig() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
@@ -28,10 +47,21 @@ function kvConfig() {
   return url && token ? { url, token } : null;
 }
 
+// A client can prepend whatever it likes to x-forwarded-for, so the FIRST entry
+// is attacker-controlled: trusting it lets anyone fabricate visits from any
+// network they choose, which is exactly the claim this dashboard exists to make.
+// x-real-ip is set by Vercel's proxy and overwritten rather than appended to, so
+// prefer it; failing that take the LAST x-forwarded-for entry, which is the
+// address the closest trusted proxy actually observed.
 function clientIp(req) {
+  const real = req.headers['x-real-ip'];
+  if (real) return String(real).split(',').pop().trim();
   const fwd = req.headers['x-forwarded-for'];
-  if (fwd) return String(fwd).split(',')[0].trim();
-  return req.headers['x-real-ip'] || (req.socket && req.socket.remoteAddress) || '';
+  if (fwd) {
+    const parts = String(fwd).split(',').map(s => s.trim()).filter(Boolean);
+    if (parts.length) return parts[parts.length - 1];
+  }
+  return (req.socket && req.socket.remoteAddress) || '';
 }
 
 // Two-part public suffixes, so "cam.ac.uk" survives instead of collapsing to "ac.uk".
@@ -53,9 +83,7 @@ function domainFromHost(hostname) {
 function classify(domain) {
   if (!domain) return 'unknown';
   if (/\.edu$/.test(domain) || /\.(ac|edu|sch|ed)\.[a-z]{2}$/.test(domain)) return 'education';
-  if (/\.gov$/.test(domain) || /\.gov\.[a-z]{2}$/.test(domain)) return 'government';
-  if (/\.(mil)$/.test(domain)) return 'government';
-  // consumer ISPs — a home or phone connection, not an organisation
+  if (/\.gov$/.test(domain) || /\.gov\.[a-z]{2}$/.test(domain) || /\.mil$/.test(domain)) return 'government';
   if (/^(comcast|xfinity|verizon|att|spectrum|charter|rr|cox|t-mobile|tmobile|sprint|vodafone|telus|rogers|bell|virginm|bt|sky|orange|telefonica|optimum|frontier|centurylink|windstream|mediacom|cableone|starlink|googlefiber)\./.test(domain)
       || /(amazonaws|azure|googleusercontent|cloudfront|akamai|digitalocean|linode|hetzner|ovh)\./.test(domain)) return 'isp';
   return 'organisation';
@@ -78,25 +106,53 @@ function readBody(req) {
   return b && typeof b === 'object' ? b : {};
 }
 
+// The collector has to stay open for the browser to reach it, so it cannot be
+// authenticated. These two checks keep casual abuse from flooding the store and
+// evicting real visits through LTRIM. Neither stops a determined scripted
+// attacker; the rate limit is what bounds the damage.
+function sameOrigin(req) {
+  const origin = req.headers.origin;
+  if (!origin) return true; // sendBeacon does not always set it
+  try { return new URL(origin).host === String(req.headers.host || ''); }
+  catch (e) { return false; }
+}
+
+async function kvPipeline(kv, cmds) {
+  const r = await fetch(kv.url + '/pipeline', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + kv.token, 'Content-Type': 'application/json' },
+    body: JSON.stringify(cmds),
+  });
+  return r.json();
+}
+
 module.exports = async (req, res) => {
-  // Always succeed from the browser's point of view; this must never surface an error.
+  // Always succeed from the browser's point of view; never surface an error.
   const done = () => { res.statusCode = 204; res.end(); };
   if (req.method !== 'POST') return done();
+  if (!sameOrigin(req)) return done();
 
   try {
     const kv = kvConfig();
     if (!kv) return done(); // not configured yet — no-op
 
+    const ip = clientIp(req);
+
+    // rate limit before doing any work
+    const rateKey = RATE_PREFIX + crypto.createHash('sha256').update(ip + '|' + RUNTIME_SALT).digest('hex').slice(0, 16);
+    const limited = await kvPipeline(kv, [['INCR', rateKey], ['EXPIRE', rateKey, '60']]);
+    const count = Array.isArray(limited) && limited[0] ? Number(limited[0].result) : 0;
+    if (count > RATE_PER_MIN) return done();
+
     const body = readBody(req);
     const h = req.headers;
-    const ip = clientIp(req);
 
     const hostname = await reverseDns(ip);
     const domain = hostname ? domainFromHost(hostname) : null;
 
-    const salt = process.env.INSIGHTS_SALT || 'nishantshah.us';
-    const visitorHash = ip
-      ? crypto.createHash('sha256').update(ip + '|' + salt).digest('hex').slice(0, 16)
+    const secret = process.env.INSIGHTS_SALT || process.env.INSIGHTS_TOKEN || '';
+    const visitorHash = (ip && secret)
+      ? crypto.createHash('sha256').update(ip + '|' + secret).digest('hex').slice(0, 16)
       : null;
 
     const visit = {
@@ -106,21 +162,27 @@ module.exports = async (req, res) => {
       country: h['x-vercel-ip-country'] || null,
       region: h['x-vercel-ip-country-region'] || null,
       city: h['x-vercel-ip-city'] ? decodeURIComponent(h['x-vercel-ip-city']) : null,
-      org: domain,
-      host: hostname,
+      org: domain,            // registrable domain only — never the full PTR
       kind: classify(domain),
       visitor: visitorHash,
       mobile: !!body.mobile,
     };
 
-    await fetch(kv.url + '/pipeline', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + kv.token, 'Content-Type': 'application/json' },
-      body: JSON.stringify([
-        ['LPUSH', LIST_KEY, JSON.stringify(visit)],
-        ['LTRIM', LIST_KEY, '0', String(MAX_VISITS - 1)],
-      ]),
-    });
+    await kvPipeline(kv, [
+      ['LPUSH', LIST_KEY, JSON.stringify(visit)],
+      ['LTRIM', LIST_KEY, '0', String(MAX_VISITS - 1)],
+    ]);
+
+    // Age out the tail a little on each write: O(1) and converges, so records
+    // do not sit in the store indefinitely.
+    try {
+      const cutoff = Date.now() - RETENTION_DAYS * 86400000;
+      const tail = await kvPipeline(kv, [['LINDEX', LIST_KEY, '-1']]);
+      const oldest = tail && tail[0] && tail[0].result ? JSON.parse(tail[0].result) : null;
+      if (oldest && oldest.t < cutoff) {
+        await kvPipeline(kv, Array.from({ length: PRUNE_PER_REQUEST }, () => ['RPOP', LIST_KEY]));
+      }
+    } catch (e) { /* pruning is best-effort */ }
   } catch (e) { /* swallow — analytics must never affect the visitor */ }
 
   return done();
