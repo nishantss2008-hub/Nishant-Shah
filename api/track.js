@@ -37,9 +37,11 @@ const RATE_PER_MIN = 60;        // per source, before writes are dropped
 const RDNS_TIMEOUT_MS = 1200;   // never let a slow PTR lookup stall the function
 const PRUNE_PER_REQUEST = 20;
 
-// random per cold start: good enough to rate-limit a 60s window without
-// creating an identifier that outlives the process
-const RUNTIME_SALT = crypto.randomBytes(16).toString('hex');
+// Secret used for hashing. Must be STABLE across instances: a per-process
+// random would give every concurrent lambda its own rate-limit namespace.
+function secret() {
+  return process.env.INSIGHTS_SALT || process.env.INSIGHTS_TOKEN || '';
+}
 
 function kvConfig() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
@@ -54,6 +56,11 @@ function kvConfig() {
 // prefer it; failing that take the LAST x-forwarded-for entry, which is the
 // address the closest trusted proxy actually observed.
 function clientIp(req) {
+  // Vercel strips client-supplied x-vercel-* headers, so this one cannot be
+  // forged. Without it a client could rotate x-real-ip on every request and
+  // both fake its organisation and land in a fresh rate-limit bucket each time.
+  const vercel = req.headers['x-vercel-forwarded-for'];
+  if (vercel) return String(vercel).split(',').pop().trim();
   const real = req.headers['x-real-ip'];
   if (real) return String(real).split(',').pop().trim();
   const fwd = req.headers['x-forwarded-for'];
@@ -138,10 +145,20 @@ module.exports = async (req, res) => {
 
     const ip = clientIp(req);
 
-    // rate limit before doing any work
-    const rateKey = RATE_PREFIX + crypto.createHash('sha256').update(ip + '|' + RUNTIME_SALT).digest('hex').slice(0, 16);
-    const limited = await kvPipeline(kv, [['INCR', rateKey], ['EXPIRE', rateKey, '60']]);
-    const count = Array.isArray(limited) && limited[0] ? Number(limited[0].result) : 0;
+    // Rate limit before doing any work. The key is derived from a stable
+    // secret so every instance computes the same one — otherwise the ceiling
+    // is 60/min PER LAMBDA, and a flood that makes Vercel scale out quietly
+    // raises the attacker's own allowance. The entry is a hash carrying a 60s
+    // TTL, so nothing identifying outlives the window.
+    // SET ... NX establishes the window once; a bare EXPIRE on every hit would
+    // keep pushing the deadline out and never let a busy source recover.
+    const rateKey = RATE_PREFIX + crypto.createHash('sha256')
+      .update(ip + '|rate|' + (secret() || 'nishantshah.us')).digest('hex').slice(0, 16);
+    const limited = await kvPipeline(kv, [
+      ['SET', rateKey, '0', 'EX', '60', 'NX'],
+      ['INCR', rateKey],
+    ]);
+    const count = Array.isArray(limited) && limited[1] ? Number(limited[1].result) : 0;
     if (count > RATE_PER_MIN) return done();
 
     const body = readBody(req);
@@ -150,9 +167,9 @@ module.exports = async (req, res) => {
     const hostname = await reverseDns(ip);
     const domain = hostname ? domainFromHost(hostname) : null;
 
-    const secret = process.env.INSIGHTS_SALT || process.env.INSIGHTS_TOKEN || '';
-    const visitorHash = (ip && secret)
-      ? crypto.createHash('sha256').update(ip + '|' + secret).digest('hex').slice(0, 16)
+    const sec = secret();
+    const visitorHash = (ip && sec)
+      ? crypto.createHash('sha256').update(ip + '|' + sec).digest('hex').slice(0, 16)
       : null;
 
     const visit = {
